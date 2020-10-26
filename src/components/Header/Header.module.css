@@ -8,6 +8,7 @@
   grid-template-areas: "logo midArea loginBtn registerBtn helpBtn";
   justify-content: stretch;
   align-content: center;
+  box-sizing: border-box;
 }
 .Logo {
   grid-area: logo;
