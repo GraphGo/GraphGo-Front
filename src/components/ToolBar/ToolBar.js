@@ -47,23 +47,23 @@ class ToolBar extends Component {
   render() {
     return (
       <div className={classes.ToolBar}>
-        <button onClick={() => this.handleToolSelected("pen")}>
+        <button title="Pen" onClick={() => this.handleToolSelected("pen")}>
           <img id="pen" src={penIcon} alt="pen" />
         </button>
-        <button onClick={() => this.handleToolSelected("hand")}>
+        <button title="Hand" onClick={() => this.handleToolSelected("hand")}>
           <img id="hand" src={handIcon} alt="hand tool" />
         </button>
-        <button onClick={() => this.handleToolSelected("lasso")}>
+        <button title="Lasso Tool" onClick={() => this.handleToolSelected("lasso")}>
           <img id="lasso" src={lassoIcon} alt="lasso tool" />
         </button>
-        <button>
+        <button title="Undo">
           <img id="undo" src={undoIcon} alt="undo" />
         </button>
-        <button>
+        <button title="Redo">
           <img id="redo" src={redoIcon} alt="redo" />
         </button>
-        <button>
-          <img id="save" src={saveIcon} alt="redo" />
+        <button title="Save">
+          <img id="save" src={saveIcon} alt="save" />
         </button>
       </div>
     );
