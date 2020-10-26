@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="6" height="26" viewBox="0 0 6 26">
+  <g id="dots" transform="translate(6) rotate(90)">
+    <path id="XMLID_287_" d="M16,13a3,3,0,1,0,3,3A3,3,0,0,0,16,13Z" transform="translate(-3 -13)" fill="#fafcfd"/>
+    <path id="XMLID_289_" d="M6,13a3,3,0,1,0,3,3A3,3,0,0,0,6,13Z" transform="translate(-3 -13)" fill="#fafcfd"/>
+    <path id="XMLID_291_" d="M26,13a3,3,0,1,0,3,3A3,3,0,0,0,26,13Z" transform="translate(-3 -13)" fill="#fafcfd"/>
+  </g>
+</svg>

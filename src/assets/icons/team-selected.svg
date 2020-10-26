@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="101" height="101" viewBox="0 0 101 101">
+  <defs>
+    <filter id="Ellipse_9" x="0" y="0" width="101" height="101" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Component_15_2" data-name="Component 15 – 2" transform="translate(9 6)" opacity="0.603">
+    <g transform="matrix(1, 0, 0, 1, -9, -6)" filter="url(#Ellipse_9)">
+      <circle id="Ellipse_9-2" data-name="Ellipse 9" cx="41.5" cy="41.5" r="41.5" transform="translate(9 6)" fill="#0a3763"/>
+    </g>
+    <g id="customer" transform="translate(24 -6.379)">
+      <circle id="Ellipse_6" data-name="Ellipse 6" cx="6.5" cy="6.5" r="6.5" transform="translate(11 32.379)" fill="#fafcfd"/>
+      <circle id="Ellipse_7" data-name="Ellipse 7" cx="4" cy="4" r="4" transform="translate(26 37.379)" fill="#fafcfd"/>
+      <ellipse id="Ellipse_8" data-name="Ellipse 8" cx="3.5" cy="4" rx="3.5" ry="4" transform="translate(2 37.379)" fill="#fafcfd"/>
+      <path id="Path_49" data-name="Path 49" d="M9.375,241.61c-1.512-1.239-2.882-1.075-4.631-1.075A4.735,4.735,0,0,0,0,245.25v7.63a2.053,2.053,0,0,0,2.055,2.047c4.892,0,4.3.089,4.3-.211C6.357,249.309,5.717,245.345,9.375,241.61Z" transform="translate(0 -193.373)" fill="#fafcfd"/>
+      <path id="Path_50" data-name="Path 50" d="M131.336,239.932c-3.055-.255-5.71,0-8,1.893-3.832,3.07-3.095,7.2-3.095,12.259a2.451,2.451,0,0,0,2.447,2.447c14.746,0,15.333.476,16.208-1.461.287-.655.208-.447.208-6.712C139.1,243.383,134.8,239.932,131.336,239.932Z" transform="translate(-111.788 -192.742)" fill="#fafcfd"/>
+      <path id="Path_51" data-name="Path 51" d="M382.441,240.537c-1.758,0-3.121-.162-4.631,1.075,3.63,3.707,3.017,7.4,3.017,13.105,0,.3-.489.211,4.229.211a2.126,2.126,0,0,0,2.128-2.12v-7.557A4.735,4.735,0,0,0,382.441,240.537Z" transform="translate(-351.416 -193.375)" fill="#fafcfd"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="101" height="101" viewBox="0 0 101 101">
+  <defs>
+    <filter id="Ellipse_5" x="0" y="0" width="101" height="101" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Component_13_3" data-name="Component 13 – 3" transform="translate(9 6)" opacity="0.599">
+    <g transform="matrix(1, 0, 0, 1, -9, -6)" filter="url(#Ellipse_5)">
+      <circle id="Ellipse_5-2" data-name="Ellipse 5" cx="41.5" cy="41.5" r="41.5" transform="translate(9 6)" fill="#0a3763"/>
+    </g>
+    <g id="folder" transform="translate(24 3.5)">
+      <path id="Path_47" data-name="Path 47" d="M134.425,27.6h-10.4l-2.833-4.625a.986.986,0,0,0-.84-.471h-7.834A2.517,2.517,0,0,0,110,25.014V44.377a2.517,2.517,0,0,0,2.514,2.514h21.91a2.517,2.517,0,0,0,2.514-2.514V30.111A2.517,2.517,0,0,0,134.425,27.6Z" transform="translate(-102.773)" fill="#fafcfd"/>
+      <path id="Path_48" data-name="Path 48" d="M5.256,141.333V126.275H2.514A2.517,2.517,0,0,0,0,128.789v19.363a2.517,2.517,0,0,0,2.514,2.514h21.91a2.517,2.517,0,0,0,2.514-2.514v-2.333H9.742a4.49,4.49,0,0,1-4.485-4.485Z" transform="translate(0 -96.957)" fill="#fafcfd"/>
+    </g>
+  </g>
+</svg>
