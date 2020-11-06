@@ -46,7 +46,7 @@ const getAllFiles = (email) => {
     })
 }
 
-const AddFileTodb = (uid, file) => {
+const addFileTodb = (uid, file) => {
     console.log(uid)
     return new Promise((resolve, reject) => {
         db.collection("file").doc().set({
@@ -54,7 +54,11 @@ const AddFileTodb = (uid, file) => {
             type: file.type,
             owner: file.ownerID,
             data: file.data
-        }).then(()=>{resolve("added")
+        }).then(()=>{
+            //need to update user's file pointers as well
+            //db.collection("user").doc(uid).
+            
+            resolve("added")
     }).catch((error)=>{reject(error)})
     })
 }
@@ -68,5 +72,5 @@ const modifyFile = (fileId, file) => {
 
 
 export {
-    getAllFiles, AddFileTodb, modifyFile, File
+    getAllFiles, addFileTodb, modifyFile, File
 }
