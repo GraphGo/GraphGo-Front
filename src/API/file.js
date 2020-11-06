@@ -35,14 +35,38 @@ const getAllFiles = (email) => {
                 }
                 var result = []
                 // console.log(querysnapshot.docs[0])
-                querysnapshot.forEach(doc => {
-                    result.push(doc.data())
+                querysnapshot.forEach(doc => { 
+                    let dic = doc.data()
+                    dic["fileId"] = doc.id
+                    result.push(dic)
                 })
                 resolve(result)
             }).catch(e => reject(e)) 
         })    
     })
 }
+
+const AddFileTodb = (uid, file) => {
+    console.log(uid)
+    return new Promise((resolve, reject) => {
+        db.collection("file").doc().set({
+            files: file.files,
+            type: file.type,
+            owner: file.ownerID,
+            data: file.data
+        }).then(()=>{resolve("added")
+    }).catch((error)=>{reject(error)})
+    })
+}
+
+const modifyFile = (fileId, file) => {
+    return new Promise((resolve,reject)=>{
+        db.collection("user").doc(fileId).update(file).then(()=>{resolve("file modified")
+    }).catch((error)=>{reject(error)})
+    })
+}
+
+
 export {
-    getAllFiles, File
+    getAllFiles, AddFileTodb, modifyFile, File
 }
