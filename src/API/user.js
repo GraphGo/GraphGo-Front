@@ -3,11 +3,12 @@ const firebase = require('firebase/app')
 require('firebase/firestore')
 import {db, auth} from "./db"
 
-class User{
-    constructor(email, password, files){
+class User {
+    constructor(email, username, files){
         this.email = email
-        this.password = password
+        this.username = username
         this.files = files
+        this.user_since = new Date()
     }
 
     toString(){
@@ -15,17 +16,19 @@ class User{
     }
 }
 
-saveUserToDB = (user) => {
-    return new Promise((res, rej)=>{
+const saveUserToDB = (user) => {
+    return new Promise((resolve, reject)=>{
         db.collection("user").doc().set({
             email: user.email,
-            files: user.files
+            files: user.files,
+            user_since: user.user_since,
+            
         }).then(()=>{resolve("user added")
     }).catch((error)=>{reject(error)})
     })
 }
 
-login = (email, password) => {
+const login = (email, password) => {
     try {
         auth.signInWithEmailAndPassword(email,
             password);
@@ -35,7 +38,7 @@ login = (email, password) => {
     }
 }
 
-signUp = (email, password) => {
+const signUp = (email, password) => {
     try {
         auth.createUserWithEmailAndPassword(email,
             password);
@@ -47,3 +50,5 @@ signUp = (email, password) => {
         alert(error)
     }
 }
+
+export { saveUserToDB, signUp, login }
