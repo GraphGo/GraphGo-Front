@@ -1,7 +1,7 @@
-const firebase = require('firebase')
+import firebase from 'firebase'
 require('firebase/firestore')
 
-firebase.initializeApp({    
+const firebaseApp = firebase.initializeApp({    
     apiKey: "AIzaSyBjhv7NmoxHRrnRTcxLku4GxjpZHX8uruU",
     authDomain: "graphgo-server.firebaseapp.com",
     databaseURL: "https://graphgo-server.firebaseio.com",
@@ -12,8 +12,6 @@ firebase.initializeApp({
     measurementId: "G-2SGHSDQ3DX"
 });
 
-var auth = firebase.auth()
+var db = firebaseApp.firestore();
 
-var db = firebase.firestore();
-
-export default {db, auth};
+export default {db};

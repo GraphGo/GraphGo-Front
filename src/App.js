@@ -1,9 +1,9 @@
 import "./App.css";
-import CanvasPage from "./views/CanvasPage/CanvasPage";
+import CMS from './views/CMS/CMS'
 function App() {
   return (
     <div className="App">
-      <CanvasPage />
+      <CMS />
       {/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
