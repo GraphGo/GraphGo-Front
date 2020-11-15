@@ -166,16 +166,6 @@ class DrawArea extends Component {
   }
 
   render () {
-    const AnimationContainer = styled.div`
-      position: absolute;
-      width: 100px;
-      height: 100px;
-      z-index: 100;
-      top: ${this.state.animation_pos_top}px;
-      left: ${this.state.animation_pos_left}px;
-      background-color: green;
-      color: white;
-    `;
     return (
       <Container>
         <div id="paint">
@@ -184,7 +174,6 @@ class DrawArea extends Component {
         <div id="predicted">
           <button id="clear">Clear</button>
         </div>
-        <AnimationContainer>PUT THE ALGORITHM ANIMATION HERE!</AnimationContainer>
       </Container>
     )
   }
