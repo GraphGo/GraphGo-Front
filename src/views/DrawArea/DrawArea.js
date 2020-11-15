@@ -59,24 +59,26 @@ class DrawArea extends Component {
     var mouse = {x: 0, y: 0};
     var arr_x = []
     var arr_y = []
-    var local_arr_x = []
-    var local_arr_y = []
+    var old_arr_x = []
+    var old_arr_y = []
     var old_bbox = []
     var predicted_arr = []
     var same_object = false;
+    var input;
+    var place_holder=false;
     canvas.addEventListener('mousemove', function(e) {
       mouse.x = e.pageX - this.offsetLeft;
       mouse.y = e.pageY - this.offsetTop;
       
     }, false);
 
-    context.lineWidth = 2;
+    context.lineWidth = 7;
     context.lineJoin = 'round';
     context.lineCap = 'round';
     context.strokeStyle = 'red';
 
     canvas.addEventListener('mousedown', function(e) {
-      
+      place_holder=false;
       if (arr_x.length!=0 & arr_y.length!=0){
         if (mouse.x - arr_x.max()< 30){
             same_object = true;
@@ -102,10 +104,18 @@ class DrawArea extends Component {
     //   var img = new Image();
     //   img.onload = function() {
         //context.drawImage(canvas, 0, 0, 28, 28);
+        if (old_arr_x.length>0){context.clearRect(0,0,old_arr_x.max()-old_arr_x.min()+15,old_arr_y.max()-old_arr_y.min()+15)}
         
-        let data = context.getImageData(arr_x.min()-5, arr_y.min()-5,arr_x.max()-arr_x.min()+15,arr_y.max()-arr_y.min()+15);
+        data = context.getImageData(arr_x.min()-5, arr_y.min()-5,arr_x.max()-arr_x.min()+15,arr_y.max()-arr_y.min()+15);
         context.putImageData(data, 0, 0);
-        let img = tf.browser.fromPixels(data, 1).resizeBilinear([28,28]);
+        width = arr_y.max()-arr_y.min()+15;
+        if (width<25){
+            place_holder=true;
+        }
+        input = context.getImageData(0,0,(width<arr_y.max()-arr_y.min()+15)?(arr_y.max()-arr_y.min()+15):width,arr_y.max()-arr_y.min()+15);
+        old_arr_x = arr_x
+        old_arr_y = arr_y
+        let img = tf.browser.fromPixels(input,1).resizeBilinear([28,28]).div(255.0)//.mean(2).expandDims(2).expandDims().toFloat().div(255.0);
         
         // var input = [];
         // for(var i = 0; i < data.length; i += 4) {
@@ -117,6 +127,24 @@ class DrawArea extends Component {
     //   img.src = canvas.toDataURL('image/png');
     }, false);
 
+    canvas.addEventListener('touchstart', function (e) {
+      var touch = e.touches[0];
+      canvas.dispatchEvent(new MouseEvent('mousedown', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      }));
+    }, false);
+    canvas.addEventListener('touchend', function (e) {
+      canvas.dispatchEvent(new MouseEvent('mouseup', {}));
+    }, false);
+    canvas.addEventListener('touchmove', function (e) {
+      var touch = e.touches[0];
+      canvas.dispatchEvent(new MouseEvent('mousemove', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      }));
+    }, false);
+    
     var onPaint = function() {
       arr_x.push(mouse.x)
       arr_y.push(mouse.y)
@@ -126,6 +154,7 @@ class DrawArea extends Component {
 
     tf.loadLayersModel('https://raw.githubusercontent.com/carlos-aguayo/carlos-aguayo.github.io/master/model/model.json').then(function(model) {
       window.model = model;
+      console.log('ready');
     });
     
 
@@ -133,9 +162,12 @@ class DrawArea extends Component {
       if (window.model) {
         window.model.predict([input.reshape([1, 28, 28, 1])]).array().then(function(scores){
           scores = scores[0];
-          let predicted = scores.indexOf(Math.max(...scores));
+          predicted = scores.indexOf(Math.max(...scores));
+          if(place_holder){
+            predicted=1;
+          }
           //$('#number').html(predicted.toString()+','+predicted.toString());
-          //Data structure 没调好所以prediction还没实现
+          
           if (same_object){
               predicted_arr[predicted_arr.length-1] = predicted;
             }else{
