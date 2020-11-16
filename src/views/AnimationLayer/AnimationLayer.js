@@ -1,26 +1,40 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import AnimationContainer from "../AnimationContainer/AnimationContainer.js"
 
 class AnimationLayer extends React.Component {
   state = {
-    animations: []
+    // here is the state componenent to control all animation components in the animation layer
+    animationContainers: [{
+      key: 0,
+      top: 100,
+      left: 80,
+      width: 100,
+      height: 234,
+    }]
   }
 
   render() {
     return (
       <Container style={{"height": `${window.innerWidth / 3}px`}}>
-        <AnimationContainer/>
+        {this.state.animationContainers.map(config => {
+          return (
+            <div style={{
+              "width": `${config.width}px`,
+              "height": `${config.height}px`,
+              "top": `${config.top}px`,
+              "left": `${config.left}px`,
+              "position": "absolute"
+            }}>
+              <AnimationContainer key={config.key}/>
+            </div>
+            
+          );
+        })}
       </Container>
     )
   }
 }
-
-const AnimationContainer = styled.div`
-  width: 100px;
-  height: 100px;
-  background-color: red;
-  position: absolute;
-`;
 
 const Container = styled.div`
   width: 100%;

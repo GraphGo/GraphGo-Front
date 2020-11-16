@@ -106,9 +106,9 @@ class DrawArea extends Component {
         //context.drawImage(canvas, 0, 0, 28, 28);
         if (old_arr_x.length>0){context.clearRect(0,0,old_arr_x.max()-old_arr_x.min()+15,old_arr_y.max()-old_arr_y.min()+15)}
         
-        data = context.getImageData(arr_x.min()-5, arr_y.min()-5,arr_x.max()-arr_x.min()+15,arr_y.max()-arr_y.min()+15);
+        let data = context.getImageData(arr_x.min()-5, arr_y.min()-5,arr_x.max()-arr_x.min()+15,arr_y.max()-arr_y.min()+15);
         context.putImageData(data, 0, 0);
-        width = arr_y.max()-arr_y.min()+15;
+        let width = arr_y.max()-arr_y.min()+15;
         if (width<25){
             place_holder=true;
         }
@@ -162,7 +162,7 @@ class DrawArea extends Component {
       if (window.model) {
         window.model.predict([input.reshape([1, 28, 28, 1])]).array().then(function(scores){
           scores = scores[0];
-          predicted = scores.indexOf(Math.max(...scores));
+          let predicted = scores.indexOf(Math.max(...scores));
           if(place_holder){
             predicted=1;
           }
@@ -188,8 +188,8 @@ class DrawArea extends Component {
       mouse = {x: 0, y: 0};
       arr_x = []
       arr_y = []
-      local_arr_x = []
-      local_arr_y = []
+      let local_arr_x = []
+      let local_arr_y = []
       old_bbox = []
       predicted_arr = []
       same_object = false;
