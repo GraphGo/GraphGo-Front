@@ -1,19 +1,40 @@
-const { query } = require('express');
-const firebase = require('firebase/app')
-require('firebase/firestore')
 import {db, auth} from "./db"
 
 class User {
-    constructor(email, username, files){
+    constructor(email, user_since, files){
         this.email = email
-        this.username = username
         this.files = files
-        this.user_since = new Date()
+        this.user_since = user_since
     }
 
     toString(){
         return this.email
     }
+}
+
+const userConverter = {
+    toFirestore: function(user) {
+        return {
+            email: user.email,
+            files: user.files,
+            user_since: user.user_since
+        }
+    },
+    fromFirestore: function(snapshot, options) {
+        const data = snapshot.data(options)
+        return new User(data.email, data.user_since, data.files)
+    }
+}
+
+const getUser = (email) => {
+    return new Promise((resolve, reject) => {
+        db.collection('user').withConverter(userConverter).get("email",'==',email).then(querysnapshot => {
+            if(querysnapshot.docs.length == 0){
+                reject("No user with this email found")
+            }
+            resolve(querysnapshot.docs[0].data())
+        })
+    })
 }
 
 const saveUserToDB = (user) => {
@@ -51,4 +72,4 @@ const signUp = (email, password) => {
     }
 }
 
-export { saveUserToDB, signUp, login }
+export { saveUserToDB, signUp, login, getUser }

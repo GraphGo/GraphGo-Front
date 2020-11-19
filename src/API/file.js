@@ -1,48 +1,103 @@
-import db from './db'
+import {db, auth} from './db'
+import { getUser } from './user'
+
 
 class File {
-    constructor(files, type, ownerID, data){
-        this.files = files
+    constructor(name, type, root, img, last_modified, structures){
+        this.name = name
         this.type = type
-        this.ownerID = ownerID
-        this.data = data
+        this.root = root
+        this.img = img
+        this.last_modified = last_modified
+        this.structures = structures
     }
 }
 
-const fileConverter = {
-    toFireStore: (file) => {
+class Structure {
+    constructor(graph, type, recognized_values, bounding_box, canvas_size){
+        this.graph = graph
+        this.type = type
+        this.recognized_values = recognized_values
+        this.bounding_box = bounding_box
+        this.canvas_size = canvas_size
+    }
+}
+
+class Folder {
+    constructor(name, files, last_modified = new Date(), num_files=files.length){
+        this.name = name
+        this.files = files
+        this.last_modified = last_modified
+        this.num_files = num_files
+    }
+}
+
+const FileConverter = {
+    toFirestore: function(file) {
         return {
-            files: file.files,
+            name:file.name,
             type: file.type,
-            ownerID: file.ownerID,
-            data: file.data
+            root: file.root,
+            img: file.img,
+            last_modified: file.last_modified,
+            structures: file.structures
         }
     },
-    fromFireStore: (snapshot, options) => {
+    fromFirestore: function(snapshot, options){
         const data = snapshot.data(options)
-        return new File(data.files, data.type, data.ownerID, data.data)
+        return new File(data.name, data.type, data.root, data.img, data.last_modified, data.structures)
     }
 }
 
+const FolderConverter = {
+    toFirestore: function(folder) {
+        return {
+            name: folder.name,
+            num_files: folder.num_files,
+            last_modified: folder.last_modified,
+            files: folder.files,
+            type: folder.type
+        }
+    },
+    fromFirestore: function(snapshot, options){
+        const data = snapshot.data(options)
+        return new Folder(data.name, data.files, data.last_modified, data.num_files)
+    }
+}
+
+
 const getAllFiles = (email) => {
-    console.log(email)
     return new Promise((resolve, reject) => {
-        db.collection('user').where("email","==",email).get().then(querysnapshot => {
-            var ownerID = querysnapshot.docs[0].id
-            db.collection("file").where("owner","==",ownerID).get().then((querysnapshot) => {
-                if(querysnapshot.empty) {
-                    reject("Not Found")
+        getUser(email).then(querysnapshot => {
+            var queryResult = []
+            // for each id, get File/Folder object from database
+            querysnapshot.files.forEach(item => {
+                var collection;
+                // add converter
+                if(item.type === 'folder'){
+                    collection = db.collection('folder').withConverter(FolderConverter)
+                } else if (item.type === 'graph'){
+                    collection = db.collection('file').withConverter(FileConverter)
                 }
-                var result = []
-                // console.log(querysnapshot.docs[0])
-                querysnapshot.forEach(doc => { 
-                    let dic = doc.data()
-                    dic["fileId"] = doc.id
-                    result.push(dic)
+                collection.doc(item.id).get().then(querysnapshot => {
+                    queryResult.push(querysnapshot.data())
                 })
-                resolve(result)
-            }).catch(e => reject(e)) 
-        })    
+            })
+            // FIXME: queryResult can be printed out with length 2
+            // but when I directly print queryResult.length it's 0
+            console.log(queryResult)
+            resolve(queryResult)
+        }).catch(e=>reject(e))   
+    })
+}
+
+const getFileById = (fileId) => {
+    return new Promise((resolve, reject) => {
+        db.collection('file').withConverter(FileConverter).get('id','==',fileId).then(querysnapshot => {
+            if(querysnapshot.docs.length == 0) reject('No file with this id found')
+            console.log(querysnapshot.docs[0].data())
+            resolve(querysnapshot.docs[0].data())
+        })
     })
 }
 
@@ -72,5 +127,5 @@ const modifyFile = (fileId, file) => {
 
 
 export {
-    getAllFiles, addFileTodb, modifyFile, File
+    getAllFiles, addFileTodb, modifyFile, getFileById
 }
