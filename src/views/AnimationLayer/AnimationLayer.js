@@ -11,13 +11,20 @@ class AnimationLayer extends React.Component {
       left: 80,
       width: 100,
       height: 234,
+      values: [1, 2, 3, 4]
     }]
+  }
+  constructor(props) {
+    super(props);
   }
 
   render() {
+    console.log(this.props);
     return (
       <Container style={{"height": `${window.innerWidth / 3}px`}}>
-        {this.state.animationContainers.map(config => {
+        {
+        this.props.smartObjects ?
+        this.props.smartObjects.map(config => {
           return (
             <div style={{
               "width": `${config.width}px`,
@@ -26,11 +33,11 @@ class AnimationLayer extends React.Component {
               "left": `${config.left}px`,
               "position": "absolute"
             }}>
-              <AnimationContainer key={config.key}/>
+              <AnimationContainer smartObject={config}/>
             </div>
             
           );
-        })}
+        }) : <div></div>}
       </Container>
     )
   }
@@ -47,7 +54,7 @@ const Container = styled.div`
   z-index: -2;
   top: 83.2px;
   left: 0;
-  background-color: grey;
+  background-color: white;
   opacity: 0.5;
 `;
 
