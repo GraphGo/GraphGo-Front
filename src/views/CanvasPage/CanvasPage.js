@@ -12,7 +12,7 @@ const CanvasPage = () => {
       <Header canvasPage={true}/>
       <ToolBar />
       {/* <DrawingArea src="./demo.html"></DrawingArea> */}
-      <AnimationLayer />
+      {/* <AnimationLayer /> */}{/* Commented out for testing. TODO: uncomment */}
       <DrawArea />
     </div>
   );

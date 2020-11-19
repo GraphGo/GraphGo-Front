@@ -11,6 +11,8 @@ import redoIcon from "../../assets/icons/redo.svg";
 import redoDarkIcon from "../../assets/icons/redo-dark.svg";
 import saveIcon from "../../assets/icons/save.svg";
 import saveDarkIcon from "../../assets/icons/save-dark.svg";
+import PenToolPopup from "../PenToolPopup/PenToolPopup";
+import OutsideClickHandler from "../hoc/OutsideClickHandler/OutsideClickHandler"
 import classes from "./ToolBar.module.css";
 
 const tools = {
@@ -23,14 +25,14 @@ class ToolBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      toolSelected: "pen",
+      toolSelected: null,
+      showPenMenu: false
     };
   }
   componentDidUpdate() {
     // update icons
     Object.keys(tools).forEach((key) => {
-      if (this.state.toolSelected == key) {
-        console.log(key, tools[key]);
+      if (this.state.toolSelected === key) {
         const updatedIcon = tools[key][1];
         document.getElementById(key).setAttribute("src", updatedIcon);
       } else {
@@ -41,8 +43,12 @@ class ToolBar extends Component {
   }
 
   handleToolSelected = (toolName) => {
-    this.setState({ toolSelected: toolName });
+    this.setState({ toolSelected: toolName, showPenMenu: true });
   };
+
+  handlePenMenuClosed = () => {
+    this.setState({ showPenMenu: false })
+  }
 
   render() {
     return (
@@ -50,6 +56,9 @@ class ToolBar extends Component {
         <button title="Pen" onClick={() => this.handleToolSelected("pen")}>
           <img id="pen" src={penIcon} alt="pen" />
         </button>
+        <OutsideClickHandler handler={this.handlePenMenuClosed}>
+          <PenToolPopup show={this.state.toolSelected === "pen" && this.state.showPenMenu} />
+        </OutsideClickHandler>
         <button title="Hand" onClick={() => this.handleToolSelected("hand")}>
           <img id="hand" src={handIcon} alt="hand tool" />
         </button>
@@ -65,6 +74,7 @@ class ToolBar extends Component {
         <button title="Save">
           <img id="save" src={saveIcon} alt="save" />
         </button>
+
       </div>
     );
   }
