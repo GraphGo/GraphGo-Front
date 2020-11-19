@@ -4,8 +4,8 @@ import styled from 'styled-components';
 class AnimationContainer extends Component {
   constructor(inputArray) {
     super();
-    array = [];
-    for (i = 0; i < inputArray.length; i++) {
+    let array = [];
+    for (let i = 0; i < inputArray.length; i++) {
       array.append({value:inputArray[i], x:(i+1)*15, y:15, speed:{x:1, y:1}})
     }
     this.state = {
@@ -14,12 +14,12 @@ class AnimationContainer extends Component {
   }
   componentDidMount() {
     const canvas = document.getElementById("myCanvas");
-    const ctx = canvas.getContext("2d");
+    const context = canvas.getContext("2d");
     context.font = "20px Georgia";
     context.fillText('\[', 0, 15);
     // draw every element in arr
-    for (i = 0; i < this.state.arr.length; i++){
-      object = this.state.arr[i];
+    for (let i = 0; i < this.state.arr.length; i++){
+      const object = this.state.arr[i];
       context.fillText(object.value, object.x, object.y);
     }
     context.fillText('\]', this.state.arr[this.state.arr.length-1] + 15, 15);
