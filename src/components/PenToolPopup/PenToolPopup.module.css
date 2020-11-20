@@ -1,0 +1,16 @@
+.PenToolPopup {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  z-index: 100;
+  left: 70px;
+  top: 22%;
+  width: 240px;
+  height: 200px;
+  padding: 10px;
+  background-color: #dbeaee99;
+}
+
+.StrokeWidthSlider {
+  margin: 20px 10px 10px 0px;
+}
