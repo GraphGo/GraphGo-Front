@@ -9,6 +9,8 @@ import AnimationLayer from "../AnimationLayer/AnimationLayer";
 const CanvasPage = () => {
   return (
     <div>
+      {/* imitate redux store yea */}
+      <ReduxStore id="redux-store" tool="pen"></ReduxStore>
       <Header canvasPage={true}/>
       <ToolBar />
       {/* <DrawingArea src="./demo.html"></DrawingArea> */}
@@ -17,5 +19,9 @@ const CanvasPage = () => {
     </div>
   );
 };
+
+const ReduxStore = styled.div`
+  ${'' /* display: none; */}
+`;
 
 export default CanvasPage;

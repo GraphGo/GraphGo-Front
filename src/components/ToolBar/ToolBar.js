@@ -47,13 +47,23 @@ class ToolBar extends Component {
   render() {
     return (
       <div className={classes.ToolBar}>
-        <button title="Pen" onClick={() => this.handleToolSelected("pen")}>
+        <button title="Pen" onClick={() => {
+          this.handleToolSelected("pen");
+          document.getElementById("redux-store").setAttribute("tool", "pen");
+        }
+        }>
           <img id="pen" src={penIcon} alt="pen" />
         </button>
-        <button title="Hand" onClick={() => this.handleToolSelected("hand")}>
+        <button title="Hand" onClick={() => {
+          this.handleToolSelected("hand");
+          document.getElementById("redux-store").setAttribute("tool", "hand");
+        }}>
           <img id="hand" src={handIcon} alt="hand tool" />
         </button>
-        <button title="Lasso Tool" onClick={() => this.handleToolSelected("lasso")}>
+        <button title="Lasso Tool" onClick={() => {
+          this.handleToolSelected("lasso");
+          document.getElementById("redux-store").setAttribute("tool", "lasso");
+        }}>
           <img id="lasso" src={lassoIcon} alt="lasso tool" />
         </button>
         <button title="Undo">
