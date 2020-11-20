@@ -106,7 +106,7 @@ function updateWithAnimation(oriIdx, newIdx) {
     var newXPos = xPos - 15;
     // move the piece in between to left
     while (xPos != newXPos){
-      var i = 0;
+      var i = 1;
       for (i = 1; i <= newIdx - oldIdx; i++){
         arr[oriIdx + i].x -= arr[oriIdx + i].speed.x;
       }
@@ -126,10 +126,10 @@ function updateWithAnimation(oriIdx, newIdx) {
     // move the piece in between to right
     while (xPos != newXPos){
       var i = 0;
-      for (i = 1; i <= oldIdx - newIdx; i++){
+      for (i = 0; i < oldIdx - newIdx; i++){
         arr[newIdx + i].x += arr[newIdx + i].speed.x;
       }
-      xPos += arr[newIdx + 1].speed.x;
+      xPos += arr[newIdx].speed.x;
       animate();
     }
   }
