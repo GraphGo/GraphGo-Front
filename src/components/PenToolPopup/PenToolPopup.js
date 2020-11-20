@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import classes from "./PenToolPopup.module.css";
-import { CirclePicker } from 'react-color'
+import { CirclePicker } from 'react-color';
 import StrokeWidthSlider from "../StrokeWidthSlider/StrokeWidthSlider"
 
 class PenToolPopup extends Component {
