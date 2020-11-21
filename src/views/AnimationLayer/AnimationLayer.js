@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import AnimationContainer from "../AnimationContainer/AnimationContainer.js"
+// import AnimationContainer from "../AnimationContainer/AnimationContainer.js"
 
 class AnimationLayer extends React.Component {
   state = {
@@ -33,7 +33,7 @@ class AnimationLayer extends React.Component {
               "left": `${config.left}px`,
               "position": "absolute"
             }}>
-              <AnimationContainer smartObject={config}/>
+              {/* <AnimationContainer smartObject={config}/> */}
             </div>
             
           );
