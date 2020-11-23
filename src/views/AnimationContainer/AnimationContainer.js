@@ -7,11 +7,11 @@ class AnimationContainer extends Component {
     this.arr = [];
     let i = 0;
     let inputArray = props.smartObject.data;
-    var canvas = document.getElementById("myCanvas");
-    canvas.width = props.smartObject.width;
-    canvas.height = props.smartObject.height;
-    var ctx = canvas.getContext("2d");
-    ctx.font = "10px Georgia";
+    this.canvas = document.getElementById("myCanvas");
+    this.canvas.width = props.smartObject.width;
+    this.canvas.height = props.smartObject.height;
+    this.ctx = this.canvas.getContext("2d");
+    this.ctx.font = "10px Georgia";
     for (i = 0; i < inputArray.length; i++) {
       this.arr.push({
         value: inputArray[i],
@@ -23,33 +23,36 @@ class AnimationContainer extends Component {
         }
       })
     }
+    this.draw = this.draw.bind(this);
+    this.animate = this.animate.bind(this);
+    this.updateWithAnimation = this.updateWithAnimation.bind(this);
+    this.insertionSort = this.insertionSort.bind(this);
   }
 
   componentDidMount() {
     this.draw();
   }
-
-  componentWillMount() {
+  
+  componentDidUpdate() {
     this.insertionSort();
   }
 
   // this function is used to animate the updated array
   animate() {
-    requestAnimationFrame(this.draw);
+    this.setState({state: this.state});
+    setTimeout(this.draw, 1000);
   }
 
   // this function is used to draw an array
   draw() {
-    var canvas = document.getElementById("myCanvas");
-    var ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillText('\[', 0, 15);
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillText('\[', 0, 15);
     var i = 0;
     // draw every element in arr
     for (i = 0; i < this.arr.length; i++) {
-      ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
+      this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
     }
-    ctx.fillText('\]', this.arr[this.arr.length - 1].x + 15, 15);
+    this.ctx.fillText('\]', this.arr[this.arr.length - 1].x + 15, 15);
   }
 
   // this function is update the array with animation
@@ -64,13 +67,12 @@ class AnimationContainer extends Component {
     // choose which way to move by determining the positions of idxs
     if (oriIdx < newIdx) {
       // move element to newIdx
-      while (this.arr[oriIdx].x != this.arr[newIdx].x + 15) {
+      while (this.arr[oriIdx].x != this.arr[newIdx].x) {
         this.arr[oriIdx].x += this.arr[oriIdx].speed.x;
         this.animate();
       }
-
       var xPos = this.arr[oriIdx + 1].x;
-      var newXPos = xPos - 15;
+      var newXPos = this.arr[oriIdx + 1].x - 15;
       // move the piece in between to left
       while (xPos != newXPos) {
         var i = 1;
@@ -128,9 +130,9 @@ class AnimationContainer extends Component {
       /* Move elements of arr[0..i-1], that are  
       greater than key, to one position ahead  
       of their current position */
-      while (j >= 0 && this.arr[j].value > key) {  
+      while (j > 0 && this.arr[j].value > key) {
         j = j - 1;  
-      }  
+      }
       this.updateWithAnimation(i, j);
     }
   }
