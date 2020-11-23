@@ -138,6 +138,10 @@ function updateWithAnimation(oriIdx, newIdx) {
     arr[oriIdx].y += arr[oriIdx].speed.y;
     animate();
   }
+
+  // update the array move the element in the array
+  arr.splice(newIdx + 1, 0, arr[oriIdx]);
+  arr.splice(oriIdx, 1);
 }
 
 export default AnimationContainer;
