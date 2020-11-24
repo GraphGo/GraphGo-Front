@@ -12,9 +12,8 @@ if(!firebase.apps.length){
         measurementId: "G-2SGHSDQ3DX"
     });
 }
-
-
 var db = firebase.firestore();
 var auth = firebase.auth()
+const FieldValue = firebase.firestore.FieldValue
 
-export { db, auth };
+export { db, auth, FieldValue};

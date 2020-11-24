@@ -1,4 +1,4 @@
-import {db, auth} from './db'
+import {db, auth, FieldValue } from './db'
 import { getUser } from './user'
 
 
@@ -24,11 +24,12 @@ class Structure {
 }
 
 class Folder {
-    constructor(name, files, last_modified = new Date(), num_files=files.length){
+    constructor(name, type, files,  last_modified = new Date(), num_files=files.length){
         this.name = name
         this.files = files
         this.last_modified = last_modified
         this.num_files = num_files
+        this.type = type
     }
 }
 
@@ -40,7 +41,8 @@ const FileConverter = {
             root: file.root,
             img: file.img,
             last_modified: file.last_modified,
-            structures: file.structures
+            structures: file.structures,
+            id: file.id
         }
     },
     fromFirestore: function(snapshot, options){
@@ -56,37 +58,36 @@ const FolderConverter = {
             num_files: folder.num_files,
             last_modified: folder.last_modified,
             files: folder.files,
-            type: folder.type
+            type: folder.type,
         }
     },
     fromFirestore: function(snapshot, options){
         const data = snapshot.data(options)
-        return new Folder(data.name, data.files, data.last_modified, data.num_files)
+        return new Folder(data.name, data.type, data.files, data.last_modified, data.num_files)
     }
 }
 
 
 const getAllFiles = (email) => {
     return new Promise((resolve, reject) => {
-        getUser(email).then(querysnapshot => {
-            var queryResult = []
+        getUser(email).then(querysnapshot => {  
+            var promises = []
             // for each id, get File/Folder object from database
             querysnapshot.files.forEach(item => {
                 var collection;
                 // add converter
                 if(item.type === 'folder'){
-                    collection = db.collection('folder').withConverter(FolderConverter)
+                    collection = db.collection('folder')
                 } else if (item.type === 'graph'){
-                    collection = db.collection('file').withConverter(FileConverter)
+                    collection = db.collection('file')
                 }
-                collection.doc(item.id).get().then(querysnapshot => {
-                    queryResult.push(querysnapshot.data())
-                })
+                promises.push(collection.doc(item.id).get().then(querysnapshot => {
+                    var data = querysnapshot.data()
+                    data.id = item.id
+                    return data
+                }))
             })
-            // FIXME: queryResult can be printed out with length 2
-            // but when I directly print queryResult.length it's 0
-            console.log(queryResult)
-            resolve(queryResult)
+            resolve(Promise.all(promises))
         }).catch(e=>reject(e))   
     })
 }
@@ -112,7 +113,6 @@ const addFileTodb = (uid, file) => {
         }).then(()=>{
             //need to update user's file pointers as well
             //db.collection("user").doc(uid).
-            
             resolve("added")
     }).catch((error)=>{reject(error)})
     })
@@ -125,7 +125,27 @@ const modifyFile = (fileId, file) => {
     })
 }
 
+const createFolder = (name, email) => {
+    return new Promise((resolve, reject) => {
+        db.collection("user").get('email','==', email).then(querysnapshot => {
+            if (querysnapshot.empty){
+                reject("User does not exist")
+            }
+            var doc = querysnapshot.docs[0]
+            return db.collection('user').doc(doc.id)
+        }).then(userRef => {
+            console.log(name)
+            db.collection('folder').add({files: [], last_modified: new Date().getTime(), name: name, num_files: 0, type: 'folder'})
+                .then(docRef => {
+                    userRef.update({files: FieldValue.arrayUnion({id: docRef.id, type:"folder"})})
+                    resolve("Success")
+                })
+        })
+
+    })
+}
+
 
 export {
-    getAllFiles, addFileTodb, modifyFile, getFileById
+    getAllFiles, addFileTodb, modifyFile, getFileById,createFolder, Folder, File, Structure
 }
