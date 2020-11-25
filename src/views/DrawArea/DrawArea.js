@@ -45,7 +45,7 @@ class DrawArea extends Component {
     };
 
     // sample call to create new smart object in animation layer
-    let newSmartObject = new SmartObject([4, 3, 2, 1], 200, 200, 1000, 300,0);
+    let newSmartObject = new SmartObject([1, 2, 3, 4], 100, 100, 300, 200,0);
     this.setState(
       state => {
       const smartObjects = state.smartObjects.concat(newSmartObject);
@@ -84,8 +84,10 @@ class DrawArea extends Component {
     var old_bbox = []
     var predicted_arr = []
     var same_object = false;
-    var input;
+    var input;22
     var place_holder = false;
+    var lasso_x = 0;
+    var lasso_y = 0;
     canvas.addEventListener('mousemove', function (e) {
       mouse.x = e.pageX - this.offsetLeft;
       mouse.y = e.pageY - this.offsetTop;
@@ -98,53 +100,91 @@ class DrawArea extends Component {
     context.strokeStyle = 'red';
 
     canvas.addEventListener('mousedown', function (e) {
-      place_holder = false;
-      if (arr_x.length != 0 & arr_y.length != 0) {
-        if (mouse.x - arr_x.max() < 30) {
-          same_object = true;
-          console.log('Same object')
-        }
-        else {
-          same_object = false;
-          arr_x = [];
-          arr_y = [];
-        }
-      }
-
-
-      context.moveTo(mouse.x, mouse.y);
-      context.beginPath();
-      canvas.addEventListener('mousemove', onPaint, false);
+      let toolType = document.getElementById("redux-store").getAttribute("tool");
+      switch(toolType) {
+        case "pen":
+          console.log(toolType);
+          place_holder = false;
+          if (arr_x.length != 0 & arr_y.length != 0) {
+            if (mouse.x - arr_x.max() < 30) {
+              same_object = true;
+              console.log('Same object')
+            }
+            else {
+              same_object = false;
+              arr_x = [];
+              arr_y = [];
+            }
+          }
+          context.moveTo(mouse.x, mouse.y);
+          context.beginPath();
+          context.setLineDash([5, 15]);
+          canvas.addEventListener('mousemove', onPaint, false);
+          break;
+        case "lasso":
+          place_holder = false;
+          context.moveTo(mouse.x, mouse.y);
+          context.beginPath();
+          canvas.addEventListener('mousemove', onPaint, false);
+          
+          let lassoBox = document.getElementById("lasso-box");
+          lasso_x = mouse.x;
+          lasso_y = mouse.y;
+          lassoBox.style.display = 'block';
+          lassoBox.style.left = mouse.x + "px";
+          lassoBox.style.top = 82 + mouse.y + "px";
+          break;
+      }  
     }, false);
 
     canvas.addEventListener('mouseup', function () {
-      //   $('#number').html('<img id="spinner" src="spinner.gif"/>');
+      let toolType = document.getElementById("redux-store").getAttribute("tool");
+      switch (toolType) {
+        case "pen":
+          //   $('#number').html('<img id="spinner" src="spinner.gif"/>');
+          canvas.removeEventListener('mousemove', onPaint, false);
+          //   var img = new Image();
+          //   img.onload = function() {
+          //context.drawImage(canvas, 0, 0, 28, 28);
+          if (old_arr_x.length > 0) { context.clearRect(0, 0, old_arr_x.max() - old_arr_x.min() + 15, old_arr_y.max() - old_arr_y.min() + 15) }
+          let data = context.getImageData(arr_x.min() - 5, arr_y.min() - 5, arr_x.max() - arr_x.min() + 15, arr_y.max() - arr_y.min() + 15);
+          context.putImageData(data, 0, 0);
+          let width = arr_y.max() - arr_y.min() + 15;
+          if (width < 25) {
+            place_holder = true;
+          }
+          input = context.getImageData(0, 0, (width < arr_y.max() - arr_y.min() + 15) ? (arr_y.max() - arr_y.min() + 15) : width, arr_y.max() - arr_y.min() + 15);
+          old_arr_x = arr_x
+          old_arr_y = arr_y
+          let img = tf.browser.fromPixels(input, 1).resizeBilinear([28, 28]).div(255.0)//.mean(2).expandDims(2).expandDims().toFloat().div(255.0);
+          // var input = [];
+          // for(var i = 0; i < data.length; i += 4) {
+          //     input.push(data[i + 2] / 255);
+          // }
+          predict(img);
+          //   };
+          //   img.src = canvas.toDataURL('image/png');
+          break;
+        case "lasso":
+          // reset the lasso area
+          canvas.removeEventListener('mousemove', onPaint, false);
+          let lassoBox = document.getElementById("lasso-box");
+          lassoBox.style.width = 0 + "px";
+          lassoBox.style.height = 0 + "px";
+          lassoBox.style.display = "none";
 
-      canvas.removeEventListener('mousemove', onPaint, false);
-      //   var img = new Image();
-      //   img.onload = function() {
-      //context.drawImage(canvas, 0, 0, 28, 28);
-      if (old_arr_x.length > 0) { context.clearRect(0, 0, old_arr_x.max() - old_arr_x.min() + 15, old_arr_y.max() - old_arr_y.min() + 15) }
+          context.rect(Math.min(mouse.x, lasso_x), Math.min(mouse.y, lasso_y), Math.abs(mouse.x - lasso_x), Math.abs(mouse.y - lasso_y));
+          let originalStyle = context.strokeStyle;
+          context.setLineDash([5, 3])
+          context.strokeStyle = "#a8b9c6";
+          context.stroke();
 
-      let data = context.getImageData(arr_x.min() - 5, arr_y.min() - 5, arr_x.max() - arr_x.min() + 15, arr_y.max() - arr_y.min() + 15);
-      context.putImageData(data, 0, 0);
-      let width = arr_y.max() - arr_y.min() + 15;
-      if (width < 25) {
-        place_holder = true;
+          // reset selecting box position
+          lasso_x = 0;
+          lasso_y = 0;
+          context.strokeStyle = originalStyle;
+          break;
       }
-      input = context.getImageData(0, 0, (width < arr_y.max() - arr_y.min() + 15) ? (arr_y.max() - arr_y.min() + 15) : width, arr_y.max() - arr_y.min() + 15);
-      old_arr_x = arr_x
-      old_arr_y = arr_y
-      let img = tf.browser.fromPixels(input, 1).resizeBilinear([28, 28]).div(255.0)//.mean(2).expandDims(2).expandDims().toFloat().div(255.0);
-
-      // var input = [];
-      // for(var i = 0; i < data.length; i += 4) {
-      //     input.push(data[i + 2] / 255);
-      // }
-      predict(img);
-
-      //   };
-      //   img.src = canvas.toDataURL('image/png');
     }, false);
 
     canvas.addEventListener('touchstart', function (e) {
@@ -166,10 +206,39 @@ class DrawArea extends Component {
     }, false);
 
     var onPaint = function () {
-      arr_x.push(mouse.x)
-      arr_y.push(mouse.y)
-      context.lineTo(mouse.x, mouse.y);
-      context.stroke();
+      let toolType = document.getElementById("redux-store").getAttribute("tool");
+      switch (toolType) {
+        case "pen":
+          arr_x.push(mouse.x)
+          arr_y.push(mouse.y)
+          context.lineTo(mouse.x, mouse.y);
+          context.stroke();
+          break;
+        case "lasso":
+          let lassoBox = document.getElementById("lasso-box");
+          
+          // bottom right
+          if (mouse.x >= lasso_x && mouse.y >= lasso_y) {
+            lassoBox.style.width = (mouse.x - lasso_x) - 5 + "px";
+            lassoBox.style.height = (mouse.y - lasso_y) - 5 + "px";
+            // top right
+          } else if (mouse.x >= lasso_x && mouse.y < lasso_y) {
+            lassoBox.style.width = (mouse.x - lasso_x) - 5 + "px";
+            lassoBox.style.height = (lasso_y - mouse.y) - 5 + "px";
+            lassoBox.style.top = 82 + mouse.y + "px";
+            // bottom left
+          } else if (mouse.x < lasso_x && mouse.y >= lasso_y) {
+            lassoBox.style.width = (lasso_x - mouse.x) - 5 + "px";
+            lassoBox.style.height = (mouse.y - lasso_y) - 5 + "px";
+            lassoBox.style.left = mouse.x + "px";
+            // top left
+          } else {
+            lassoBox.style.width = (lasso_x - mouse.x) + "px";
+            lassoBox.style.height = (lasso_y - mouse.y) + "px";
+            lassoBox.style.top = 82 + mouse.y + 10 + "px";
+            lassoBox.style.left = mouse.x + 10 + "px";
+          }
+      }
     };
 
     tf.loadLayersModel('https://raw.githubusercontent.com/carlos-aguayo/carlos-aguayo.github.io/master/model/model.json').then(function (model) {
@@ -226,8 +295,18 @@ class DrawArea extends Component {
           <AnimationLayer smartObjects={this.state.smartObjects}  />
         </div>
         <div id="predicted">
-          <button id="clear">Clear</button>
+          {/* <button id="clear">Clear</button> */}
         </div>
+        <div id="lasso-box" style={{
+          width: "10px",
+          height: "20px",
+          top: "-82px",
+          left: "-100px",
+          position: "absolute",
+          zIndex: "10",
+          border: "2px dotted #a8b9c6",
+          boxSizing: "border-box"
+        }}></div>
       </Container>
     )
   }
