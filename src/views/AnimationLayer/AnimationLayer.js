@@ -51,11 +51,11 @@ const Container = styled.div`
   touch-action: none;
   font-family: "Roboto";
   position: absolute;
-  z-index: -2;
+  z-index: 3;
   top: 83.2px;
   left: 0;
   background-color: white;
-  opacity: 0.5;
+  opacity: 0.7;
 `;
 
 export default AnimationLayer;

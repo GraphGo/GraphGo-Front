@@ -56,6 +56,8 @@ class ToolBar extends Component {
         <button title="Pen" onClick={() => {
           this.handleToolSelected("pen");
           document.getElementById("redux-store").setAttribute("tool", "pen");
+          // make the animation layer lower than the canvas
+          document.getElementById("myCanvas").style.zIndex = "4";
         }
         }>
           <img id="pen" src={penIcon} alt="pen" />
@@ -66,14 +68,19 @@ class ToolBar extends Component {
         <button title="Hand" onClick={() => {
           this.handleToolSelected("hand");
           document.getElementById("redux-store").setAttribute("tool", "hand");
+          // make the animation layer lower than the canvas
+          document.getElementById("myCanvas").style.zIndex = "4";
         }}>
           <img id="hand" src={handIcon} alt="hand tool" />
         </button>
         <button title="Lasso Tool" onClick={() => {
           this.handleToolSelected("lasso");
           document.getElementById("redux-store").setAttribute("tool", "lasso");
+          // make the animation layer higher than the canvas
+          document.getElementById("myCanvas").style.zIndex = "2";
+          document.getElementById("animation-layer").style.pointerEvents = "none";
         }}>
-          <img id="lasso" src={lassoIcon} alt="lasso tool" />
+          <img id="lasso" src={lassoIcon} alt="lasso tool"/>
         </button>
         <button title="Undo">
           <img id="undo" src={undoIcon} alt="undo" />

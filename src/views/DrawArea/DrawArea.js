@@ -347,8 +347,15 @@ class DrawArea extends Component {
           </div>
         </div>
         <div id="paint">
-          <canvas id="myCanvas"></canvas>
-          <AnimationLayer smartObjects={this.state.smartObjects}  />
+          <canvas id="myCanvas" style={{
+            position: "absolute",
+            zIndex: "4",
+            left: "0"
+          }}></canvas>
+          <div id="animation-layer">
+            <AnimationLayer smartObjects={this.state.smartObjects}/>
+          </div>
+          
         </div>
         <div id="predicted">
           {/* <button id="clear">Clear</button> */}
