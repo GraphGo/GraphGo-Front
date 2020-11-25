@@ -10,7 +10,7 @@ class DrawArea extends Component {
   state = {
     animation_pos_top: 100, //the distance of the animation box to the top
     animation_pos_left: 100, // the distance of the animation box to the left
-    animation_data: [1, 2, 3, 4],
+    animation_data: [4,2,1,3],
     smartObjects: []
   }
 
@@ -45,7 +45,7 @@ class DrawArea extends Component {
     };
 
     // sample call to create new smart object in animation layer
-    let newSmartObject = new SmartObject([1, 2, 3, 4], 100, 100, 600, 200,0);
+    let newSmartObject = new SmartObject([4,3,1,2], 100, 100, 600, 200,0);
     this.setState(
       state => {
       const smartObjects = state.smartObjects.concat(newSmartObject);
