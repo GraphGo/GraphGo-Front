@@ -10,8 +10,8 @@ class AnimationContainer extends Component {
     for (i = 0; i < inputArray.length; i++) {
       this.arr.push({
         value: inputArray[i],
-        x: (i + 1) * 150,
-        y: 200,
+        x: (i + 1) * 75,
+        y: 100,
         speed: {
           x: 0.5,
           y: 0.5
@@ -30,7 +30,7 @@ class AnimationContainer extends Component {
     this.canvas.width = this.props.smartObject.width;
     this.canvas.height = this.props.smartObject.height;
     this.ctx = this.canvas.getContext("2d");
-    this.ctx.font = "100px Arial";
+    this.ctx.font = "60px Arial";
     this.draw(this.arr);
     this.insertionSort();
   }
@@ -52,13 +52,13 @@ class AnimationContainer extends Component {
   // this function is used to draw an array
   draw(arr) {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillText('\[', 0, 200);
+    this.ctx.fillText('\[', 0, 100);
     let i = 0;
     // draw every element in arr
     for (i = 0; i < arr.length; i++) {
       this.ctx.fillText(arr[i].value, arr[i].x, arr[i].y);
     }
-    this.ctx.fillText('\]', arr.length * 150 + 150, 200);
+    this.ctx.fillText('\]', arr.length * 75 + 75, 100);
   }
 
   // this function is update the array with animation
