@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import _ from 'lodash'
 class AnimationContainer extends Component {
   constructor(props) {
     super(props);
@@ -10,8 +10,8 @@ class AnimationContainer extends Component {
     for (i = 0; i < inputArray.length; i++) {
       this.arr.push({
         value: inputArray[i],
-        x: (i + 1) * 150,
-        y: 200,
+        x: (i + 1) * 75,
+        y: 100,
         speed: {
           x: 0.5,
           y: 0.5
@@ -26,11 +26,11 @@ class AnimationContainer extends Component {
   }
 
   componentDidMount() {
-    this.canvas = document.getElementById(this.props.smartObject.index);
+    this.canvas = document.getElementById("animationCanvas"+this.props.smartObject.index);
     this.canvas.width = this.props.smartObject.width;
     this.canvas.height = this.props.smartObject.height;
     this.ctx = this.canvas.getContext("2d");
-    this.ctx.font = "100px Arial";
+    this.ctx.font = "60px Arial";
     this.draw(this.arr);
     this.insertionSort();
   }
@@ -52,13 +52,13 @@ class AnimationContainer extends Component {
   // this function is used to draw an array
   draw(arr) {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillText('\[', 0, 200);
+    this.ctx.fillText('\[', 0, 100);
     let i = 0;
     // draw every element in arr
     for (i = 0; i < arr.length; i++) {
       this.ctx.fillText(arr[i].value, arr[i].x, arr[i].y);
     }
-    this.ctx.fillText('\]', arr.length * 150 + 150, 200);
+    this.ctx.fillText('\]', arr.length * 75 + 75, 100);
   }
 
   // this function is update the array with animation
@@ -66,19 +66,19 @@ class AnimationContainer extends Component {
   // @param newIdx: the new index of this element
   updateWithAnimation(oriIdx, newIdx) {
     // move element up
-    while (this.arr[oriIdx].y != 80) {
+    while (this.arr[oriIdx].y != 40) {
       this.arr[oriIdx].y -= this.arr[oriIdx].speed.y;
-      this.animate(JSON.parse(JSON.stringify(this.arr)));
+      this.animate(_.cloneDeep(this.arr));
     }
     // choose which way to move by determining the positions of idxs
     if (oriIdx < newIdx) {
       // move element to newIdx
       while (this.arr[oriIdx].x != this.arr[newIdx].x) {
         this.arr[oriIdx].x += this.arr[oriIdx].speed.x;
-        this.animate(JSON.parse(JSON.stringify(this.arr)));
+        this.animate(_.cloneDeep(this.arr));
       }
       let xPos = this.arr[oriIdx + 1].x;
-      let newXPos = this.arr[oriIdx + 1].x - 150;
+      let newXPos = this.arr[oriIdx + 1].x - 75;
       // move the piece in between to left
       while (xPos != newXPos) {
         let i = 1;
@@ -86,18 +86,18 @@ class AnimationContainer extends Component {
           this.arr[oriIdx + i].x -= this.arr[oriIdx + i].speed.x;
         }
         xPos -= this.arr[oriIdx + 1].speed.x;
-        this.animate(JSON.parse(JSON.stringify(this.arr)));
+        this.animate(_.cloneDeep(this.arr));
       }
     }
     else if (oriIdx > newIdx) {
       // move element to newIdx
       while (this.arr[oriIdx].x != this.arr[newIdx].x) {
         this.arr[oriIdx].x -= this.arr[oriIdx].speed.x;
-        this.animate(JSON.parse(JSON.stringify(this.arr)));
+        this.animate(_.cloneDeep(this.arr));
       }
 
       let xPos = this.arr[newIdx + 1].x;
-      let newXPos = xPos + 150;
+      let newXPos = xPos + 75;
       // move the piece in between to right
       while (xPos != newXPos) {
         var i = 0;
@@ -105,13 +105,13 @@ class AnimationContainer extends Component {
           this.arr[newIdx + i].x += this.arr[newIdx + i].speed.x;
         }
         xPos += this.arr[newIdx].speed.x;
-        this.animate(JSON.parse(JSON.stringify(this.arr)));
+        this.animate(_.cloneDeep(this.arr));
       }
     }
     // move element down
-    while (this.arr[oriIdx].y != 200) {
+    while (this.arr[oriIdx].y != 100) {
       this.arr[oriIdx].y += this.arr[oriIdx].speed.y;
-      this.animate(JSON.parse(JSON.stringify(this.arr)));
+      this.animate(_.cloneDeep(this.arr));
     }
 
     // update the array move the element in the array
@@ -147,7 +147,9 @@ class AnimationContainer extends Component {
 
   render() {
     return (
-      <canvas id={this.props.smartObject.index}></canvas>
+      <div style={{"position":"absolute", "top":`${this.props.smartObject.top}px`, "left":`${this.props.smartObject.left}px`, "zIndex":"1"}}>
+      <canvas id={"animationCanvas"+this.props.smartObject.index}></canvas>
+      </div>
      /*  <div style={{
         "width": "100%",
         "height": "100%",

@@ -1,5 +1,5 @@
 class SmartObject {
-    constructor(data, top, left, width, height, index) {
+    constructor(data, left, top, width, height, index) {
         this.data = data;
         this.top = top;
         this.left = left;
