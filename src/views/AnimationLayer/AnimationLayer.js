@@ -22,7 +22,7 @@ class AnimationLayer extends React.Component {
     console.log(this.props);
     return (
       <Container style={{"height": `${window.innerWidth / 3}px`}}>
-        {
+        { 
         this.props.smartObjects.length != 0 ?
         this.props.smartObjects.map(config => {
           return (
@@ -33,7 +33,7 @@ class AnimationLayer extends React.Component {
               "left": `${config.left}px`,
               "position": "absolute"
             }}>
-              <AnimationContainer smartObject={config} key={config.index}/>
+              <AnimationContainer smartObject={config} key={config.index.toString()}/>
             </div>
             
           );

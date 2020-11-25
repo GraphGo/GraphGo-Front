@@ -45,7 +45,7 @@ class DrawArea extends Component {
     };
 
     // sample call to create new smart object in animation layer
-    let newSmartObject = new SmartObject([4,3,1,2], 100, 100, 600, 200,0);
+    let newSmartObject = new SmartObject([3,5,2,4,7,6], 100, 100, 600, 200,0);
     this.setState(
       state => {
       const smartObjects = state.smartObjects.concat(newSmartObject);
