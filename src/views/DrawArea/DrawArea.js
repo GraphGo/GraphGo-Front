@@ -45,7 +45,7 @@ class DrawArea extends Component {
     };
 
     // sample call to create new smart object in animation layer
-    let newSmartObject = new SmartObject([4, 3, 2, 1], 100, 100, 300, 200,0);
+    let newSmartObject = new SmartObject([1, 2, 3, 4], 100, 100, 300, 200,0);
     this.setState(
       state => {
       const smartObjects = state.smartObjects.concat(newSmartObject);
@@ -75,6 +75,11 @@ class DrawArea extends Component {
     canvas.width = parseInt(compuetedStyle.getPropertyValue('width'));
     canvas.height = parseInt(compuetedStyle.getPropertyValue('height'));
 
+    // the lasso popup container
+    var lassoContainer = document.getElementById('lasso-container');
+    lassoContainer.style.width = parseInt(compuetedStyle.getPropertyValue('width')) + "px";
+    lassoContainer.style.height = parseInt(compuetedStyle.getPropertyValue('height')) + "px";
+
 
     var mouse = { x: 0, y: 0 };
     var arr_x = []
@@ -86,6 +91,8 @@ class DrawArea extends Component {
     var same_object = false;
     var input;
     var place_holder = false;
+    var lasso_x = 0;
+    var lasso_y = 0;
     canvas.addEventListener('mousemove', function (e) {
       mouse.x = e.pageX - this.offsetLeft;
       mouse.y = e.pageY - this.offsetTop;
@@ -98,53 +105,102 @@ class DrawArea extends Component {
     context.strokeStyle = 'red';
 
     canvas.addEventListener('mousedown', function (e) {
-      place_holder = false;
-      if (arr_x.length != 0 & arr_y.length != 0) {
-        if (mouse.x - arr_x.max() < 30) {
-          same_object = true;
-          console.log('Same object')
-        }
-        else {
-          same_object = false;
-          arr_x = [];
-          arr_y = [];
-        }
-      }
-
-
-      context.moveTo(mouse.x, mouse.y);
-      context.beginPath();
-      canvas.addEventListener('mousemove', onPaint, false);
+      let toolType = document.getElementById("redux-store").getAttribute("tool");
+      switch(toolType) {
+        case "pen":
+          console.log(toolType);
+          place_holder = false;
+          if (arr_x.length != 0 & arr_y.length != 0) {
+            if (mouse.x - arr_x.max() < 30) {
+              same_object = true;
+              console.log('Same object')
+            }
+            else {
+              same_object = false;
+              arr_x = [];
+              arr_y = [];
+            }
+          }
+          context.moveTo(mouse.x, mouse.y);
+          context.beginPath();
+          context.setLineDash([5, 15]);
+          canvas.addEventListener('mousemove', onPaint, false);
+          break;
+        case "lasso":
+          place_holder = false;
+          context.moveTo(mouse.x, mouse.y);
+          context.beginPath();
+          canvas.addEventListener('mousemove', onPaint, false);
+          
+          let lassoBox = document.getElementById("lasso-box");
+          lasso_x = mouse.x;
+          lasso_y = mouse.y;
+          lassoBox.style.display = 'block';
+          lassoBox.style.left = mouse.x + "px";
+          lassoBox.style.top = 82 + mouse.y + "px";
+          lassoBox.style.width = 0 + "px";
+          lassoBox.style.height = 0 + "px";
+          break;
+      }  
     }, false);
 
     canvas.addEventListener('mouseup', function () {
-      //   $('#number').html('<img id="spinner" src="spinner.gif"/>');
+      let toolType = document.getElementById("redux-store").getAttribute("tool");
+      switch (toolType) {
+        case "pen":
+          //   $('#number').html('<img id="spinner" src="spinner.gif"/>');
+          canvas.removeEventListener('mousemove', onPaint, false);
+          //   var img = new Image();
+          //   img.onload = function() {
+          //context.drawImage(canvas, 0, 0, 28, 28);
+          if (old_arr_x.length > 0) { context.clearRect(0, 0, old_arr_x.max() - old_arr_x.min() + 15, old_arr_y.max() - old_arr_y.min() + 15) }
+          let data = context.getImageData(arr_x.min() - 5, arr_y.min() - 5, arr_x.max() - arr_x.min() + 15, arr_y.max() - arr_y.min() + 15);
+          context.putImageData(data, 0, 0);
+          let width = arr_y.max() - arr_y.min() + 15;
+          if (width < 25) {
+            place_holder = true;
+          }
+          input = context.getImageData(0, 0, (width < arr_y.max() - arr_y.min() + 15) ? (arr_y.max() - arr_y.min() + 15) : width, arr_y.max() - arr_y.min() + 15);
+          old_arr_x = arr_x
+          old_arr_y = arr_y
+          let img = tf.browser.fromPixels(input, 1).resizeBilinear([28, 28]).div(255.0)//.mean(2).expandDims(2).expandDims().toFloat().div(255.0);
+          // var input = [];
+          // for(var i = 0; i < data.length; i += 4) {
+          //     input.push(data[i + 2] / 255);
+          // }
+          predict(img);
+          //   };
+          //   img.src = canvas.toDataURL('image/png');
+          break;
+        case "lasso":
+          // reset the lasso area
+          canvas.removeEventListener('mousemove', onPaint, false);
+          let lassoBox = document.getElementById("lasso-box");
+          // lassoBox.style.width = 0 + "px";
+          // lassoBox.style.height = 0 + "px";
+          // lassoBox.style.display = "none";
 
-      canvas.removeEventListener('mousemove', onPaint, false);
-      //   var img = new Image();
-      //   img.onload = function() {
-      //context.drawImage(canvas, 0, 0, 28, 28);
-      if (old_arr_x.length > 0) { context.clearRect(0, 0, old_arr_x.max() - old_arr_x.min() + 15, old_arr_y.max() - old_arr_y.min() + 15) }
+          // context.rect(Math.min(mouse.x, lasso_x), Math.min(mouse.y, lasso_y), Math.abs(mouse.x - lasso_x), Math.abs(mouse.y - lasso_y));
 
-      let data = context.getImageData(arr_x.min() - 5, arr_y.min() - 5, arr_x.max() - arr_x.min() + 15, arr_y.max() - arr_y.min() + 15);
-      context.putImageData(data, 0, 0);
-      let width = arr_y.max() - arr_y.min() + 15;
-      if (width < 25) {
-        place_holder = true;
+          // open the lasso container and popup box
+          let lassoContainer = document.getElementById("lasso-container");
+          let lassoPopup = document.getElementById("lasso-popup");
+          lassoContainer.style.display = "block";
+          lassoPopup.style.display = "block";
+          lassoPopup.style.left = Math.min(mouse.x, lasso_x) + "px";
+          lassoPopup.style.top = Math.max(mouse.y, lasso_y) + 20 + "px";
+
+
+          let originalStyle = context.strokeStyle;
+          context.strokeStyle = "#a8b9c6";
+          context.stroke();
+
+          // reset selecting box position
+          lasso_x = 0;
+          lasso_y = 0;
+          context.strokeStyle = originalStyle;
+          break;
       }
-      input = context.getImageData(0, 0, (width < arr_y.max() - arr_y.min() + 15) ? (arr_y.max() - arr_y.min() + 15) : width, arr_y.max() - arr_y.min() + 15);
-      old_arr_x = arr_x
-      old_arr_y = arr_y
-      let img = tf.browser.fromPixels(input, 1).resizeBilinear([28, 28]).div(255.0)//.mean(2).expandDims(2).expandDims().toFloat().div(255.0);
-
-      // var input = [];
-      // for(var i = 0; i < data.length; i += 4) {
-      //     input.push(data[i + 2] / 255);
-      // }
-      predict(img);
-
-      //   };
-      //   img.src = canvas.toDataURL('image/png');
     }, false);
 
     canvas.addEventListener('touchstart', function (e) {
@@ -166,10 +222,39 @@ class DrawArea extends Component {
     }, false);
 
     var onPaint = function () {
-      arr_x.push(mouse.x)
-      arr_y.push(mouse.y)
-      context.lineTo(mouse.x, mouse.y);
-      context.stroke();
+      let toolType = document.getElementById("redux-store").getAttribute("tool");
+      switch (toolType) {
+        case "pen":
+          arr_x.push(mouse.x)
+          arr_y.push(mouse.y)
+          context.lineTo(mouse.x, mouse.y);
+          context.stroke();
+          break;
+        case "lasso":
+          let lassoBox = document.getElementById("lasso-box");
+          
+          // bottom right
+          if (mouse.x >= lasso_x && mouse.y >= lasso_y) {
+            lassoBox.style.width = (mouse.x - lasso_x) - 5 + "px";
+            lassoBox.style.height = (mouse.y - lasso_y) - 5 + "px";
+            // top right
+          } else if (mouse.x >= lasso_x && mouse.y < lasso_y) {
+            lassoBox.style.width = (mouse.x - lasso_x) - 5 + "px";
+            lassoBox.style.height = (lasso_y - mouse.y) - 5 + "px";
+            lassoBox.style.top = 82 + mouse.y + "px";
+            // bottom left
+          } else if (mouse.x < lasso_x && mouse.y >= lasso_y) {
+            lassoBox.style.width = (lasso_x - mouse.x) - 5 + "px";
+            lassoBox.style.height = (mouse.y - lasso_y) - 5 + "px";
+            lassoBox.style.left = mouse.x + "px";
+            // top left
+          } else {
+            lassoBox.style.width = (lasso_x - mouse.x) + "px";
+            lassoBox.style.height = (lasso_y - mouse.y) + "px";
+            lassoBox.style.top = 82 + mouse.y + 10 + "px";
+            lassoBox.style.left = mouse.x + 10 + "px";
+          }
+      }
     };
 
     tf.loadLayersModel('https://raw.githubusercontent.com/carlos-aguayo/carlos-aguayo.github.io/master/model/model.json').then(function (model) {
@@ -221,13 +306,63 @@ class DrawArea extends Component {
   render() {
     return (
       <Container>
+        <div id="lasso-container" style={{
+          position: 'absolute',
+          zIndex: "20",
+          left: "0",
+          top: "82.3px",
+          display: "none"
+        }} onClick={() => {
+          document.getElementById("lasso-container").style.display = "none";
+          document.getElementById("lasso-popup").style.display = "none";
+          let lassoBox = document.getElementById("lasso-box");
+          lassoBox.style.display = "none";
+          lassoBox.style.left = 0 + "px";
+          lassoBox.style.top = 0 + "px";
+        }}>
+          <div id="lasso-popup" style={{
+            position: 'absolute', 
+            zIndex: "30", 
+            display: "none"
+          }}>
+            <div style={{
+              color: "white",
+              backgroundColor: "#a8b9c6",
+              fontFamily: 'Roboto',
+              padding: "10px 20px",
+              color: "white",
+              backgroundColor: "rgb(168, 185, 198)",
+              borderRadius: "15px",
+              cursor: "pointer",
+              transition: "all 0.1s linear",
+            }} onClick={() => {
+              document.getElementById("lasso-container").style.display = "none";
+              document.getElementById("lasso-popup").style.display = "none";
+              let lassoBox = document.getElementById("lasso-box");
+              lassoBox.style.display = "none";
+              lassoBox.style.left = 0 + "px";
+              lassoBox.style.top = 0 + "px";
+              alert("Smart Object Created!")
+            }}>Convert to Smart Object</div>
+          </div>
+        </div>
         <div id="paint">
           <canvas id="myCanvas"></canvas>
           <AnimationLayer smartObjects={this.state.smartObjects}  />
         </div>
         <div id="predicted">
-          <button id="clear">Clear</button>
+          {/* <button id="clear">Clear</button> */}
         </div>
+        <div id="lasso-box" style={{
+          width: "10px",
+          height: "20px",
+          top: "-82px",
+          left: "-100px",
+          position: "absolute",
+          zIndex: "10",
+          border: "2px dotted #a8b9c6",
+          boxSizing: "border-box"
+        }}></div>
       </Container>
     )
   }

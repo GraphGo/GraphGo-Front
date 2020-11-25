@@ -8,8 +8,8 @@ class AnimationContainer extends Component {
     let i = 0;
     let inputArray = props.smartObject.data;
     this.canvas = document.getElementById("myCanvas");
-    this.canvas.width = props.smartObject.width;
-    this.canvas.height = props.smartObject.height;
+    // this.canvas.width = props.smartObject.width;
+    // this.canvas.height = props.smartObject.height;
     this.ctx = this.canvas.getContext("2d");
     this.ctx.font = "10px Georgia";
     for (i = 0; i < inputArray.length; i++) {
