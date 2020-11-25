@@ -4,6 +4,7 @@ import { Grid, Button } from '@material-ui/core'
 import { getAllFiles, createFolder } from '../../API/file'
 import FolderItem from '../../components/FolderItem/FolderItem'
 import FileItem from '../../components/FileItem/FileItem'
+import TopBar from '../../components/TopBar/TopBar'
 
 class CMS extends React.Component {
     constructor(props) {
@@ -49,12 +50,12 @@ class CMS extends React.Component {
         console.log("Clicked")
     }
 
-    onCreateFolderPopupConfirm(event){
-        console.log("[CMS] --- Creating folder "+ name)
-        createFolder("Create test", "liuhanshu2000@gmail.com").then(res=> {
+    onCreateFolderPopupConfirm(folderName){
+        console.log("[CMS] --- Creating folder "+ folderName)
+        createFolder(folderName, "liuhanshu2000@gmail.com").then(res=> {
             console.log(res)
+            this.loadData()
         }).catch( e => {console.log(e)})
-        this.loadData()
     }
 
     fileItems(){
@@ -84,7 +85,7 @@ class CMS extends React.Component {
             <>
                 <Header />
                 <div className="main-page">
-                    <Button variant='contained' onClick={this.onCreateFolderPopupConfirm}>Create</Button>
+                    <TopBar onRefresh={this.loadData} onSubmit={this.onCreateFolderPopupConfirm} />
                     <Grid style={gridStyle} container direction='row' justify='flex-start' alignItems='flex-start'>
                         {this.state.files.map(item => {
                             if(item.type === 'folder'){
