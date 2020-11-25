@@ -5,7 +5,8 @@ import * as tf from '@tensorflow/tfjs';
 import "./DrawArea.css";
 import AnimationLayer from "../AnimationLayer/AnimationLayer"
 import SmartObject from "./SmartObject"
-
+import axios from "axios"
+import _ from 'lodash'
 class DrawArea extends Component {
   state = {
     animation_pos_top: 100, //the distance of the animation box to the top
@@ -45,17 +46,17 @@ class DrawArea extends Component {
     };
 
     // sample call to create new smart object in animation layer
-    let newSmartObject = new SmartObject([3,5,2,4,7,6], 100, 100, 600, 200,0);
-    this.setState(
-      state => {
-      const smartObjects = state.smartObjects.concat(newSmartObject);
-      console.log(smartObjects);
-      return {
-        smartObjects: smartObjects
-      };
-    });
+    // let newSmartObject = new SmartObject([3,5,2,4,7,6], 100, 100, 600, 200,0);
+    // this.setState(
+    //   state => {
+    //   const smartObjects = state.smartObjects.concat(newSmartObject);
+    //   console.log(smartObjects);
+    //   return {
+    //     smartObjects: smartObjects
+    //   };
+    // });
 
-
+    var that = this;
     $('#paint').css({ 'width': '100%' });
     $('#number').css({ 'width': '100px', 'font-size': '60px' });
     $('#clear').css({ 'font-size': '35px' });
@@ -118,7 +119,7 @@ class DrawArea extends Component {
           // }
           context.moveTo(mouse.x, mouse.y);
           context.beginPath();
-          context.setLineDash([5, 15]);
+          //context.setLineDash([5, 15]);
           canvas.addEventListener('mousemove', onPaint, false);
           break;
         case "lasso":
@@ -174,11 +175,32 @@ class DrawArea extends Component {
           lassoBox.style.display = "none";
 
           context.rect(Math.min(mouse.x, lasso_x), Math.min(mouse.y, lasso_y), Math.abs(mouse.x - lasso_x), Math.abs(mouse.y - lasso_y));
+          //context.fillStyle = "white"
           let originalStyle = context.strokeStyle;
+          //context.fillRect(Math.min(mouse.x, lasso_x), Math.min(mouse.y, lasso_y), Math.abs(mouse.x - lasso_x), Math.abs(mouse.y - lasso_y));
           context.setLineDash([5, 3])
           context.strokeStyle = "#a8b9c6";
           context.stroke();
-
+          //let img = context.getImageData(Math.min(mouse.x, lasso_x), Math.min(mouse.y, lasso_y), Math.abs(mouse.x - lasso_x), Math.abs(mouse.y - lasso_y));
+          const top = Math.min(mouse.y, lasso_y);
+          const left = Math.min(mouse.x, lasso_x);
+          axios.post('http://138.68.245.67:5000/',{data:"ass"}, {
+            headers: {
+              'Content-Type':'application/json'
+            }
+          })
+            .then(res => {
+              let newSmartObject = new SmartObject(res.data.result, left, top,  Math.abs(mouse.x - lasso_x), Math.abs(mouse.y - lasso_y),0);
+              console.log(res);
+              that.setState(
+                state => {
+                const smartObjects = state.smartObjects.concat(newSmartObject);
+                console.log(smartObjects);
+                return {
+                  smartObjects: smartObjects
+                };
+              });
+            });
           // reset selecting box position
           lasso_x = 0;
           lasso_y = 0;

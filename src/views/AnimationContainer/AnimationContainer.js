@@ -147,7 +147,9 @@ class AnimationContainer extends Component {
 
   render() {
     return (
+      <div style={{"position":"absolute", "top":`${this.props.smartObject.top}px`, "left":`${this.props.smartObject.left}px`, "zIndex":"1"}}>
       <canvas id={"animationCanvas"+this.props.smartObject.index}></canvas>
+      </div>
      /*  <div style={{
         "width": "100%",
         "height": "100%",
