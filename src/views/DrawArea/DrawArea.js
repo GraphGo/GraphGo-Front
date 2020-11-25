@@ -76,6 +76,11 @@ class DrawArea extends Component {
     canvas.width = parseInt(compuetedStyle.getPropertyValue('width'));
     canvas.height = parseInt(compuetedStyle.getPropertyValue('height'));
 
+    // the lasso popup container
+    var lassoContainer = document.getElementById('lasso-container');
+    lassoContainer.style.width = parseInt(compuetedStyle.getPropertyValue('width')) + "px";
+    lassoContainer.style.height = parseInt(compuetedStyle.getPropertyValue('height')) + "px";
+
 
     var mouse = { x: 0, y: 0 };
     // var arr_x = []
@@ -312,6 +317,46 @@ class DrawArea extends Component {
   render() {
     return (
       <Container>
+        <div id="lasso-container" style={{
+          position: 'absolute',
+          zIndex: "20",
+          left: "0",
+          top: "82.3px",
+          display: "none"
+        }} onClick={() => {
+          document.getElementById("lasso-container").style.display = "none";
+          document.getElementById("lasso-popup").style.display = "none";
+          let lassoBox = document.getElementById("lasso-box");
+          lassoBox.style.display = "none";
+          lassoBox.style.left = 0 + "px";
+          lassoBox.style.top = 0 + "px";
+        }}>
+          <div id="lasso-popup" style={{
+            position: 'absolute', 
+            zIndex: "30", 
+            display: "none"
+          }}>
+            <div style={{
+              color: "white",
+              backgroundColor: "#a8b9c6",
+              fontFamily: 'Roboto',
+              padding: "10px 20px",
+              color: "white",
+              backgroundColor: "rgb(168, 185, 198)",
+              borderRadius: "15px",
+              cursor: "pointer",
+              transition: "all 0.1s linear",
+            }} onClick={() => {
+              document.getElementById("lasso-container").style.display = "none";
+              document.getElementById("lasso-popup").style.display = "none";
+              let lassoBox = document.getElementById("lasso-box");
+              lassoBox.style.display = "none";
+              lassoBox.style.left = 0 + "px";
+              lassoBox.style.top = 0 + "px";
+              alert("Smart Object Created!")
+            }}>Convert to Smart Object</div>
+          </div>
+        </div>
         <div id="paint">
           <canvas id="myCanvas"></canvas>
           <AnimationLayer smartObjects={this.state.smartObjects}  />
