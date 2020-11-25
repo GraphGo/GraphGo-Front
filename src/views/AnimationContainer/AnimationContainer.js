@@ -1,22 +1,17 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 
 class AnimationContainer extends Component {
   constructor(props) {
     super(props);
     this.arr = [];
+    this.props = props;
     let i = 0;
     let inputArray = props.smartObject.data;
-    this.canvas = document.getElementById("myCanvas");
-    // this.canvas.width = props.smartObject.width;
-    // this.canvas.height = props.smartObject.height;
-    this.ctx = this.canvas.getContext("2d");
-    this.ctx.font = "10px Georgia";
     for (i = 0; i < inputArray.length; i++) {
       this.arr.push({
         value: inputArray[i],
-        x: (i + 1) * 15,
-        y: 15,
+        x: (i + 1) * 150,
+        y: 200,
         speed: {
           x: 0.5,
           y: 0.5
@@ -27,32 +22,43 @@ class AnimationContainer extends Component {
     this.animate = this.animate.bind(this);
     this.updateWithAnimation = this.updateWithAnimation.bind(this);
     this.insertionSort = this.insertionSort.bind(this);
+    this.sleep = this.sleep.bind(this);
   }
 
   componentDidMount() {
-    this.draw();
-  }
-  
-  componentDidUpdate() {
+    this.canvas = document.getElementById(this.props.smartObject.index);
+    this.canvas.width = this.props.smartObject.width;
+    this.canvas.height = this.props.smartObject.height;
+    this.ctx = this.canvas.getContext("2d");
+    this.ctx.font = "100px Arial";
+    this.draw(this.arr);
     this.insertionSort();
   }
 
+  // this function is used to synchronously draw the elements
+  sleep(milliseconds) {
+    const date = Date.now();
+    let currentDate = null;
+    do {
+      currentDate = Date.now();
+    } while (currentDate - date < milliseconds);
+  }
+
   // this function is used to animate the updated array
-  animate() {
-    this.setState({state: this.state});
-    setTimeout(this.draw, 1000);
+  animate(arr) {
+    window.setTimeout(function(arr) {this.sleep(3);this.draw(arr);}.bind(this), 3000, arr);
   }
 
   // this function is used to draw an array
-  draw() {
+  draw(arr) {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillText('\[', 0, 15);
-    var i = 0;
+    this.ctx.fillText('\[', 0, 200);
+    let i = 0;
     // draw every element in arr
-    for (i = 0; i < this.arr.length; i++) {
-      this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
+    for (i = 0; i < arr.length; i++) {
+      this.ctx.fillText(arr[i].value, arr[i].x, arr[i].y);
     }
-    this.ctx.fillText('\]', this.arr[this.arr.length - 1].x + 15, 15);
+    this.ctx.fillText('\]', arr.length * 150 + 150, 200);
   }
 
   // this function is update the array with animation
@@ -60,38 +66,38 @@ class AnimationContainer extends Component {
   // @param newIdx: the new index of this element
   updateWithAnimation(oriIdx, newIdx) {
     // move element up
-    while (this.arr[oriIdx].y != 0) {
+    while (this.arr[oriIdx].y != 80) {
       this.arr[oriIdx].y -= this.arr[oriIdx].speed.y;
-      this.animate();
+      this.animate(JSON.parse(JSON.stringify(this.arr)));
     }
     // choose which way to move by determining the positions of idxs
     if (oriIdx < newIdx) {
       // move element to newIdx
       while (this.arr[oriIdx].x != this.arr[newIdx].x) {
         this.arr[oriIdx].x += this.arr[oriIdx].speed.x;
-        this.animate();
+        this.animate(JSON.parse(JSON.stringify(this.arr)));
       }
-      var xPos = this.arr[oriIdx + 1].x;
-      var newXPos = this.arr[oriIdx + 1].x - 15;
+      let xPos = this.arr[oriIdx + 1].x;
+      let newXPos = this.arr[oriIdx + 1].x - 150;
       // move the piece in between to left
       while (xPos != newXPos) {
-        var i = 1;
+        let i = 1;
         for (i = 1; i <= newIdx - oriIdx; i++) {
           this.arr[oriIdx + i].x -= this.arr[oriIdx + i].speed.x;
         }
         xPos -= this.arr[oriIdx + 1].speed.x;
-        this.animate();
+        this.animate(JSON.parse(JSON.stringify(this.arr)));
       }
     }
     else if (oriIdx > newIdx) {
       // move element to newIdx
       while (this.arr[oriIdx].x != this.arr[newIdx].x) {
         this.arr[oriIdx].x -= this.arr[oriIdx].speed.x;
-        this.animate();
+        this.animate(JSON.parse(JSON.stringify(this.arr)));
       }
 
-      var xPos = this.arr[newIdx + 1].x;
-      var newXPos = xPos + 15;
+      let xPos = this.arr[newIdx + 1].x;
+      let newXPos = xPos + 150;
       // move the piece in between to right
       while (xPos != newXPos) {
         var i = 0;
@@ -99,13 +105,13 @@ class AnimationContainer extends Component {
           this.arr[newIdx + i].x += this.arr[newIdx + i].speed.x;
         }
         xPos += this.arr[newIdx].speed.x;
-        this.animate();
+        this.animate(JSON.parse(JSON.stringify(this.arr)));
       }
     }
     // move element down
-    while (this.arr[oriIdx].y != 15) {
+    while (this.arr[oriIdx].y != 200) {
       this.arr[oriIdx].y += this.arr[oriIdx].speed.y;
-      this.animate();
+      this.animate(JSON.parse(JSON.stringify(this.arr)));
     }
 
     // update the array move the element in the array
@@ -120,26 +126,28 @@ class AnimationContainer extends Component {
   }
 
   insertionSort() {
-    var i = 1;
-    var key = null;
-    var j = 0;  
-    for (i = 1; i < this.arr.length; i++) {  
-      key = this.arr[i].value;  
-      j = i - 1;  
+    let i = 1;
+    let key = null;
+    let j = 0; 
+    for (i = 1; i < this.arr.length; i++) 
+    {  
+        key = this.arr[i].value;  
+        j = i - 1;  
   
-      /* Move elements of arr[0..i-1], that are  
-      greater than key, to one position ahead  
-      of their current position */
-      while (j > 0 && this.arr[j].value > key) {
-        j = j - 1;  
-      }
-      this.updateWithAnimation(i, j);
-    }
+        /* Move elements of arr[0..i-1], that are  
+        greater than key, to one position ahead  
+        of their current position */
+        while (j >= 0 && this.arr[j].value > key) 
+        {  
+          this.updateWithAnimation(j + 1, j);
+          j = j - 1;  
+        }
+    } 
   }
 
   render() {
     return (
-      <canvas id="animationCanvas"></canvas>
+      <canvas id={this.props.smartObject.index}></canvas>
      /*  <div style={{
         "width": "100%",
         "height": "100%",
