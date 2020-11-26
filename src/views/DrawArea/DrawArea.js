@@ -189,13 +189,18 @@ class DrawArea extends Component {
           //let img = context.getImageData(Math.min(mouse.x, lasso_x), Math.min(mouse.y, lasso_y), Math.abs(mouse.x - lasso_x), Math.abs(mouse.y - lasso_y));
           const top = Math.min(mouse.y, lasso_y);
           const left = Math.min(mouse.x, lasso_x);
-          axios.post('http://138.68.245.67:5000/',{data:"ass"}, {
+          const width = Math.abs(mouse.x - lasso_x);
+          const height = Math.abs(mouse.y - lasso_y);
+
+          var canvasData = canvas.toDataURL('image/png');
+          console.log(canvasData);
+          axios.post('http://138.68.245.67:5000/',{data:canvasData.replace("data:image/png;base64,",""), top: top, left:left, width:width, height:height}, {
             headers: {
               'Content-Type':'application/json'
             }
           })
             .then(res => {
-              let newSmartObject = new SmartObject(res.data.result, left, top,  Math.abs(mouse.x - lasso_x), Math.abs(mouse.y - lasso_y),0);
+              let newSmartObject = new SmartObject(res.data.result, left, top,  width, height,0);
               console.log(res);
               that.setState(
                 state => {
@@ -206,6 +211,12 @@ class DrawArea extends Component {
                 };
               });
             });
+          // var blobCallback = function(blob) {
+          //   console.log(blob);
+
+          // }
+
+          // canvas.toBlob(blobCallback);
           // reset selecting box position
           lasso_x = 0;
           lasso_y = 0;
