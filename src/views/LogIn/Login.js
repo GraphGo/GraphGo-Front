@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { AuthContext } from '../../API/auth'
+//import { AuthContext } from '../../API/auth'
 import {db, auth} from '../../API/db'
 import Header from '../../components/Header/Header'
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
