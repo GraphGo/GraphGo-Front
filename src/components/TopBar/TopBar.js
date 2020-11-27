@@ -5,18 +5,21 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import RefreshIcon from '@material-ui/icons/Refresh'
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import AddIcon from '@material-ui/icons/Add';
 
 export default function TopBar(props) {
     const [open, setOpen] = React.useState(false);
     const [text, setText] = React.useState("");
-
-
     const handleClickOpen = () => {
         setOpen(true)
     }
 
     const handleClose = () => {
+        setOpen(false)
+    }
+
+    const handleSubmit = () => {
         setOpen(false)
         props.onSubmit(text)
     }
@@ -27,12 +30,16 @@ export default function TopBar(props) {
 
     return (
         <div className='top-bar'>
+            <IconButton onClick={props.onBack} disabled={props.backDisabled} >
+                <ArrowBackIcon></ArrowBackIcon>
+            </IconButton>
             <IconButton onClick={props.onRefresh}>
                 <RefreshIcon />
             </IconButton>
-            <IconButton onClick={handleClickOpen}>
+            <IconButton onClick={handleClickOpen} disabled={props.addDisabled}>
                 <AddIcon />
             </IconButton>
+
             <Dialog open={open} onClose={handleClose} >
                 <DialogTitle id="form-dialog-tilte">New Folder</DialogTitle>
                 <DialogContent>
@@ -43,7 +50,7 @@ export default function TopBar(props) {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color="primary">Cancel</Button>
-                    <Button onClick={handleClose} color="primary">Confirm</Button>
+                    <Button onClick={handleSubmit} color="primary">Confirm</Button>
                 </DialogActions>
             </Dialog>
         </div>

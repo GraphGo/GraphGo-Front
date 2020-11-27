@@ -58,7 +58,7 @@ const FolderConverter = {
             num_files: folder.num_files,
             last_modified: folder.last_modified,
             files: folder.files,
-            type: folder.type,
+            type: folder.type
         }
     },
     fromFirestore: function(snapshot, options){
@@ -84,6 +84,18 @@ const getAllFiles = (email) => {
                 promises.push(collection.doc(item.id).get().then(querysnapshot => {
                     var data = querysnapshot.data()
                     data.id = item.id
+                    if(item.type === "folder"){
+                        var files = []
+                        for(var i = 0; i < data.files.length ; i++){
+                            var file = data.files[i]
+                            file.get().then(querysnapshot => {
+                                var data = querysnapshot.data()
+                                data.id = file.id
+                                files.push(data)
+                            })
+                        }
+                        data.files = files
+                    }
                     return data
                 }))
             })
@@ -101,28 +113,13 @@ const getFileById = (fileId) => {
         })
     })
 }
-
-const addFileTodb = (uid, file) => {
-    console.log(uid)
-    return new Promise((resolve, reject) => {
-        db.collection("file").doc().set({
-            files: file.files,
-            type: file.type,
-            owner: file.ownerID,
-            data: file.data
-        }).then(()=>{
-            //need to update user's file pointers as well
-            //db.collection("user").doc(uid).
-            resolve("added")
-    }).catch((error)=>{reject(error)})
-    })
+// base64 img, smart obj, width, height
+const saveCanvas = (img, smartObj, width, height, uid, docID="") => {
+    
 }
 
-const modifyFile = (fileId, file) => {
-    return new Promise((resolve,reject)=>{
-        db.collection("user").doc(fileId).update(file).then(()=>{resolve("file modified")
-    }).catch((error)=>{reject(error)})
-    })
+const loadCanvas = (docID) => {
+    
 }
 
 const createFolder = (name, email) => {
@@ -135,7 +132,7 @@ const createFolder = (name, email) => {
             return db.collection('user').doc(doc.id)
         }).then(userRef => {
             console.log(name)
-            db.collection('folder').add({files: [], last_modified: new Date().getTime(), name: name, num_files: 0, type: 'folder'})
+            db.collection('folder').add({files: [], last_modified: new Date(), name: name, num_files: 0, type: 'folder'})
                 .then(docRef => {
                     userRef.update({files: FieldValue.arrayUnion({id: docRef.id, type:"folder"})})
                     resolve("Success")
@@ -145,7 +142,19 @@ const createFolder = (name, email) => {
     })
 }
 
+const deleteFolder = (email, folderID) => {
+    return new Promise((resolve, reject) => {
+        db.collection("user").get('email','==',email).then(querysnapshot => {
+            if(querysnapshot.empty) reject("User does not exist")
+            var doc = querysnapshot.docs[0]
+            doc.update({files: FieldValue.arrayRemove({id: folderID, type: "folder"})})
+        }).then(()=> {
+            db.collection('folder').doc(folderID).delete().then(res => resolve(res)).catch(e => reject(e))
+        })
+    })
+}
+
 
 export {
-    getAllFiles, addFileTodb, modifyFile, getFileById,createFolder, Folder, File, Structure
+    getAllFiles, getFileById,createFolder, Folder, File, Structure
 }

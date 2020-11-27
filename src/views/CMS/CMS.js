@@ -1,6 +1,6 @@
 import React from "react";
 import Header from "../../components/Header/Header";
-import { Grid, Button } from '@material-ui/core'
+import { Grid, ButtonBase } from '@material-ui/core'
 import { getAllFiles, createFolder } from '../../API/file'
 import FolderItem from '../../components/FolderItem/FolderItem'
 import FileItem from '../../components/FileItem/FileItem'
@@ -10,11 +10,14 @@ class CMS extends React.Component {
     constructor(props) {
         super(props) 
         this.state = {
-            files: [],
-            currentFolder: null
+            files: [], // store all files
+            fileItems:[], // store currently displayed files
+            currentFolder: "" // id of current route 
         };
         this.loadData = this.loadData.bind(this)
         this.onCreateFolderPopupConfirm = this.onCreateFolderPopupConfirm.bind(this)
+        this.onFolderClick = this.onFolderClick.bind(this)
+        this.onBack = this.onBack.bind(this)
     }
 
     componentDidMount(){
@@ -42,38 +45,42 @@ class CMS extends React.Component {
                     files.push({id: item.id, name: item.name, type: item.type, root: item.root, last_modified: item.last_modified, img: item.img})
                 }
             })
-            this.setState({files: files})
+            this.setState({fileItems: files, files: files})
         }).catch(e => console.error(e))
     }
 
-    onFolderClick() {
-        console.log("Clicked")
+    enterFolder(id){
+        if(id === ""){
+            this.setState({fileItems: this.state.files, currentFolder: ""})
+            return 
+        }
+        var root = {};
+        for(var i = 0; i < this.state.files.length; i++){
+            var item = this.state.files[i]
+            if(item.type !== "folder") continue
+            if (item.id === id){
+                root = item
+            }
+        }
+        if(!root) return
+        else this.setState({fileItems: root.files, currentFolder: id})
     }
 
-    onCreateFolderPopupConfirm(folderName){
+    onFolderClick(e) {
+        var id=e.target.getAttribute("datakey")
+        this.enterFolder(id)
+    }
+
+    onBack(){
+        this.setState({currentFolder: ""})
+        this.enterFolder("")
+    }
+
+    onCreateFolderPopupConfirm(folderName) {
         console.log("[CMS] --- Creating folder "+ folderName)
         createFolder(folderName, "liuhanshu2000@gmail.com").then(res=> {
-            console.log(res)
             this.loadData()
-        }).catch( e => {console.log(e)})
-    }
-
-    fileItems(){
-        return this.state.files.map(item => {
-            if(item.type === 'folder'){
-                return (
-                    <Grid item xs={2} key={item.id}>
-                        <FolderItem name={item.name} />
-                    </Grid>
-                )
-            }else if (item.type === 'graph'){
-                return (
-                    <Grid item xs={2} key={item.id}>
-                        <FileItem name={item.name}></FileItem>
-                    </Grid>
-                )
-            }
-        })
+        }).catch(e => {console.log(e)})
     }
 
     render() {
@@ -85,19 +92,24 @@ class CMS extends React.Component {
             <>
                 <Header />
                 <div className="main-page">
-                    <TopBar onRefresh={this.loadData} onSubmit={this.onCreateFolderPopupConfirm} />
+                    <TopBar addDisabled={this.state.currentFolder !== ""} 
+                    backDisabled={this.state.currentFolder === ""} 
+                    onBack={this.onBack} onRefresh={this.loadData} 
+                    onSubmit={this.onCreateFolderPopupConfirm} 
+                    />
+
                     <Grid style={gridStyle} container direction='row' justify='flex-start' alignItems='flex-start'>
-                        {this.state.files.map(item => {
+                        {this.state.fileItems.map(item => {
                             if(item.type === 'folder'){
                                 return (
-                                    <Grid item xs={2} key={item.id}>
-                                        <FolderItem name={item.name} />
+                                    <Grid item xs={3} key={item.id} datakey={item.id} onClick={this.onFolderClick}>
+                                        <FolderItem name={item.name} datakey={item.id} />
                                     </Grid>
                                 )
                             }else if (item.type === 'graph'){
                                 return (
-                                    <Grid item xs={2} key={item.id}>
-                                        <FileItem name={item.name}></FileItem>
+                                    <Grid item xs={3} key={item.id} datakey={item.id} >
+                                        <FileItem name={item.name} datakey={item.id}></FileItem>
                                     </Grid>
                                 )
                             }

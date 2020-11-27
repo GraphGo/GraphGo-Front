@@ -28,7 +28,7 @@ const userConverter = {
 
 const getUser = (email) => {
     return new Promise((resolve, reject) => {
-        db.collection('user').withConverter(userConverter).get("email",'==',email).then(querysnapshot => {
+        db.collection('user').get("email",'==',email).then(querysnapshot => {
             if(querysnapshot.docs.length == 0){
                 reject("No user with this email found")
             }

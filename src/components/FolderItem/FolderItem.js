@@ -3,9 +3,9 @@ import folderSVG from '../../assets/folder-svg.svg'
 
 const FolderItem = props => {
     return (
-        <div className="folderItem" onClick={props.folderClick}>
-            <img className="fileImg" src={folderSVG} />
-            <h5 className="fileTitle">{props.name}</h5>
+        <div className="folderItem" datakey={props.datakey}>
+            <img className="fileImg" src={folderSVG} datakey={props.datakey}/>
+            <h5 className="fileTitle" datakey={props.datakey}>{props.name}</h5>
         </div>
     )
 }
