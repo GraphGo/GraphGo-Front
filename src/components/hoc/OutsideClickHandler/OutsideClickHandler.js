@@ -6,6 +6,7 @@ export default class OutsideClickHandler extends Component {
         super(props);
 
         this.wrapperRef = React.createRef();
+        this.handlerIsActive = true;
         // this.setWrapperRef = this.setWrapperRef.bind(this);
         this.handleClickOutside = this.handleClickOutside.bind(this);
     }
@@ -17,7 +18,15 @@ export default class OutsideClickHandler extends Component {
     componentWillUnmount() {
         document.removeEventListener('mousedown', this.handleClickOutside);
     }
-
+    componentWillUpdate() {
+        console.log(this.props.showPenMenu);
+        if (this.props.showPenMenu) {
+            document.removeEventListener('mousedown', this.handleClickOutside);
+            this.handlerIsActive = false;
+        } else if (!this.handlerIsActive) {
+            document.addEventListener('mousedown', this.handleClickOutside);
+        }
+    }
     /**
      * Alert if clicked on outside of element
      */

@@ -62,7 +62,7 @@ class ToolBar extends Component {
         }>
           <img id="pen" src={penIcon} alt="pen" />
         </button>
-        <OutsideClickHandler handler={this.handlePenMenuClosed}>
+        <OutsideClickHandler handler={this.handlePenMenuClosed} showPenMenu={this.state.showPenMenu}>
           <PenToolPopup show={this.state.toolSelected === "pen" && this.state.showPenMenu} />
         </OutsideClickHandler>
         <button title="Hand" onClick={() => {
