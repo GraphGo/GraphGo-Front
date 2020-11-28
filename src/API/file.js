@@ -114,12 +114,41 @@ const getFileById = (fileId) => {
     })
 }
 // base64 img, smart obj, width, height
-const saveCanvas = (img, smartObj, width, height, uid, docID="") => {
-    
+const saveCanvas = (img, smartObj, width, height, name, uid, docID="", root="") => {
+    return new Promise((resolve, reject) => {
+        // create new graph, return id
+        if(docID === ""){
+            db.collection('file').add({img: img, last_modified: new Date(), name: name, root: root, config:{width: width, height: height}, type: "graph"}).then(docRef => {
+                return docRef.id
+            }).then(fileID => {
+                var structPromises = []
+                for (var obj in smartObj){
+                    structPromises.push(db.collection('structure').add(Object.assign({}, obj)))
+                }
+                Promise.all(structPromises).then(structRefs => {
+                    db.collection('file').doc(fileID).update({structures: structRefs})
+                })
+                return fileID
+            }).then(fileID=>{
+                db.collection('user').doc(uid).set({files: FieldValue.arrayUnion({id: fileID, type: "graph"})})
+                resolve(fileID)
+            }).catch(e => {reject(e)})
+        } else {
+            // save to exisitng graph
+            db.collection('file').doc(docID).update({img: img, last_modified: new Date(), name: name, root: root, config: {width: width, height: height}}).then(res=> {
+                resolve(res)
+            }).catch(e => {reject(e)})
+        }
+
+    })
 }
 
 const loadCanvas = (docID) => {
-    
+    return new Promise((resolve, reject) => {
+        db.collection('file').doc(docID).get().then(querysnapshot => {
+            resolve(querysnapshot.data())
+        }).catch(e => {reject(e)})
+    })
 }
 
 const createFolder = (name, email) => {
@@ -156,5 +185,5 @@ const deleteFolder = (email, folderID) => {
 
 
 export {
-    getAllFiles, getFileById,createFolder, Folder, File, Structure
+    getAllFiles, getFileById,createFolder, saveCanvas, loadCanvas, Folder, File, Structure
 }
