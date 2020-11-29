@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import SmartObjsContext from '../../contexts/SmartObjsContext.js';
 
 class AnimationContainer extends Component {
   constructor(props) {
@@ -24,7 +25,40 @@ class AnimationContainer extends Component {
     this.insertionSort = this.insertionSort.bind(this);
   }
 
+  // Re-draw when React Context gets updated
+  componentDidUpdate(){
+    console.log(this.context);
+    if (this.context && this.context.smartObjStyle){
+      // strokeWidth = this.context.smartObjStyle.strokeWidth;
+      if (this.props.smartObject.index == this.context.smartObjSelected){
+        console.log("Change", this.context.smartObjSelected, "th Smart Object property.")
+        this.canvas = document.getElementById("animationCanvas"+this.props.smartObject.index);
+        this.canvas.width = this.props.smartObject.width;
+        this.canvas.height = this.props.smartObject.height;
+        this.ctx = this.canvas.getContext("2d");
+        this.ctx.fillStyle = this.context.smartObjStyle.color;
+        this.textSize = 50;
+        this.ctx.font = this.context.smartObjStyle.strokeWidth + " " + this.textSize + "px Arial";
+        console.log(this.context.smartObjStyle.strokeWidth)
+    
+        // draw the array
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillText('\[', 0, 100);
+        let i = 0;
+        // draw every element in arr
+        for (i = 0; i < this.arr.length; i++) {
+          this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
+        }
+        this.ctx.fillText('\]', this.arr.length * 75 + 75, 100);
+    
+        this.insertionSort();
+    }
+    }
+    
+    
+  }
   componentDidMount() {
+
     this.canvas = document.getElementById("animationCanvas"+this.props.smartObject.index);
     this.canvas.width = this.props.smartObject.width;
     this.canvas.height = this.props.smartObject.height;
@@ -221,5 +255,5 @@ class AnimationContainer extends Component {
     );
   }
 }
-
+AnimationContainer.contextType = SmartObjsContext;
 export default AnimationContainer;

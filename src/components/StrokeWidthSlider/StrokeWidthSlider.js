@@ -6,13 +6,12 @@ class StrokeWidthSlider extends Component {
 
     state = {
         strokeWidth: 5,
-        
     };
 
     handleInput = (e) =>{
-        var canvas = document.getElementById('myCanvas');
-        var context = canvas.getContext('2d');
-        context.lineWidth = e.target.value;
+        if (this.props.handler){
+            this.props.handler(e.target.value);
+        }
         this.setState({strokeWidth: e.target.value})
     }
 

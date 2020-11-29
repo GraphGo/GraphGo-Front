@@ -17,6 +17,7 @@ input:focus {
 
 button {
   border: none;
+  font-family: "Montserrat", sans-serif;
 }
 button:hover {
   cursor: pointer;
