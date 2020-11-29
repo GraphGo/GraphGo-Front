@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import _ from 'lodash'
+
 class AnimationContainer extends Component {
   constructor(props) {
     super(props);
@@ -22,7 +22,6 @@ class AnimationContainer extends Component {
     this.animate = this.animate.bind(this);
     this.updateWithAnimation = this.updateWithAnimation.bind(this);
     this.insertionSort = this.insertionSort.bind(this);
-    this.sleep = this.sleep.bind(this);
   }
 
   componentDidMount() {
@@ -30,88 +29,137 @@ class AnimationContainer extends Component {
     this.canvas.width = this.props.smartObject.width;
     this.canvas.height = this.props.smartObject.height;
     this.ctx = this.canvas.getContext("2d");
-    this.ctx.font = "60px Arial";
-    this.draw(this.arr);
-    this.insertionSort();
-  }
+    this.textSize = 50;
+    this.ctx.font = this.textSize + "px Arial";
 
-  // this function is used to synchronously draw the elements
-  sleep(milliseconds) {
-    const date = Date.now();
-    let currentDate = null;
-    do {
-      currentDate = Date.now();
-    } while (currentDate - date < milliseconds);
-  }
-
-  // this function is used to animate the updated array
-  animate(arr) {
-    window.setTimeout(function(arr) {this.sleep(3);this.draw(arr);}.bind(this), 3000, arr);
-  }
-
-  // this function is used to draw an array
-  draw(arr) {
+    // draw the array
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillText('\[', 0, 100);
     let i = 0;
     // draw every element in arr
-    for (i = 0; i < arr.length; i++) {
-      this.ctx.fillText(arr[i].value, arr[i].x, arr[i].y);
+    for (i = 0; i < this.arr.length; i++) {
+      this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
     }
-    this.ctx.fillText('\]', arr.length * 75 + 75, 100);
+    this.ctx.fillText('\]', this.arr.length * 75 + 75, 100);
+
+    this.insertionSort();
+  }
+
+  // this function is used to animate the updated array
+  animate(arr) {
+    window.setTimeout(this.draw, 10, arr);
+  }
+
+  // this function is used to redraw an element in an array
+  draw(arr) {
+    let i = 0;
+    for (i = 0; i < arr.length; i++){
+      this.ctx.clearRect(
+        arr[i][1], 
+        arr[i][2] - this.textSize, 
+        this.textSize * 1.2, 
+        this.textSize * 1.2
+      );
+      this.ctx.fillText(arr[i][0], arr[i][3], arr[i][4]);
+    }
   }
 
   // this function is update the array with animation
   // @param oriIdx: the original index of an element
   // @param newIdx: the new index of this element
   updateWithAnimation(oriIdx, newIdx) {
+    let oriX, oriY, newX, newY, value, inputArr;
     // move element up
-    while (this.arr[oriIdx].y != 40) {
+    while (this.arr[oriIdx].y != 50) {
+      value = this.arr[oriIdx].value;
+      oriX = this.arr[oriIdx].x;
+      oriY = this.arr[oriIdx].y;
       this.arr[oriIdx].y -= this.arr[oriIdx].speed.y;
-      this.animate(_.cloneDeep(this.arr));
+      newX = this.arr[oriIdx].x;
+      newY = this.arr[oriIdx].y;
+      inputArr = [[value, oriX, oriY, newX, newY]];
+      //this.animate(_.cloneDeep(this.arr));
+      this.animate(inputArr);
     }
     // choose which way to move by determining the positions of idxs
     if (oriIdx < newIdx) {
       // move element to newIdx
       while (this.arr[oriIdx].x != this.arr[newIdx].x) {
+        value = this.arr[oriIdx].value;
+        oriX = this.arr[oriIdx].x;
+        oriY = this.arr[oriIdx].y;
         this.arr[oriIdx].x += this.arr[oriIdx].speed.x;
-        this.animate(_.cloneDeep(this.arr));
+        newX = this.arr[oriIdx].x;
+        newY = this.arr[oriIdx].y;
+        inputArr = [[value, oriX, oriY, newX, newY]];
+        //this.animate(_.cloneDeep(this.arr));
+        this.animate(inputArr);
       }
       let xPos = this.arr[oriIdx + 1].x;
       let newXPos = this.arr[oriIdx + 1].x - 75;
       // move the piece in between to left
       while (xPos != newXPos) {
+        inputArr = [];
         let i = 1;
         for (i = 1; i <= newIdx - oriIdx; i++) {
+          value = this.arr[oriIdx + i].value;
+          oriX = this.arr[oriIdx + i].x;
+          oriY = this.arr[oriIdx + i].y;
           this.arr[oriIdx + i].x -= this.arr[oriIdx + i].speed.x;
+          newX = this.arr[oriIdx + i].x;
+          newY = this.arr[oriIdx + i].y;
+          inputArr.push([value, oriX, oriY, newX, newY]);
         }
         xPos -= this.arr[oriIdx + 1].speed.x;
-        this.animate(_.cloneDeep(this.arr));
+        //this.animate(_.cloneDeep(this.arr));
+        this.animate(inputArr);
       }
     }
     else if (oriIdx > newIdx) {
       // move element to newIdx
       while (this.arr[oriIdx].x != this.arr[newIdx].x) {
+        value = this.arr[oriIdx].value;
+        oriX = this.arr[oriIdx].x;
+        oriY = this.arr[oriIdx].y;
         this.arr[oriIdx].x -= this.arr[oriIdx].speed.x;
-        this.animate(_.cloneDeep(this.arr));
+        newX = this.arr[oriIdx].x;
+        newY = this.arr[oriIdx].y;
+        inputArr = [[value, oriX, oriY, newX, newY]];
+        //this.animate(_.cloneDeep(this.arr));
+        this.animate(inputArr);
       }
 
       let xPos = this.arr[newIdx + 1].x;
       let newXPos = xPos + 75;
       // move the piece in between to right
       while (xPos != newXPos) {
+        inputArr = [];
         var i = 0;
         for (i = 0; i < oriIdx - newIdx; i++) {
+          value = this.arr[newIdx + i].value;
+          oriX = this.arr[newIdx + i].x;
+          oriY = this.arr[newIdx + i].y;
           this.arr[newIdx + i].x += this.arr[newIdx + i].speed.x;
+          newX = this.arr[newIdx + i].x;
+          newY = this.arr[newIdx + i].y;
+          inputArr.push([value, oriX, oriY, newX, newY]);
         }
         xPos += this.arr[newIdx].speed.x;
-        this.animate(_.cloneDeep(this.arr));
+        //this.animate(_.cloneDeep(this.arr));
+        this.animate(inputArr); 
       }
     }
     // move element down
     while (this.arr[oriIdx].y != 100) {
+      value = this.arr[oriIdx].value;
+      oriX = this.arr[oriIdx].x;
+      oriY = this.arr[oriIdx].y;
       this.arr[oriIdx].y += this.arr[oriIdx].speed.y;
-      this.animate(_.cloneDeep(this.arr));
+      newX = this.arr[oriIdx].x;
+      newY = this.arr[oriIdx].y;
+      inputArr = [[value, oriX, oriY, newX, newY]];
+      //this.animate(_.cloneDeep(this.arr));
+      this.animate(inputArr);
     }
 
     // update the array move the element in the array
