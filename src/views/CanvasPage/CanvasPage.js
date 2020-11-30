@@ -32,7 +32,7 @@ class CanvasPage extends Component {
   }
 
   Register() {
-    
+
   }
 
   render() {
@@ -40,7 +40,7 @@ class CanvasPage extends Component {
       <div>
         {/* imitate redux store yea */}
         <ReduxStore id="redux-store" tool="pen"></ReduxStore>
-        <Header canvasPage={true} Login={Login} Register={Register}/>
+        <Header canvasPage={true} Login={this.Login} Register={this.Register}/>
         <ToolBar />
         {/* <DrawingArea src="./demo.html"></DrawingArea> */}
         {/* <AnimationLayer /> */}{/* Commented out for testing. TODO: uncomment */}
