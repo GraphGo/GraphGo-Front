@@ -1,6 +1,6 @@
 import React from "react";
 import Header from "../../components/Header/Header";
-import { Grid, ButtonBase } from '@material-ui/core'
+import { Grid } from '@material-ui/core'
 import { getAllFiles, createFolder } from '../../API/file'
 import FolderItem from '../../components/FolderItem/FolderItem'
 import FileItem from '../../components/FileItem/FileItem'
@@ -15,19 +15,12 @@ class CMS extends React.Component {
             files: [], // store all files
             fileItems:[], // store currently displayed files
             currentFolder: "", // id of current route 
-            email: "" //email address of current user
         };
         this.loadData = this.loadData.bind(this)
         this.onCreateFolderPopupConfirm = this.onCreateFolderPopupConfirm.bind(this)
         this.onFolderClick = this.onFolderClick.bind(this)
         this.onBack = this.onBack.bind(this)
         this.loadUser = this.loadUser.bind(this)
-    }
-
-    loadUser(email) {
-        getUser(email).then((user)=> {
-            this.setState({email: user.email})
-        })
     }
 
     componentDidMount(){
@@ -88,7 +81,7 @@ class CMS extends React.Component {
 
     onCreateFolderPopupConfirm(folderName) {
         console.log("[CMS] --- Creating folder "+ folderName)
-        createFolder(folderName, "liuhanshu2000@gmail.com").then(res=> { //Hardcoded name, need fix
+        createFolder(folderName, "liuhanshu2000@gmail.com").then(() => { //Hardcoded name, need fix
             this.loadData()
         }).catch(e => {console.log(e)})
     }
