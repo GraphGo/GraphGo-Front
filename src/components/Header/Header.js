@@ -10,8 +10,8 @@ const Header = (props) => (
     <div className={classes.MiddleArea}>
       {props.canvasPage ? <h1>My New Graph</h1> : <SearchBar />}
     </div>
-    <button className={classes.LoginBtn} onClick={this.props.Login}>Login</button>
-    <button className={classes.RegisterBtn} onClick={this.props.Register}>Register</button>
+    <button className={classes.LoginBtn} onClick={props.Login}>Login</button>
+    <button className={classes.RegisterBtn} onClick={props.Register}>Register</button>
     <button className={classes.HelpBtn} type="button">
       <img src={helpIcon} alt="help" />
     </button>
