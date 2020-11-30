@@ -125,8 +125,8 @@ const saveCanvas = (img, smartObj, width, height, name, uid, docID="", root="") 
                 for (var obj in smartObj){
                     structPromises.push(db.collection('structure').add(Object.assign({}, obj)))
                 }
-                Promise.all(structPromises).then(structRefs => {
-                    db.collection('file').doc(fileID).update({structures: structRefs})
+                Promise.all(structPromises).then(structRef => {
+                    db.collection('file').doc(fileID).update({structures: FieldValue.arrayUnion(structRef)})
                 })
                 return fileID
             }).then(fileID=>{
