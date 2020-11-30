@@ -8,10 +8,10 @@ import TopBar from '../../components/TopBar/TopBar'
 
 class CMS extends React.Component {
     constructor(props) {
-        super(props) 
+        super(props)
         this.state = {
             files: [], // store all files
-            fileItems:[], // store currently displayed files
+            fileItems: [], // store currently displayed files
             currentFolder: "" // id of current route 
         };
         this.loadData = this.loadData.bind(this)
@@ -20,7 +20,7 @@ class CMS extends React.Component {
         this.onBack = this.onBack.bind(this)
     }
 
-    componentDidMount(){
+    componentDidMount() {
         // TODO: use user email from Context
         console.log("[CMS] --- Component loaded")
         this.loadData()
@@ -30,57 +30,57 @@ class CMS extends React.Component {
 
     }
 
-    loadTestData(){
+    loadTestData() {
 
-    }   
+    }
 
-    loadData(){
+    loadData() {
         console.log("[CMS] --- Reloading data")
         getAllFiles("liuhanshu2000@gmail.com").then(res => {
             var files = []
             res.forEach(item => {
-                if(item.type === 'folder'){
-                    files.push({id: item.id, name: item.name, type: item.type, files: item.files, last_modified: item.last_modified, num_files: item.num_files})
-                } else if (item.type==='graph'){
-                    files.push({id: item.id, name: item.name, type: item.type, root: item.root, last_modified: item.last_modified, img: item.img})
+                if (item.type === 'folder') {
+                    files.push({ id: item.id, name: item.name, type: item.type, files: item.files, last_modified: item.last_modified, num_files: item.num_files })
+                } else if (item.type === 'graph') {
+                    files.push({ id: item.id, name: item.name, type: item.type, root: item.root, last_modified: item.last_modified, img: item.img })
                 }
             })
-            this.setState({fileItems: files, files: files})
+            this.setState({ fileItems: files, files: files })
         }).catch(e => console.error(e))
     }
 
-    enterFolder(id){
-        if(id === ""){
-            this.setState({fileItems: this.state.files, currentFolder: ""})
-            return 
+    enterFolder(id) {
+        if (id === "") {
+            this.setState({ fileItems: this.state.files, currentFolder: "" })
+            return
         }
         var root = {};
-        for(var i = 0; i < this.state.files.length; i++){
+        for (var i = 0; i < this.state.files.length; i++) {
             var item = this.state.files[i]
-            if(item.type !== "folder") continue
-            if (item.id === id){
+            if (item.type !== "folder") continue
+            if (item.id === id) {
                 root = item
             }
         }
-        if(!root) return
-        else this.setState({fileItems: root.files, currentFolder: id})
+        if (!root) return
+        else this.setState({ fileItems: root.files, currentFolder: id })
     }
 
     onFolderClick(e) {
-        var id=e.target.getAttribute("datakey")
+        var id = e.target.getAttribute("datakey")
         this.enterFolder(id)
     }
 
-    onBack(){
-        this.setState({currentFolder: ""})
+    onBack() {
+        this.setState({ currentFolder: "" })
         this.enterFolder("")
     }
 
     onCreateFolderPopupConfirm(folderName) {
-        console.log("[CMS] --- Creating folder "+ folderName)
-        createFolder(folderName, "liuhanshu2000@gmail.com").then(res=> {
+        console.log("[CMS] --- Creating folder " + folderName)
+        createFolder(folderName, "liuhanshu2000@gmail.com").then(res => {
             this.loadData()
-        }).catch(e => {console.log(e)})
+        }).catch(e => { console.log(e) })
     }
 
     render() {
@@ -91,22 +91,34 @@ class CMS extends React.Component {
         return (
             <>
                 <Header />
+                <div id="firebaseui-auth-container" style={{
+                    width: "200 px",
+                    height: "200px",
+                    position: 'absolute',
+                    top: "100px",
+                    right: "10%",
+                    zIndex: "999",
+                    fontSize: "70%",
+                    padding: "15px",
+                    border: "1px"
+                }}></div>
+                <div id="loader" ></div>
                 <div className="main-page">
-                    <TopBar addDisabled={this.state.currentFolder !== ""} 
-                    backDisabled={this.state.currentFolder === ""} 
-                    onBack={this.onBack} onRefresh={this.loadData} 
-                    onSubmit={this.onCreateFolderPopupConfirm} 
+                    <TopBar addDisabled={this.state.currentFolder !== ""}
+                        backDisabled={this.state.currentFolder === ""}
+                        onBack={this.onBack} onRefresh={this.loadData}
+                        onSubmit={this.onCreateFolderPopupConfirm}
                     />
 
                     <Grid style={gridStyle} container direction='row' justify='flex-start' alignItems='flex-start'>
                         {this.state.fileItems.map(item => {
-                            if(item.type === 'folder'){
+                            if (item.type === 'folder') {
                                 return (
                                     <Grid item xs={3} key={item.id} datakey={item.id} onClick={this.onFolderClick}>
                                         <FolderItem name={item.name} datakey={item.id} />
                                     </Grid>
                                 )
-                            }else if (item.type === 'graph'){
+                            } else if (item.type === 'graph') {
                                 return (
                                     <Grid item xs={3} key={item.id} datakey={item.id} >
                                         <FileItem name={item.name} datakey={item.id}></FileItem>
