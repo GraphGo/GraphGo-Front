@@ -229,7 +229,11 @@ class AnimationContainer extends Component {
 
   render() {
     return (
-       <canvas id={"animationCanvas"+this.props.smartObject.index}></canvas>
+       <canvas id={"animationCanvas"+this.props.smartObject.index} onClick={() => {
+         if (window.confirm("Are you sure you want to remove this animation?")) {
+            this.props.removeSmartObject(this.props.smartObject.index);
+         }
+       }} style={{border: '3px dotted'}}></canvas>
      /*  <div style={{
         "width": "100%",
         "height": "100%",

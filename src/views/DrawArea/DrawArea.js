@@ -7,12 +7,18 @@ import AnimationLayer from "../AnimationLayer/AnimationLayer"
 import SmartObject from "./SmartObject"
 import axios from "axios"
 import _ from 'lodash'
+
 class DrawArea extends Component {
   state = {
     animation_pos_top: 100, //the distance of the animation box to the top
     animation_pos_left: 100, // the distance of the animation box to the left
     animation_data: [4,2,1,3],
-    smartObjects: []
+    smartObjects: [],
+    left: 0,
+    top: 0,
+    width: 0,
+    height: 0,
+    count: 0,
   }
 
   gtag() {
@@ -143,7 +149,7 @@ class DrawArea extends Component {
       }  
     }, false);
 
-    canvas.addEventListener('mouseup', function () {
+    canvas.addEventListener('mouseup', () => {
       let toolType = document.getElementById("redux-store").getAttribute("tool");
       switch (toolType) {
         case "pen":
@@ -174,12 +180,12 @@ class DrawArea extends Component {
         case "lasso":
           // reset the lasso area
           canvas.removeEventListener('mousemove', onPaint, false);
-          let lassoBox = document.getElementById("lasso-box");
-          lassoBox.style.width = 0 + "px";
-          lassoBox.style.height = 0 + "px";
-          lassoBox.style.display = "none";
+          // let lassoBox = document.getElementById("lasso-box");
+          // lassoBox.style.width = 0 + "px";
+          // lassoBox.style.height = 0 + "px";
+          // lassoBox.style.display = "none";
 
-          context.rect(Math.min(mouse.x, lasso_x), Math.min(mouse.y, lasso_y), Math.abs(mouse.x - lasso_x), Math.abs(mouse.y - lasso_y));
+          // context.rect(Math.min(mouse.x, lasso_x), Math.min(mouse.y, lasso_y), Math.abs(mouse.x - lasso_x), Math.abs(mouse.y - lasso_y));
           //context.fillStyle = "white"
           let originalStyle = context.strokeStyle;
           //context.fillRect(Math.min(mouse.x, lasso_x), Math.min(mouse.y, lasso_y), Math.abs(mouse.x - lasso_x), Math.abs(mouse.y - lasso_y));
@@ -187,30 +193,46 @@ class DrawArea extends Component {
           context.strokeStyle = "#a8b9c6";
           context.stroke();
           //let img = context.getImageData(Math.min(mouse.x, lasso_x), Math.min(mouse.y, lasso_y), Math.abs(mouse.x - lasso_x), Math.abs(mouse.y - lasso_y));
-          const top = Math.min(mouse.y, lasso_y);
-          const left = Math.min(mouse.x, lasso_x);
-          const width = Math.abs(mouse.x - lasso_x);
-          const height = Math.abs(mouse.y - lasso_y);
+          
+          // open the lasso container and popup box
+          let lassoContainer = document.getElementById("lasso-container");
+          let lassoPopup = document.getElementById("lasso-popup");
+          lassoContainer.style.display = "block";
+          lassoPopup.style.display = "block";
+          lassoPopup.style.left = Math.min(mouse.x, lasso_x) + "px";
+          lassoPopup.style.top = Math.max(mouse.y, lasso_y) + 20 + "px";
 
-          var canvasData = canvas.toDataURL('image/png');
-          console.log(canvasData);
-          axios.post('http://138.68.245.67:5000/',{data:canvasData.replace("data:image/png;base64,",""), top: top, left:left, width:width, height:height}, {
-            headers: {
-              'Content-Type':'application/json'
-            }
+          this.setState({
+            top: Math.min(mouse.y, lasso_y),
+            left: Math.min(mouse.x, lasso_x),
+            width: Math.abs(mouse.x - lasso_x),
+            height: Math.abs(mouse.y - lasso_y),
           })
-            .then(res => {
-              let newSmartObject = new SmartObject(res.data.result, left, top,  width, height,0);
-              console.log(res);
-              that.setState(
-                state => {
-                const smartObjects = state.smartObjects.concat(newSmartObject);
-                console.log(smartObjects);
-                return {
-                  smartObjects: smartObjects
-                };
-              });
-            });
+
+          // const top = Math.min(mouse.y, lasso_y);
+          // const left = Math.min(mouse.x, lasso_x);
+          // const width = Math.abs(mouse.x - lasso_x);
+          // const height = Math.abs(mouse.y - lasso_y);
+
+          // var canvasData = canvas.toDataURL('image/png');
+          // //console.log(canvasData);
+          // axios.post('http://138.68.245.67:5000/',{data:canvasData.replace("data:image/png;base64,",""), top: top, left:left, width:width, height:height}, {
+          //   headers: {
+          //     'Content-Type':'application/json'
+          //   }
+          // })
+          //   .then(res => {
+          //     let newSmartObject = new SmartObject(res.data.result, left, top,  width, height,0);
+          //     console.log(res);
+          //     that.setState(
+          //       state => {
+          //       const smartObjects = state.smartObjects.concat(newSmartObject);
+          //       console.log(smartObjects);
+          //       return {
+          //         smartObjects: smartObjects
+          //       };
+          //     });
+          //   });
           // var blobCallback = function(blob) {
           //   console.log(blob);
 
@@ -325,6 +347,19 @@ class DrawArea extends Component {
     // });
   }
 
+  removeSmartObject = (id) => {
+    let smartObjects = [...this.state.smartObjects];
+    let target_idx = 0;
+    for (let i = 0; i < smartObjects.length; i++) {
+      if (id === smartObjects[i].index) {
+        target_idx = i;
+        break;
+      }
+    }
+    smartObjects.splice(target_idx, 1);
+    this.setState({ smartObjects: smartObjects});
+  }
+
   render() {
     return (
       <Container>
@@ -357,14 +392,44 @@ class DrawArea extends Component {
               borderRadius: "15px",
               cursor: "pointer",
               transition: "all 0.1s linear",
-            }} onClick={() => {
+            }} onClick={(e) => {
+              // create the smart object
+              const top = this.state.top;
+              const left = this.state.left;
+              const width = this.state.width - 10;
+              const height = this.state.height;
+              const canvas = document.getElementById('myCanvas');
+
+              var canvasData = canvas.toDataURL('image/png');
+              // console.log(canvasData);
+              axios.post('http://138.68.245.67:5000/',{data:canvasData.replace("data:image/png;base64,",""), top: top, left:left, width:width, height:height}, {
+                headers: {
+                  'Content-Type':'application/json'
+                }
+              })
+                .then(res => {
+                  let newSmartObject = new SmartObject(res.data.result, left, top,  width, height, this.state.count);
+                  console.log(res);
+                  this.setState(
+                    state => {
+                    const smartObjects = state.smartObjects.concat(newSmartObject);
+                    console.log(smartObjects);
+                    return {
+                      smartObjects: smartObjects
+                    };
+                  });
+                }).catch(error => console.log(error));
+
+              this.setState({count: this.state.count + 1});
+
               document.getElementById("lasso-container").style.display = "none";
               document.getElementById("lasso-popup").style.display = "none";
               let lassoBox = document.getElementById("lasso-box");
               lassoBox.style.display = "none";
               lassoBox.style.left = 0 + "px";
               lassoBox.style.top = 0 + "px";
-              alert("Smart Object Created!")
+              lassoBox.style.width = 0 + "px";
+              lassoBox.style.height = 0 + "px";
             }}>Convert to Smart Object</div>
           </div>
         </div>
@@ -375,7 +440,7 @@ class DrawArea extends Component {
             left: "0"
           }}></canvas>
           <div id="animation-layer">
-            <AnimationLayer smartObjects={this.state.smartObjects}/>
+            <AnimationLayer smartObjects={this.state.smartObjects} removeSmartObject={this.removeSmartObject}/>
           </div>
           
         </div>
