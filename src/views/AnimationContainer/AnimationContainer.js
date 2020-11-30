@@ -52,13 +52,13 @@ class AnimationContainer extends Component {
   // this function is used to draw an array
   draw(arr) {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillText('\[', 0, 100);
+    this.ctx.fillText('[', 0, 100);
     let i = 0;
     // draw every element in arr
     for (i = 0; i < arr.length; i++) {
       this.ctx.fillText(arr[i].value, arr[i].x, arr[i].y);
     }
-    this.ctx.fillText('\]', arr.length * 75 + 75, 100);
+    this.ctx.fillText(']', arr.length * 75 + 75, 100);
   }
 
   // this function is update the array with animation

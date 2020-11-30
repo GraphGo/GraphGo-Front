@@ -26,7 +26,7 @@ class AnimationLayer extends React.Component {
         this.props.smartObjects.length != 0 ?
         this.props.smartObjects.map(config => {
           return (
-            <div style={{
+            <div key={config.index.toString()} style={{
               "width": `${config.width}px`,
               "height": `${config.height}px`,
               "top": `${config.top}px`,
