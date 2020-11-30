@@ -9,6 +9,7 @@ import {saveUserToDB, signUp, login, getUser} from '../../API/user'
 
 class CMS extends React.Component {
     constructor(props) {
+        // need to pass in props of the current user
         super(props) 
         this.state = {
             files: [], // store all files

@@ -10,13 +10,37 @@ class CanvasPage extends Component {
 
   constructor(props) {
     super(props); 
+    this.state = {
+      name:"",
+      email: "",
+      isLoggedIn: false,
+    }
   }
+
+  componentDidMount() {
+    if (this.props.isLoggedIn === true) {
+      this.setState({isLoggedIn: true});
+    }
+  }
+
+  componentWillUnmount() {
+
+  }
+
+  Login() {
+
+  }
+
+  Register() {
+    
+  }
+
   render() {
     return (
       <div>
         {/* imitate redux store yea */}
         <ReduxStore id="redux-store" tool="pen"></ReduxStore>
-        <Header canvasPage={true} />
+        <Header canvasPage={true} Login={Login} Register={Register}/>
         <ToolBar />
         {/* <DrawingArea src="./demo.html"></DrawingArea> */}
         {/* <AnimationLayer /> */}{/* Commented out for testing. TODO: uncomment */}
