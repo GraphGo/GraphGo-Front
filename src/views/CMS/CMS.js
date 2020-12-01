@@ -1,11 +1,12 @@
 import React from "react";
 import Header from "../../components/Header/Header";
 import { Grid } from '@material-ui/core'
-import { getAllFiles, createFolder } from '../../API/file'
+import { getAllFiles, createFolder, loadCanvas } from '../../API/file'
 import FolderItem from '../../components/FolderItem/FolderItem'
 import FileItem from '../../components/FileItem/FileItem'
 import TopBar from '../../components/TopBar/TopBar'
 import {saveUserToDB, signUp, login, getUser} from '../../API/user'
+import history from '../../utils/history'
 
 class CMS extends React.Component {
     constructor(props) {
@@ -19,8 +20,8 @@ class CMS extends React.Component {
         this.loadData = this.loadData.bind(this)
         this.onCreateFolderPopupConfirm = this.onCreateFolderPopupConfirm.bind(this)
         this.onFolderClick = this.onFolderClick.bind(this)
+        this.onFileClick = this.onFileClick.bind(this)
         this.onBack = this.onBack.bind(this)
-        this.loadUser = this.loadUser.bind(this)
     }
 
     componentDidMount() {
@@ -39,7 +40,10 @@ class CMS extends React.Component {
 
     loadData() {
         console.log("[CMS] --- Reloading data")
-        getAllFiles("liuhanshu2000@gmail.com").then(res => {
+        var user = sessionStorage.getItem('user')
+        if(!user) return;
+
+        getAllFiles(user).then(res => {
             var files = []
             res.forEach(item => {
                 if (item.type === 'folder') {
@@ -72,6 +76,14 @@ class CMS extends React.Component {
     onFolderClick(e) {
         var id = e.target.getAttribute("datakey")
         this.enterFolder(id)
+    }
+
+    onFileClick(e) {
+        var id = e.target.getAttribute("datakey")
+        loadCanvas(id).then(res => {
+            console.log(res)
+            history.push({pathname: '/', state: res})
+        })
     }
 
     onBack() {
@@ -123,7 +135,7 @@ class CMS extends React.Component {
                                 )
                             } else if (item.type === 'graph') {
                                 return (
-                                    <Grid item xs={3} key={item.id} datakey={item.id} >
+                                    <Grid item xs={3} key={item.id} datakey={item.id} onClick={this.onFileClick}>
                                         <FileItem name={item.name} datakey={item.id}></FileItem>
                                     </Grid>
                                 )
