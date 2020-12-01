@@ -9,13 +9,13 @@ function App() {
     <div className="App">
     <Router history={history}>
       <Switch>
-        <Route path='/canvas'>
+        <Route exact path='/'>
           <CanvasPage />
         </Route>
-        <Route path="/CMS">
+        <Route exact path="/CMS">
           <CMS />
         </Route>
-        <Route path="/login">
+        <Route exact path="/login">
           <Login />
         </Route>
       </Switch>
