@@ -9,9 +9,6 @@ import axios from "axios"
 import _ from 'lodash'
 class DrawArea extends Component {
   state = {
-    animation_pos_top: 100, //the distance of the animation box to the top
-    animation_pos_left: 100, // the distance of the animation box to the left
-    animation_data: [4,2,1,3],
     smartObjects: []
   }
   gtag() {
@@ -38,19 +35,7 @@ class DrawArea extends Component {
     this.updateDatalayer();
     this.gtag = this.gtag.bind(this);
   }
-  /**
-   * Calls backend function to store graph to firebase
-   */
-  handleSaveGraph () {
-    const canvas = document.getElementById('myCanvas');
-    const img = canvas.toDataURL('img/png');
-    const data = {
-      data: img,
-      width: canvas.width(),
-      height: canvas.height(),
-      userID: this.props.savedData.userID
-    }
-  }
+
 
   componentDidMount() {
     Array.prototype.max = function () {
