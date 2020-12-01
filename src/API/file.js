@@ -118,16 +118,11 @@ const saveCanvas = (img, smartObj, width, height, name, uid, docID="", root="") 
     return new Promise((resolve, reject) => {
         // create new graph, return id
         if(docID === ""){
-            db.collection('file').add({img: img, last_modified: new Date(), name: name, root: root, config:{width: width, height: height}, type: "graph"}).then(docRef => {
+            db.collection('file').add({img: img, last_modified: new Date(), name: name, root: root, config:{width: width, height: height}, type: "graph"})
+            .then(docRef => {
                 return docRef.id
             }).then(fileID => {
-                var structPromises = []
-                for (var obj in smartObj){
-                    structPromises.push(db.collection('structure').add(Object.assign({}, obj)))
-                }
-                Promise.all(structPromises).then(structRef => {
-                    db.collection('file').doc(fileID).update({structures: FieldValue.arrayUnion(structRef)})
-                })
+                db.collection('file').doc(fileID).update({structures: FieldValue.arrayUnion(smartObj)})
                 return fileID
             }).then(fileID=>{
                 db.collection('user').doc(uid).set({files: FieldValue.arrayUnion({id: fileID, type: "graph"})})
@@ -144,9 +139,12 @@ const saveCanvas = (img, smartObj, width, height, name, uid, docID="", root="") 
 }
 
 const loadCanvas = (docID) => {
+    console.log(docID)
     return new Promise((resolve, reject) => {
         db.collection('file').doc(docID).get().then(querysnapshot => {
-            resolve(querysnapshot.data())
+            var data = querysnapshot.data()
+            delete data.owner
+            resolve(data)
         }).catch(e => {reject(e)})
     })
 }

@@ -28,8 +28,8 @@ class Header extends Component {
           // Return type determines whether we continue the redirect automatically
           // or whether we leave that to developer to handle.
           console.log(authResult)
-          this.setState({user:authResult.user.displayName});
-          sessionStorage.setItem("user", authResult.user.displayName)
+          this.setState({user:authResult.user.email});
+          sessionStorage.setItem("user", authResult.user.email)
           document.getElementById('firebaseui-auth-container').style.display = 'none';
           return false;
         }.bind(this),
