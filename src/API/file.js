@@ -127,7 +127,7 @@ const saveCanvas = (img, smartObj, width, height, name, uid, docID="", root="") 
             //     return fileID
             // })
             .then(fileID=>{
-                db.collection('user').doc(uid).set({files: FieldValue.arrayUnion({id: fileID, type: "graph"})})
+                db.collection('user').doc(uid).update({files: FieldValue.arrayUnion({id: fileID, type: "graph"})})
                 resolve(fileID)
             }).catch(e => {reject(e)})
         } else {
