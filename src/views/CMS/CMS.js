@@ -5,7 +5,7 @@ import { getAllFiles, createFolder, loadCanvas } from '../../API/file'
 import FolderItem from '../../components/FolderItem/FolderItem'
 import FileItem from '../../components/FileItem/FileItem'
 import TopBar from '../../components/TopBar/TopBar'
-import {saveUserToDB, signUp, login, getUser} from '../../API/user'
+//import {saveUserToDB, signUp, login, getUser} from '../../API/user'
 import history from '../../utils/history'
 
 class CMS extends React.Component {

@@ -1,11 +1,9 @@
 import React, { Component } from "react";
 import Header from "../../components/Header/Header";
 import ToolBar from "../../components/ToolBar/ToolBar";
-import classes from "./CanvasPage.module.css";
 import styled from "styled-components";
 import DrawArea from "../DrawArea/DrawArea";
-import { saveCanvas, loadCanvas } from '../../API/file'
-import AnimationLayer from "../AnimationLayer/AnimationLayer";
+import { saveCanvas} from '../../API/file'
 import AnimationMenuPopup from "../../components/AnimationMenuPopup/AnimationMenuPopup";
 import SmartObjsContext from '../../contexts/SmartObjsContext.js';
 class CanvasPage extends Component {

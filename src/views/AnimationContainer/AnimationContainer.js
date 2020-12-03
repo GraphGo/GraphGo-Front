@@ -43,13 +43,13 @@ class AnimationContainer extends Component {
     
         // draw the array
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.fillText('\[', 0, 100);
+        this.ctx.fillText('[', 0, 100);
         let i = 0;
         // draw every element in arr
         for (i = 0; i < this.arr.length; i++) {
           this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
         }
-        this.ctx.fillText('\]', this.arr.length * 75 + 75, 100);
+        this.ctx.fillText(']', this.arr.length * 75 + 75, 100);
     
         this.insertionSort();
     }
@@ -68,13 +68,13 @@ class AnimationContainer extends Component {
 
     // draw the array
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillText('\[', 0, 100);
+    this.ctx.fillText('[', 0, 100);
     let i = 0;
     // draw every element in arr
     for (i = 0; i < this.arr.length; i++) {
       this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
     }
-    this.ctx.fillText('\]', this.arr.length * 75 + 75, 100);
+    this.ctx.fillText(']', this.arr.length * 75 + 75, 100);
 
     this.insertionSort();
   }

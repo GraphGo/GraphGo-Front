@@ -18,7 +18,7 @@ export default class OutsideClickHandler extends Component {
     componentWillUnmount() {
         document.removeEventListener('mousedown', this.handleClickOutside);
     }
-    componentWillUpdate() {
+    UNSAFE_componentWillUpdate() {
         console.log(this.props.showPenMenu);
         if (this.props.showPenMenu) {
             document.removeEventListener('mousedown', this.handleClickOutside);
