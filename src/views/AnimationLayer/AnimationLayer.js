@@ -21,7 +21,7 @@ class AnimationLayer extends React.Component {
   render() {
     console.log(this.props);
     return (
-      <Container style={{"height": `${window.innerWidth / 3}px`}}>
+      <Container style={{"height": "95%"}}>
         { 
         this.props.smartObjects.length != 0 ?
         this.props.smartObjects.map(config => {
