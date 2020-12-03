@@ -14,6 +14,7 @@ import saveDarkIcon from "../../assets/icons/save-dark.svg";
 import PenToolPopup from "../PenToolPopup/PenToolPopup";
 import OutsideClickHandler from "../hoc/OutsideClickHandler/OutsideClickHandler"
 import classes from "./ToolBar.module.css";
+import SaveDialog from "./SaveDialog"
 
 const tools = {
   pen: [penIcon, penDarkIcon],
@@ -26,8 +27,12 @@ class ToolBar extends Component {
     super(props);
     this.state = {
       toolSelected: null,
-      showPenMenu: false
+      showPenMenu: false,
+      open : false,
+      text : ""
     };
+    this.handleSave = this.handleSave.bind(this);
+    this.closeDialog = this.closeDialog.bind(this);
   }
   componentDidUpdate() {
     // update icons
@@ -49,6 +54,21 @@ class ToolBar extends Component {
   handlePenMenuClosed = () => {
     this.setState({ showPenMenu: false })
   }
+
+  closeDialog() {
+    this.setState({open: false});
+  } 
+  /**
+   * Handler for saving graph file
+   */
+  handleSave() {
+    if (this.props.docID) {
+      this.props.handleSaveGraph("", this.props.docID)
+    } else {
+      this.setState({open: true});
+    }
+  }
+
 
   render() {
     return (
@@ -90,9 +110,9 @@ class ToolBar extends Component {
           <img id="redo" src={redoIcon} alt="redo" />
         </button>
         <button title="Save">
-          <img id="save" src={saveIcon} alt="save" />
+          <img id="save" onClick={this.handleSave} src={saveIcon} alt="save" />
         </button>
-
+        <SaveDialog open={this.state.open} closeDialog={this.closeDialog} saveGraph={this.props.handleSaveGraph} />
       </div>
     );
   }

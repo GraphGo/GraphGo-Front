@@ -1,23 +1,20 @@
 import "./App.css";
-import CanvasPage from "./views/CanvasPage/CanvasPage";
+import CMS from './views/CMS/CMS'
+//import Login from './views/LogIn/Login'
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
+import CanvasPage from './views/CanvasPage/CanvasPage'
+import history from "./utils/history"
 function App() {
   return (
     <div className="App">
-      <CanvasPage />
-      {/* <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header> */}
+    <Router history={history}>
+      <Switch>
+        <Route exact path='/' component={CanvasPage}>
+        </Route>
+        <Route exact path="/CMS" component={CMS}>
+        </Route>
+      </Switch>
+    </Router>
     </div>
   );
 }

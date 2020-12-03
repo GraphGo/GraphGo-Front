@@ -1,0 +1,7 @@
+.top-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    margin-left: 25px;
+    margin-top: 25px;
+}
