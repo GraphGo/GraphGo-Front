@@ -77,10 +77,20 @@ class DrawArea extends Component {
     // load image from saved data if passed in
     if (this.props.savedData) {
           const img = new Image();
-          img.src = this.props.savedData.data;
+          img.src = this.props.savedData.img;
           img.onload = function() {
-            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+            context.drawImage(img, 0, 0);
           }
+          let smartObjects = []
+          let count = 0;
+          this.props.savedData.smartObjects.forEach((element) =>{
+            smartObjects.push(new SmartObject(element.data, element.left, element.top,element.width,element.height, count));
+            count += 1;
+          });
+          this.setState({smartObjects:smartObjects});
+          
+
+
     }
 
     var compuetedStyle = getComputedStyle(document.getElementById('paint'));

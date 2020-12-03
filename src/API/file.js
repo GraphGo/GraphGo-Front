@@ -118,19 +118,22 @@ const saveCanvas = (img, smartObj, width, height, name, uid, docID="", root="") 
     return new Promise((resolve, reject) => {
         // create new graph, return id
         if(docID === ""){
-            db.collection('file').add({img: img, last_modified: new Date(), name: name, root: root, config:{width: width, height: height}, type: "graph"})
+            db.collection('file').add({smartObjects:smartObj.map((obj) => {return Object.assign({}, obj)}), img: img, last_modified: new Date(), name: name, root: root, config:{width: width, height: height}, type: "graph"})
             .then(docRef => {
                 return docRef.id
-            }).then(fileID => {
-                db.collection('file').doc(fileID).update({structures: FieldValue.arrayUnion(smartObj)})
-                return fileID
-            }).then(fileID=>{
+            })
+            // .then(fileID => {
+            //     db.collection('file').doc(fileID).update({structures: FieldValue.arrayUnion(smartObj)})
+            //     return fileID
+            // })
+            .then(fileID=>{
                 db.collection('user').doc(uid).set({files: FieldValue.arrayUnion({id: fileID, type: "graph"})})
                 resolve(fileID)
             }).catch(e => {reject(e)})
         } else {
+            console.log(docID);
             // save to exisitng graph
-            db.collection('file').doc(docID).update({img: img, last_modified: new Date(), name: name, root: root, config: {width: width, height: height}}).then(res=> {
+            db.collection('file').doc(docID).update({smartObjects:smartObj.map((obj) => {return Object.assign({}, obj)}),img: img, last_modified: new Date()}).then(res=> {
                 resolve(res)
             }).catch(e => {reject(e)})
         }
@@ -144,6 +147,7 @@ const loadCanvas = (docID) => {
         db.collection('file').doc(docID).get().then(querysnapshot => {
             var data = querysnapshot.data()
             delete data.owner
+            data.id = docID;
             resolve(data)
         }).catch(e => {reject(e)})
     })

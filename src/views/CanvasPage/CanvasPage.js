@@ -4,7 +4,7 @@ import ToolBar from "../../components/ToolBar/ToolBar";
 import classes from "./CanvasPage.module.css";
 import styled from "styled-components";
 import DrawArea from "../DrawArea/DrawArea";
-import {saveCanvas, loadCanvas} from '../../API/file'
+import { saveCanvas, loadCanvas } from '../../API/file'
 import AnimationLayer from "../AnimationLayer/AnimationLayer";
 class CanvasPage extends Component {
 
@@ -14,26 +14,36 @@ class CanvasPage extends Component {
     this.handleSaveGraph = this.handleSaveGraph.bind(this)
   }
 
-/**
- * Calls backend function to store graph to firebase
- */
-  handleSaveGraph() {
-    const canvas = document.getElementById('myCanvas');
-    const img = canvas.toDataURL('img/png');
-    const currentDrawRef = this.drawAreaRef.current;
-    const data = {
-      img: img,
-      smartObjects: currentDrawRef.state.smartObjects,
-      width: canvas.width(),
-      height: canvas.height(),
-      userID: this.props.savedData.uid
+  /**
+   * Calls backend function to store graph to firebase
+   */
+  handleSaveGraph(text, id="") {
+    let uid = sessionStorage.getItem("userID");
+    if (uid) {
+      const canvas = document.getElementById('myCanvas');
+      const img = canvas.toDataURL('img/png');
+      const currentDrawRef = this.drawAreaRef.current;
+      const data = {
+        img: img,
+        smartObjects: currentDrawRef.state.smartObjects,
+        width: canvas.width,
+        height: canvas.height,
+        userID: uid
+      }
+      console.log(data);
+      saveCanvas(img, currentDrawRef.state.smartObjects, canvas.width, canvas.height, text, uid, id).then(alert("File Saved Successfully"))
+    } else {
+      alert("You must login to save a file");
     }
   }
 
   componentDidMount() {
     if (this.props.isLoggedIn === true) {
-      this.setState({isLoggedIn: true});
+      this.setState({ isLoggedIn: true });
     }
+    console.log(this.props);
+
+
   }
 
   componentWillUnmount() {
@@ -53,24 +63,24 @@ class CanvasPage extends Component {
       <div>
         {/* imitate redux store yea */}
         <ReduxStore id="redux-store" tool="pen"></ReduxStore>
-        <Header canvasPage={true} />
+        <Header canvasPage={true} graphName={this.props.location.state ?this.props.location.state.name:null}/>
 
         <div id="firebaseui-auth-container" style={{
-          width:"200 px",
-          height:"200px",
-          position:'absolute',
-          top:"100px",
-          right:"10%",
-          zIndex:"999",
-          fontSize:"70%",
-          padding:"15px",
-          border:"1px"
+          width: "200 px",
+          height: "200px",
+          position: 'absolute',
+          top: "100px",
+          right: "10%",
+          zIndex: "999",
+          fontSize: "70%",
+          padding: "15px",
+          border: "1px"
         }}></div>
         <div id="loader" ></div>
-        <ToolBar />
+        <ToolBar handleSaveGraph={this.handleSaveGraph} docID={this.props.location.state ?this.props.location.state.id:null}/>
         {/* <DrawingArea src="./demo.html"></DrawingArea> */}
         {/* <AnimationLayer /> */}{/* Commented out for testing. TODO: uncomment */}
-        <DrawArea savedData={this.props.data} ref={this.drawAreaRef} />
+        <DrawArea savedData={this.props.location.state} ref={this.drawAreaRef} />
       </div>
     );
   }

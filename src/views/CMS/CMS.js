@@ -40,9 +40,9 @@ class CMS extends React.Component {
 
     loadData() {
         console.log("[CMS] --- Reloading data")
-        var user = sessionStorage.getItem('user')
+        var user = sessionStorage.getItem('userEmail')
         if(!user) return;
-
+        console.log(user);
         getAllFiles(user).then(res => {
             var files = []
             res.forEach(item => {
@@ -93,7 +93,7 @@ class CMS extends React.Component {
 
     onCreateFolderPopupConfirm(folderName) {
         console.log("[CMS] --- Creating folder "+ folderName)
-        createFolder(folderName, "liuhanshu2000@gmail.com").then(() => { //Hardcoded name, need fix
+        createFolder(folderName, sessionStorage.getItem("userEmail")).then(() => { //Hardcoded name, need fix
             this.loadData()
         }).catch(e => { console.log(e) })
     }
