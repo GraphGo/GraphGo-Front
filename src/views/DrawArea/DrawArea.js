@@ -150,6 +150,9 @@ class DrawArea extends Component {
           break;
         case "lasso":
           //place_holder = false;
+          mouse.x = e.pageX - this.offsetLeft;
+          mouse.y = e.pageY - this.offsetTop;
+    
           context.moveTo(mouse.x, mouse.y);
           context.beginPath();
           canvas.addEventListener('mousemove', onPaint, false);
