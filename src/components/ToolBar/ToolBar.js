@@ -82,16 +82,17 @@ class ToolBar extends Component {
         }>
           <img id="pen" src={penIcon} alt="pen" />
         </button>
-        <OutsideClickHandler handler={this.handlePenMenuClosed}>
+        <OutsideClickHandler handler={this.handlePenMenuClosed} showPenMenu={this.state.showPenMenu}>
           <PenToolPopup show={this.state.toolSelected === "pen" && this.state.showPenMenu} />
         </OutsideClickHandler>
         <button title="Hand" onClick={() => {
           this.handleToolSelected("hand");
           document.getElementById("redux-store").setAttribute("tool", "hand");
           // make the animation layer lower than the canvas
-          document.getElementById("myCanvas").style.zIndex = "4";
+          document.getElementById("myCanvas").style.zIndex = "2";
+          document.getElementById("animation-layer").style.pointerEvents = "unset";
         }}>
-          <img id="hand" src={handIcon} alt="hand tool" />
+          <img id="hand" src={handIcon} alt="hand tool"/>
         </button>
         <button title="Lasso Tool" onClick={() => {
           this.handleToolSelected("lasso");

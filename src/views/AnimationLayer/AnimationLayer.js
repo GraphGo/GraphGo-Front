@@ -32,9 +32,9 @@ class AnimationLayer extends React.Component {
               "top": `${config.top}px`,
               "left": `${config.left}px`,
               "position": "absolute",
-              "align-items":"center"
+              "alignItems":"center"
             }}>
-              <AnimationContainer smartObject={config} key={config.index.toString()}/>
+              <AnimationContainer smartObject={config} key={config.index.toString()} removeSmartObject={this.props.removeSmartObject}/>
             </div>
             
           );

@@ -15,6 +15,12 @@ class PenToolPopup extends Component {
     context.strokeStyle = color.hex;
   };
 
+  handleSliderInput = (val) =>{
+    var canvas = document.getElementById('myCanvas');
+    var context = canvas.getContext('2d');
+    context.lineWidth = val;
+}
+
   render() {
     return (
       this.props.show ? 
@@ -26,7 +32,7 @@ class PenToolPopup extends Component {
          />
         </div>
         <div className={classes.StrokeWidthSlider}>
-        <StrokeWidthSlider/>
+        <StrokeWidthSlider handler={this.handleSliderInput}/>
         </div>
        
       </div>) : null
