@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "../../components/Header/Header";
 import { Grid } from '@material-ui/core'
-import { getAllFiles, createFolder, loadCanvas } from '../../API/file'
+import { getAllFiles, createFolder, loadCanvas, saveCanvas } from '../../API/file'
 import FolderItem from '../../components/FolderItem/FolderItem'
 import FileItem from '../../components/FileItem/FileItem'
 import TopBar from '../../components/TopBar/TopBar'
@@ -18,7 +18,7 @@ class CMS extends React.Component {
             currentFolder: "", // id of current route 
         };
         this.loadData = this.loadData.bind(this)
-        this.onCreateFolderPopupConfirm = this.onCreateFolderPopupConfirm.bind(this)
+        this.onCreatePopupConfirm = this.onCreatePopupConfirm.bind(this)
         this.onFolderClick = this.onFolderClick.bind(this)
         this.onFileClick = this.onFileClick.bind(this)
         this.onBack = this.onBack.bind(this)
@@ -91,11 +91,24 @@ class CMS extends React.Component {
         this.enterFolder("")
     }
 
-    onCreateFolderPopupConfirm(folderName) {
-        console.log("[CMS] --- Creating folder "+ folderName)
-        createFolder(folderName, sessionStorage.getItem("userEmail")).then(() => { //Hardcoded name, need fix
-            this.loadData()
-        }).catch(e => { console.log(e) })
+    onCreatePopupConfirm(name, type) {
+        if(type === "folder"){
+            console.log("[CMS] --- Creating folder "+ name)
+            createFolder(name, sessionStorage.getItem("userEmail")).then(() => { //Hardcoded name, need fix
+                this.loadData()
+            }).catch(e => { console.log(e) })
+        } else if (type === "graph"){
+            console.log("[CMS] --- Creating Graph "+name)
+            saveCanvas("", [], 900, 1200, name, sessionStorage.getItem('userID'), "", this.state.currentFolder)
+            .then(docID => {
+                console.log("[CMS] --- Created with docID "+docID)
+                loadCanvas(docID).then(res => {
+                    history.push({pathname: '/' ,state: res})
+                })
+            })
+            .catch(e => console.log(e))
+        }
+
     }
 
     render() {
@@ -122,7 +135,7 @@ class CMS extends React.Component {
                     <TopBar addDisabled={this.state.currentFolder !== ""}
                         backDisabled={this.state.currentFolder === ""}
                         onBack={this.onBack} onRefresh={this.loadData}
-                        onSubmit={this.onCreateFolderPopupConfirm}
+                        onSubmit={this.onCreatePopupConfirm}
                     />
 
                     <Grid style={gridStyle} container direction='row' justify='flex-start' alignItems='flex-start'>
