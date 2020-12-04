@@ -89,7 +89,7 @@ class AnimationMenuPopup extends Component {
         </section>
         <section>
           <h3>
-            Stroke Width
+            Font Size
           </h3>
           <div className={classes.StrokeWidthSlider}>
             <FontSizeSlider handler={ this.handleFontSizeChange }/>
