@@ -27,10 +27,10 @@ class AnimationContainer extends Component {
 
   // Re-draw when React Context gets updated
   componentDidUpdate(){
-    console.log(this.context);
+    
     if (this.context && this.context.smartObjStyle){
-      // strokeWidth = this.context.smartObjStyle.strokeWidth;
-      if (this.props.smartObject.index == this.context.smartObjSelected){
+      // console.log(this.context, this.context.smartObjStyle);
+      if (this.props.index == this.context.smartObjSelected){
         console.log("Change", this.context.smartObjSelected, "th Smart Object property.")
         this.canvas = document.getElementById("animationCanvas"+this.props.smartObject.index);
         this.canvas.width = this.props.smartObject.width;
@@ -39,24 +39,56 @@ class AnimationContainer extends Component {
         this.ctx.fillStyle = this.context.smartObjStyle.color;
         this.textSize = 50;
         this.ctx.font = this.context.smartObjStyle.strokeWidth + " " + this.textSize + "px Arial";
-        console.log(this.context.smartObjStyle.strokeWidth)
     
-        // draw the array
+        // draw
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.fillText('[', 0, 100);
-        let i = 0;
-        // draw every element in arr
-        for (i = 0; i < this.arr.length; i++) {
+        for (let i = 0; i < this.arr.length; i++) {
           this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
         }
         this.ctx.fillText(']', this.arr.length * 75 + 75, 100);
     
-        this.insertionSort();
+        if (this.context.replay){
+          this.context.setReplay(false);
+          let loops = this.context.loopingAnimation ? 10 : 1;
+          for (let i = 0; i < loops; i++){
+            this.arr = [];
+            for (let i = 0; i < this.props.smartObject.data.length; i++) {
+              this.arr.push({
+                value: this.props.smartObject.data[i],
+                x: (i + 1) * 75,
+                y: 100,
+                speed: {
+                  x: 0.5,
+                  y: 0.5
+                }
+              })
+            }
+            // draw
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.fillText('[', 0, 100);
+            for (let i = 0; i < this.arr.length; i++) {
+              this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
+            }
+            this.ctx.fillText(']', this.arr.length * 75 + 75, 100);
+            this.insertionSort();
+          }
+          
+        }
+
+        
+        
+        if(this.context.revert){
+          this.context.setRevert(false);
+          if (window.confirm("Are you sure you want to remove this animation?")) {
+            this.props.removeSmartObject(this.props.smartObject.index);
+            this.context.setShowAnimationMenu(false);
+          }
+        }
+      }  
     }
-    }
-    
-    
-  }
+}
+
   componentDidMount() {
 
     this.canvas = document.getElementById("animationCanvas"+this.props.smartObject.index);
@@ -227,13 +259,18 @@ class AnimationContainer extends Component {
     } 
   }
 
+  handleRightClick = (e) => {
+    e.preventDefault();
+    this.context.setShowAnimationMenu(true);
+  }
+
   render() {
     return (
        <canvas id={"animationCanvas"+this.props.smartObject.index} onClick={() => {
          if (window.confirm("Are you sure you want to remove this animation?")) {
             this.props.removeSmartObject(this.props.smartObject.index);
          }
-       }} style={{border: '3px dotted'}}></canvas>
+       }} onContextMenu={this.handleRightClick} style={{border: '3px dotted'}}></canvas>
      /*  <div style={{
         "width": "100%",
         "height": "100%",

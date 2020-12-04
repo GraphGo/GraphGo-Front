@@ -1,10 +1,10 @@
 .AnimationMenuPopup {
   position: fixed;
   z-index: 1000;
-  left: 30%;
+  right: 5%;
   top: 22%;
   width: max-content;
-  height: 530px;
+  height: 580px;
   background-color: rgb(70, 141, 162, 0.15);
   border-radius: 25px;
 }
@@ -53,6 +53,13 @@ h3 {
   /* background-color: rgb(255, 255, 255, 0.5); */
   border-radius: 10px;
   padding: 10px 20px;
+}
+
+.loop {
+  margin: 0px 20px;
+  display: inline-flex;
+  position: absolute;
+  left: 0;
 }
 
 select {

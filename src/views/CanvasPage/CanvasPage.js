@@ -15,11 +15,17 @@ class CanvasPage extends Component {
     this.setShowAnimationMenu = this.setShowAnimationMenu.bind(this);
     this.setSmartObjSelected = this.setSmartObjSelected.bind(this);
     this.setSmartObjStyle = this.setSmartObjStyle.bind(this);
+    this.setLoopingAnimation = this.setLoopingAnimation.bind(this);
+    this.setReplay = this.setReplay.bind(this);
+    this.setRevert = this.setRevert.bind(this);
   }
   state = {
     smartObjStyle:{color: 'black', strokeWidth: 'normal'},
     showAnimationMenu: false,
-    smartObjSelected: 0
+    smartObjSelected: 0,
+    loopingAnimation: false,
+    replay: false,
+    revert: false
   }
 
   setSmartObjStyle(newStyle) {
@@ -31,6 +37,16 @@ class CanvasPage extends Component {
   setSmartObjSelected(val) {
     this.setState({smartObjSelected: val})
   }
+  setLoopingAnimation(val){
+    this.setState({loopingAnimation: val})
+  }
+  setReplay(val){
+    this.setState({replay: val})
+  }
+  setRevert(val){
+    this.setState({revert: val})
+  }
+
   /**
    * Calls backend function to store graph to firebase
    */
@@ -96,12 +112,14 @@ class CanvasPage extends Component {
         <div id="loader" ></div>
         
         <ToolBar handleSaveGraph={this.handleSaveGraph} docID={this.props.location.state ?this.props.location.state.id:null}/>
-        <SmartObjsContext.Provider value={{ smartObjectStyle:this.state.smartObjStyle, 
-          showAnimationMenu:this.state.showAnimationMenu,
-           smartObjSelected:this.state.smartObjSelected, 
-           setSmartObjStyle:this.setSmartObjStyle, 
+        <SmartObjsContext.Provider value={{ 
+           ...this.state, 
+           setSmartObjStyle: this.setSmartObjStyle, 
            setShowAnimationMenu:this.setShowAnimationMenu, 
-           setSmartObjSelected:this.setSmartObjSelected }}>
+           setSmartObjSelected:this.setSmartObjSelected,
+           setLoopingAnimation: this.setLoopingAnimation,
+           setReplay: this.setReplay,
+           setRevert: this.setRevert }}>
           {/* <DrawingArea src="./demo.html"></DrawingArea> */}
           {/* <AnimationLayer /> */}{/* Commented out for testing. TODO: uncomment */}
           <AnimationMenuPopup show/>
