@@ -1,12 +1,10 @@
 import react, { Component } from 'react';
 import styled from 'styled-components';
 import $ from "jquery";
-import * as tf from '@tensorflow/tfjs';
 import "./DrawArea.css";
 import AnimationLayer from "../AnimationLayer/AnimationLayer"
 import SmartObject from "./SmartObject"
 import axios from "axios"
-import _ from 'lodash'
 
 class DrawArea extends Component {
   state = {
@@ -152,6 +150,9 @@ class DrawArea extends Component {
           break;
         case "lasso":
           //place_holder = false;
+          mouse.x = e.pageX - this.offsetLeft;
+          mouse.y = e.pageY - this.offsetTop;
+    
           context.moveTo(mouse.x, mouse.y);
           context.beginPath();
           canvas.addEventListener('mousemove', onPaint, false);
@@ -212,8 +213,8 @@ class DrawArea extends Component {
           //let img = context.getImageData(Math.min(mouse.x, lasso_x), Math.min(mouse.y, lasso_y), Math.abs(mouse.x - lasso_x), Math.abs(mouse.y - lasso_y));
           
           // open the lasso container and popup box
-          let lassoContainer = document.getElementById("lasso-container");
-          let lassoPopup = document.getElementById("lasso-popup");
+          var lassoContainer = document.getElementById("lasso-container");
+          var lassoPopup = document.getElementById("lasso-popup");
           lassoContainer.style.display = "block";
           lassoPopup.style.display = "block";
           lassoPopup.style.left = Math.min(mouse.x, lasso_x) + "px";

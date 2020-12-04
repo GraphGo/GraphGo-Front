@@ -1,4 +1,4 @@
-import {db, auth, FieldValue } from './db'
+import {db, FieldValue } from './db'
 import { getUser } from './user'
 
 

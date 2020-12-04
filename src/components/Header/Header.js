@@ -5,8 +5,6 @@ import SearchBar from "../SearchBar/SearchBar";
 import classes from "./Header.module.css";
 import React, { Component } from "react";
 import firebase from 'firebase'
-import { auth } from "firebase-admin";
-import {useHistory} from "react-router-dom"
 import {getUser, saveUserToDB} from "../../API/user"
 import history from "../../utils/history"
 var firebaseui = require('firebaseui')
