@@ -20,7 +20,7 @@ class CanvasPage extends Component {
     this.setRevert = this.setRevert.bind(this);
   }
   state = {
-    smartObjStyle:{color: 'black', strokeWidth: 'normal'},
+    smartObjStyle:{color: 'black', fontSize: '50'},
     showAnimationMenu: false,
     smartObjSelected: 0,
     loopingAnimation: false,

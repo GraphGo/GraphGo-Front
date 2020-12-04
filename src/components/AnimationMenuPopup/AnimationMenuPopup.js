@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import classes from "./AnimationMenuPopup.module.css";
-import { CirclePicker } from 'react-color'
-import StrokeWidthSlider from "../StrokeWidthSlider/StrokeWidthSlider"
+import { CirclePicker } from 'react-color';
+// import StrokeWidthSlider from "../StrokeWidthSlider/StrokeWidthSlider"
 import SmartObjsContext from '../../contexts/SmartObjsContext.js';
 import SpeedSlider from "../../components/SpeedSlider/SpeedSlider";
-
+import FontSizeSlider from "../../components/FontSizeSlider/FontSizeSlider";
 class AnimationMenuPopup extends Component {
   constructor(props){
     super(props);
@@ -18,16 +18,16 @@ class AnimationMenuPopup extends Component {
   handleColorChange = (color) => {
     console.log("context: ", this.context, this.context.smartObjStyle)
     if (this.context && this.context.smartObjStyle){
-      this.context.setSmartObjStyle({color: color.hex, strokeWidth: this.context.smartObjStyle.strokeWidth});
+      this.context.setSmartObjStyle({color: color.hex, fontSize: this.context.smartObjStyle.fontSize});
     }
     
   };
 
-  handleStrokeWidthChange = (val) => {
-    console.log(val);
-    console.log(val/3*90, Math.round(val/3*90/100)*100);
+  handleFontSizeChange = (val) => {
+    // console.log(val);
+    // console.log(val/3*90, Math.round(val/3*90/100)*100);
     if (this.context && this.context.smartObjStyle){
-      this.context.setSmartObjStyle({color: this.context.smartObjStyle.color, strokeWidth: Math.round(val/3*90/100)*100});
+      this.context.setSmartObjStyle({color: this.context.smartObjStyle.color, fontSize: val});
     }
   }
   
@@ -92,7 +92,7 @@ class AnimationMenuPopup extends Component {
             Stroke Width
           </h3>
           <div className={classes.StrokeWidthSlider}>
-            <StrokeWidthSlider handler={ this.handleStrokeWidthChange }/>
+            <FontSizeSlider handler={ this.handleFontSizeChange }/>
           </div>
         </section>
         <section>

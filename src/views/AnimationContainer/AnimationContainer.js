@@ -37,8 +37,8 @@ class AnimationContainer extends Component {
         this.canvas.height = this.props.smartObject.height;
         this.ctx = this.canvas.getContext("2d");
         this.ctx.fillStyle = this.context.smartObjStyle.color;
-        this.textSize = 50;
-        this.ctx.font = this.context.smartObjStyle.strokeWidth + " " + this.textSize + "px Arial";
+        this.textSize = this.context.smartObjStyle.fontSize;
+        this.ctx.font = this.context.smartObjStyle.fontSize + "px Arial";
     
         // draw
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
