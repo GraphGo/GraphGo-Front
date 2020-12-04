@@ -111,7 +111,7 @@ class CanvasPage extends Component {
         }}></div>
         <div id="loader" ></div>
         
-        <ToolBar handleSaveGraph={this.handleSaveGraph} docID={this.props.location.state ?this.props.location.state.id:null}/>
+        
         <SmartObjsContext.Provider value={{ 
            ...this.state, 
            setSmartObjStyle: this.setSmartObjStyle, 
@@ -124,6 +124,7 @@ class CanvasPage extends Component {
           {/* <AnimationLayer /> */}{/* Commented out for testing. TODO: uncomment */}
           <AnimationMenuPopup show/>
           <DrawArea savedData={this.props.location.state} ref={this.drawAreaRef} />
+          <ToolBar handleSaveGraph={this.handleSaveGraph} docID={this.props.location.state ?this.props.location.state.id:null}/>
         </SmartObjsContext.Provider>
       </div>
     );

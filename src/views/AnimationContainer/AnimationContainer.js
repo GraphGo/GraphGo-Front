@@ -97,6 +97,7 @@ class AnimationContainer extends Component {
     this.ctx = this.canvas.getContext("2d");
     this.textSize = 50;
     this.ctx.font = this.textSize + "px Arial";
+    this.ctx.fillStyle = this.context.smartObjStyle.color;
 
     // draw the array
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
