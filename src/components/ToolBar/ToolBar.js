@@ -83,12 +83,21 @@ class ToolBar extends Component {
         }}>
           <img id="lasso" src={lassoIcon} alt="lasso tool"/>
         </button>
-        <button title="Undo">
+        <button title="Erase" onClick={() => {
+          this.handleToolSelected("erase");
+          document.getElementById("redux-store").setAttribute("tool", "erase");
+          // make the animation layer lower than the canvas
+          document.getElementById("myCanvas").style.zIndex = "4";
+        }
+        }>
+          <img id="pen" src={penIcon} alt="pen" />
+        </button>
+        {/* <button title="Undo">
           <img id="undo" src={undoIcon} alt="undo" />
         </button>
         <button title="Redo">
           <img id="redo" src={redoIcon} alt="redo" />
-        </button>
+        </button> */}
         <button title="Save">
           <img id="save" src={saveIcon} alt="save" />
         </button>
