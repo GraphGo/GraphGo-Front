@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Dialog, IconButton, TextField } from '@material-ui/core'
+import { Button, Dialog, IconButton, TextField, Menu, MenuItem } from '@material-ui/core'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText';
@@ -9,23 +9,53 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import AddIcon from '@material-ui/icons/Add';
 
 export default function TopBar(props) {
-    const [open, setOpen] = React.useState(false);
+    const [folderDialogOpen, setFolderDialogOpen] = React.useState(false);
     const [text, setText] = React.useState("");
-    const handleClickOpen = () => {
-        setOpen(true)
+    const [anchorEl, setAnchorEl] = React.useState(null)
+    const [graphDialogOpen, setGraphDialogOpen] = React.useState(false)
+
+    const handleCreateFolderOpen = () => {
+        setFolderDialogOpen(true)
     }
 
-    const handleClose = () => {
-        setOpen(false)
+    const handleCreateFolderClose = () => {
+        setFolderDialogOpen(false)
     }
 
-    const handleSubmit = () => {
-        setOpen(false)
-        props.onSubmit(text)
+    const handleCreateFolderSubmit = () => {
+        setFolderDialogOpen(false)
+        props.onSubmit(text, "folder")
     }
+
 
     const onTextChange = (e) => {
         setText(e.target.value)
+    }
+
+    const handleDropdownOpen = (e)=>{
+        setAnchorEl(e.currentTarget)
+    }
+
+    const handleDropdownClose = (e)=>{
+        if(e.target.getAttribute("datakey") === "newFolder"){
+            handleCreateFolderOpen()
+        }else if(e.target.getAttribute("datakey") === "newGraph"){
+            handleCreateGraphOpen()
+        }
+        setAnchorEl(null)
+    }
+
+    const handleCreateGraphOpen = () => {
+        setGraphDialogOpen(true)
+    }
+
+    const handleCreateGraphClose = () =>{
+        setGraphDialogOpen(false)
+    }
+
+    const handleCreateGraphSubmit = () => {
+        setGraphDialogOpen(false)
+        props.onSubmit(text, "graph")
     }
 
     return (
@@ -36,11 +66,15 @@ export default function TopBar(props) {
             <IconButton onClick={props.onRefresh}>
                 <RefreshIcon />
             </IconButton>
-            <IconButton onClick={handleClickOpen} disabled={props.addDisabled}>
+            <IconButton id="addButton" onClick={handleDropdownOpen} disabled={props.addDisabled}>
                 <AddIcon />
             </IconButton>
+            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleDropdownClose}>
+                <MenuItem onClick={handleDropdownClose} dataKey='newFolder'>New Folder</MenuItem>
+                <MenuItem onClick={handleDropdownClose} dataKey='newGraph'>New Graph</MenuItem>
+            </Menu>
 
-            <Dialog open={open} onClose={handleClose} >
+            <Dialog open={folderDialogOpen} onClose={handleCreateFolderClose} >
                 <DialogTitle id="form-dialog-tilte">New Folder</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -49,10 +83,25 @@ export default function TopBar(props) {
                     <TextField autoFocus fullWidth margin="dense" id="foldername" onChange={onTextChange} />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color="primary">Cancel</Button>
-                    <Button onClick={handleSubmit} color="primary">Confirm</Button>
+                    <Button onClick={handleCreateFolderClose} color="primary">Cancel</Button>
+                    <Button onClick={handleCreateFolderSubmit} color="primary">Confirm</Button>
                 </DialogActions>
             </Dialog>
+
+            <Dialog open={graphDialogOpen} onClose={handleCreateGraphClose}>
+                <DialogTitle id="form-dialog-tilte">New graph</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Enter name for new graph
+                    </DialogContentText>
+                    <TextField autoFocus fullWidth margin="dense" id="foldername" onChange={onTextChange} />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCreateGraphClose} color="primary">Cancel</Button>
+                    <Button onClick={handleCreateGraphSubmit} color="primary">Confirm</Button>
+                </DialogActions>
+            </Dialog>
+
         </div>
     )
 }

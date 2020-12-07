@@ -31,8 +31,8 @@ class ToolBar extends Component {
     this.state = {
       toolSelected: null,
       showPenMenu: false,
-      open : false,
-      text : ""
+      open: false,
+      text: ""
     };
     this.handleSave = this.handleSave.bind(this);
     this.closeDialog = this.closeDialog.bind(this);
@@ -59,16 +59,20 @@ class ToolBar extends Component {
   }
 
   closeDialog() {
-    this.setState({open: false});
-  } 
+    this.setState({ open: false });
+  }
   /**
    * Handler for saving graph file
    */
   handleSave() {
-    if (this.props.docID) {
-      this.props.handleSaveGraph("", this.props.docID)
+    if (sessionStorage.getItem("userEmail")) {
+      if (this.props.docID) {
+        this.props.handleSaveGraph("", this.props.docID)
+      } else {
+        this.setState({ open: true });
+      }
     } else {
-      this.setState({open: true});
+      alert("You must login before saving a file.")
     }
   }
 
@@ -97,7 +101,7 @@ class ToolBar extends Component {
           document.getElementById("animation-layer").style.pointerEvents = "unset";
           document.getElementById("eraser-box").style.display = "none";
         }}>
-          <img id="hand" src={handIcon} alt="hand tool"/>
+          <img id="hand" src={handIcon} alt="hand tool" />
         </button>
         <button title="Lasso Tool" onClick={() => {
           this.handleToolSelected("lasso");
@@ -107,7 +111,7 @@ class ToolBar extends Component {
           document.getElementById("animation-layer").style.pointerEvents = "none";
           document.getElementById("eraser-box").style.display = "none";
         }}>
-          <img id="lasso" src={lassoIcon} alt="lasso tool"/>
+          <img id="lasso" src={lassoIcon} alt="lasso tool" />
         </button>
         <button title="Eraser" onClick={() => {
           this.handleToolSelected("eraser");

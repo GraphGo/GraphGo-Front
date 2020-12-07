@@ -1,73 +1,6 @@
 import {db, FieldValue } from './db'
 import { getUser } from './user'
 
-
-class File {
-    constructor(name, type, root, img, last_modified, structures){
-        this.name = name
-        this.type = type
-        this.root = root
-        this.img = img
-        this.last_modified = last_modified
-        this.structures = structures
-    }
-}
-
-class Structure {
-    constructor(graph, type, recognized_values, bounding_box, canvas_size){
-        this.graph = graph
-        this.type = type
-        this.recognized_values = recognized_values
-        this.bounding_box = bounding_box
-        this.canvas_size = canvas_size
-    }
-}
-
-class Folder {
-    constructor(name, type, files,  last_modified = new Date(), num_files=files.length){
-        this.name = name
-        this.files = files
-        this.last_modified = last_modified
-        this.num_files = num_files
-        this.type = type
-    }
-}
-
-const FileConverter = {
-    toFirestore: function(file) {
-        return {
-            name:file.name,
-            type: file.type,
-            root: file.root,
-            img: file.img,
-            last_modified: file.last_modified,
-            structures: file.structures,
-            id: file.id
-        }
-    },
-    fromFirestore: function(snapshot, options){
-        const data = snapshot.data(options)
-        return new File(data.name, data.type, data.root, data.img, data.last_modified, data.structures)
-    }
-}
-
-const FolderConverter = {
-    toFirestore: function(folder) {
-        return {
-            name: folder.name,
-            num_files: folder.num_files,
-            last_modified: folder.last_modified,
-            files: folder.files,
-            type: folder.type
-        }
-    },
-    fromFirestore: function(snapshot, options){
-        const data = snapshot.data(options)
-        return new Folder(data.name, data.type, data.files, data.last_modified, data.num_files)
-    }
-}
-
-
 const getAllFiles = (email) => {
     return new Promise((resolve, reject) => {
         getUser(email).then(querysnapshot => {  
@@ -106,7 +39,7 @@ const getAllFiles = (email) => {
 
 const getFileById = (fileId) => {
     return new Promise((resolve, reject) => {
-        db.collection('file').withConverter(FileConverter).get('id','==',fileId).then(querysnapshot => {
+        db.collection('file').doc(fileId).get().then(querysnapshot => {
             if(querysnapshot.docs.length == 0) reject('No file with this id found')
             console.log(querysnapshot.docs[0].data())
             resolve(querysnapshot.docs[0].data())
@@ -122,11 +55,8 @@ const saveCanvas = (img, smartObj, width, height, name, uid, docID="", root="") 
             .then(docRef => {
                 return docRef.id
             })
-            // .then(fileID => {
-            //     db.collection('file').doc(fileID).update({structures: FieldValue.arrayUnion(smartObj)})
-            //     return fileID
-            // })
             .then(fileID=>{
+                console.log("UID: ",uid)
                 db.collection('user').doc(uid).update({files: FieldValue.arrayUnion({id: fileID, type: "graph"})})
                 resolve(fileID)
             }).catch(e => {reject(e)})
@@ -153,22 +83,13 @@ const loadCanvas = (docID) => {
     })
 }
 
-const createFolder = (name, email) => {
+const createFolder = (name, uid) => {
     return new Promise((resolve, reject) => {
-        db.collection("user").get('email','==', email).then(querysnapshot => {
-            if (querysnapshot.empty){
-                reject("User does not exist")
-            }
-            var doc = querysnapshot.docs[0]
-            return db.collection('user').doc(doc.id)
-        }).then(userRef => {
-            console.log(name)
-            db.collection('folder').add({files: [], last_modified: new Date(), name: name, num_files: 0, type: 'folder'})
-                .then(docRef => {
-                    userRef.update({files: FieldValue.arrayUnion({id: docRef.id, type:"folder"})})
-                    resolve("Success")
-                })
-        })
+        db.collection('folder').add({files: [], last_modified: new Date(), name: name, num_files: 0, type: 'folder'})
+        .then(docRef => {
+            db.collection('user').doc(uid).update({files: FieldValue.arrayUnion({id: docRef.id, type:"folder"})})
+            resolve("Success")
+        }).catch(e => reject(e))
 
     })
 }
@@ -187,5 +108,5 @@ const deleteFolder = (email, folderID) => {
 
 
 export {
-    getAllFiles, getFileById,createFolder, saveCanvas, loadCanvas, Folder, File, Structure
+    getAllFiles, getFileById,createFolder, saveCanvas, loadCanvas
 }
