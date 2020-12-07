@@ -46,7 +46,7 @@ class AnimationContainer extends Component {
   }
 
   // Re-draw when React Context gets updated
-  componentDidUpdate(){
+  async componentDidUpdate(){
     
     if (this.context && this.context.smartObjStyle){
       // console.log(this.context, this.context.smartObjStyle);
@@ -91,7 +91,7 @@ class AnimationContainer extends Component {
               this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
             }
             this.ctx.fillText(']', this.arr.length * 75 + 75, 100);
-            this.insertionSort();
+            await this.insertionSort();
           }
           
         }
