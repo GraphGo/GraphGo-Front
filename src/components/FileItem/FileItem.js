@@ -1,5 +1,5 @@
 import React from 'react'
-import fileSVG from '../../assets/file-svg.svg'
+import fileSVG from '../../assets/icons/file.svg'
 import classes from '../FolderItem/FolderItem.module.css'
 
 

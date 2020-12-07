@@ -1,6 +1,24 @@
 import React, { Component } from 'react';
 import SmartObjsContext from '../../contexts/SmartObjsContext.js';
+import {INSERSION_SORT, SELECTION_SORT, BUBBLE_SORT} from '../../components/AnimationMenuPopup/AnimationMenuPopup';
 
+const LEFT = 0, 
+      RIGHT = 1, 
+      UP = 2, 
+      DOWN = 3, 
+      FONTSIZE = 50, 
+      SPEED = 0.5, 
+      X = 100, 
+      Y = 100,
+      Y_UP = 50,
+      Y_UP_ADJ = 70,
+      VALUE_IDX = 0,
+      ORI_X_IDX = 1,
+      ORI_Y_IDX = 2,
+      NEW_X_IDX = 3,
+      NEW_Y_IDX = 4,
+      DELAYTIME = 5,
+      HALF = 2;
 class AnimationContainer extends Component {
   constructor(props) {
     super(props);
@@ -11,189 +29,229 @@ class AnimationContainer extends Component {
     for (i = 0; i < inputArray.length; i++) {
       this.arr.push({
         value: inputArray[i],
-        x: (i + 1) * 75,
-        y: 100,
+        x: (i + 1) * X,
+        y: Y,
         speed: {
-          x: 0.5,
-          y: 0.5
-        }
+          x: SPEED,
+          y: SPEED
+        },
+        numDigits: Math.floor(inputArray[i] / 10) + 1
       })
     }
     this.draw = this.draw.bind(this);
-    this.animate = this.animate.bind(this);
+    this.move = this.move.bind(this);
     this.updateWithAnimation = this.updateWithAnimation.bind(this);
+    this.swap = this.swap.bind(this);
     this.insertionSort = this.insertionSort.bind(this);
+    this.selectionSort = this.selectionSort.bind(this);
+    this.bubbleSort = this.bubbleSort.bind(this);
+    this.sortTypesMap = {
+      'insertionSort': this.insertionSort,
+      'selectionSort': this.selectionSort,
+      'bubbleSort': this.bubbleSort,
+    }
   }
 
   // Re-draw when React Context gets updated
-  componentDidUpdate(){
-    console.log(this.context);
+  async componentDidUpdate(){
+    
     if (this.context && this.context.smartObjStyle){
-      // strokeWidth = this.context.smartObjStyle.strokeWidth;
-      if (this.props.smartObject.index == this.context.smartObjSelected){
+      // console.log(this.context, this.context.smartObjStyle);
+      if (this.props.index == this.context.smartObjSelected){
         console.log("Change", this.context.smartObjSelected, "th Smart Object property.")
+        this.delay_time = DELAYTIME / this.context.animationSpeed;
+        console.log("DELAYTIME: ", DELAYTIME, "this.context.animationSpeed" ,this.context.animationSpeed, ", Delay time: ", this.delay_time);
         this.canvas = document.getElementById("animationCanvas"+this.props.smartObject.index);
         this.canvas.width = this.props.smartObject.width;
         this.canvas.height = this.props.smartObject.height;
         this.ctx = this.canvas.getContext("2d");
         this.ctx.fillStyle = this.context.smartObjStyle.color;
-        this.textSize = 50;
-        this.ctx.font = this.context.smartObjStyle.strokeWidth + " " + this.textSize + "px Arial";
-        console.log(this.context.smartObjStyle.strokeWidth)
+        this.textSize = this.context.smartObjStyle.fontSize;
+        this.ctx.font = this.context.smartObjStyle.fontSize + "px Arial";
     
-        // draw the array
+        // draw
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.fillText('[', 0, 100);
-        let i = 0;
-        // draw every element in arr
-        for (i = 0; i < this.arr.length; i++) {
+        for (let i = 0; i < this.arr.length; i++) {
           this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
         }
-        this.ctx.fillText(']', this.arr.length * 75 + 75, 100);
+        this.ctx.fillText(']', this.arr.length * 100 + 100, 100);
     
-        this.insertionSort();
+        if (this.context.replay){
+          this.context.setReplay(false);
+          // let loops = this.context.loopingAnimation ? 10 : 1;
+          let playOnce = true
+          while (playOnce){
+            playOnce = this.context.loopingAnimation
+            this.arr = [];
+            for (let i = 0; i < this.props.smartObject.data.length; i++) {
+              this.arr.push({
+                value: this.props.smartObject.data[i],
+                x: (i + 1) * 100,
+                y: 100,
+                speed: {
+                  x: 0.5,
+                  y: 0.5
+                }, 
+                numDigits: Math.floor(this.props.smartObject.data[i] / 10) + 1
+              })
+            }
+            // draw
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.fillText('[', 0, 100);
+            for (let i = 0; i < this.arr.length; i++) {
+              this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
+            }
+            this.ctx.fillText(']', this.arr.length * 100 + 200, 100);
+            // use await for this async function to continue executing after 
+            // each loop
+            // await this.insertionSort();
+            await this.sortTypesMap[this.context.sortType]();
+
+            // copy and paste this wherever you want to pause in this function
+            await this.delay(500);
+          }
+        }
+
+        if(this.context.revert){
+          this.context.setRevert(false);
+          if (window.confirm("Are you sure you want to remove this animation?")) {
+            this.props.removeSmartObject(this.props.smartObject.index);
+            this.context.setShowAnimationMenu(false);
+          }
+        }
+      }  
     }
-    }
-    
-    
-  }
+}
+
   componentDidMount() {
 
     this.canvas = document.getElementById("animationCanvas"+this.props.smartObject.index);
     this.canvas.width = this.props.smartObject.width;
     this.canvas.height = this.props.smartObject.height;
     this.ctx = this.canvas.getContext("2d");
-    this.textSize = 50;
+    this.textSize = FONTSIZE;
+    this.delay_time = DELAYTIME;
     this.ctx.font = this.textSize + "px Arial";
+    this.ctx.fillStyle = this.context.smartObjStyle.color;
 
     // draw the array
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillText('[', 0, 100);
+    this.ctx.fillText('[', 0, Y);
     let i = 0;
     // draw every element in arr
     for (i = 0; i < this.arr.length; i++) {
       this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
     }
-    this.ctx.fillText(']', this.arr.length * 75 + 75, 100);
+    this.ctx.fillText(']', (this.arr.length + 2) * X, Y);
 
-    this.insertionSort();
+    //this.insertionSort();
+    this.selectionSort();
+    //this.bubbleSort();
   }
 
-  // this function is used to animate the updated array
-  animate(arr) {
-    window.setTimeout(this.draw, 10, arr);
+  // this function is used to asynchronously delay the animation frames
+  delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   // this function is used to redraw an element in an array
   draw(arr) {
     let i = 0;
     for (i = 0; i < arr.length; i++){
+
       this.ctx.clearRect(
-        arr[i][1], 
-        arr[i][2] - this.textSize, 
-        this.textSize * 1.2, 
-        this.textSize * 1.2
+        arr[i][ORI_X_IDX] - this.textSize / HALF, 
+        arr[i][ORI_Y_IDX] - this.textSize, 
+        this.textSize * 1.1+ this.textSize * 0.5 * (arr[i][5]-1), 
+        this.textSize * 1.1
       );
-      this.ctx.fillText(arr[i][0], arr[i][3], arr[i][4]);
+      console.log(arr[i][5])
+      this.ctx.fillText(arr[i][VALUE_IDX],
+                        arr[i][NEW_X_IDX],
+                        arr[i][NEW_Y_IDX]);
     }
+  }
+
+  // this function is used to move an element
+  move(idx, direction) {
+    let value = this.arr[idx].value;
+    let oriX = this.arr[idx].x;
+    let oriY = this.arr[idx].y;
+    let numDigits = this.arr[idx].numDigits;
+    switch(direction) {
+      case UP:
+        this.arr[idx].y -= this.arr[idx].speed.y;
+        break;
+      case DOWN:
+        this.arr[idx].y += this.arr[idx].speed.y;
+        break;
+      case LEFT:
+        this.arr[idx].x -= this.arr[idx].speed.x;
+        break;
+      case RIGHT:
+        this.arr[idx].x += this.arr[idx].speed.x;
+        break;
+      default:
+    }
+    let newX = this.arr[idx].x;
+    let newY = this.arr[idx].y;
+    return [value, oriX, oriY, newX, newY, numDigits];
   }
 
   // this function is update the array with animation
   // @param oriIdx: the original index of an element
   // @param newIdx: the new index of this element
-  updateWithAnimation(oriIdx, newIdx) {
-    let oriX, oriY, newX, newY, value, inputArr;
+  async updateWithAnimation(oriIdx, newIdx) {
+    let inputArr;
     // move element up
-    while (this.arr[oriIdx].y != 50) {
-      value = this.arr[oriIdx].value;
-      oriX = this.arr[oriIdx].x;
-      oriY = this.arr[oriIdx].y;
-      this.arr[oriIdx].y -= this.arr[oriIdx].speed.y;
-      newX = this.arr[oriIdx].x;
-      newY = this.arr[oriIdx].y;
-      inputArr = [[value, oriX, oriY, newX, newY]];
-      //this.animate(_.cloneDeep(this.arr));
-      this.animate(inputArr);
+    while (this.arr[oriIdx].y > Y_UP) {
+      await this.delay(this.delay_time);
+      this.draw([this.move(oriIdx, UP)]);
     }
     // choose which way to move by determining the positions of idxs
     if (oriIdx < newIdx) {
       // move element to newIdx
-      while (this.arr[oriIdx].x != this.arr[newIdx].x) {
-        value = this.arr[oriIdx].value;
-        oriX = this.arr[oriIdx].x;
-        oriY = this.arr[oriIdx].y;
-        this.arr[oriIdx].x += this.arr[oriIdx].speed.x;
-        newX = this.arr[oriIdx].x;
-        newY = this.arr[oriIdx].y;
-        inputArr = [[value, oriX, oriY, newX, newY]];
-        //this.animate(_.cloneDeep(this.arr));
-        this.animate(inputArr);
+      while (this.arr[oriIdx].x < this.arr[newIdx].x) {
+        await this.delay(this.delay_time);
+        this.draw([this.move(oriIdx, RIGHT)]);
       }
-      let xPos = this.arr[oriIdx + 1].x;
-      let newXPos = this.arr[oriIdx + 1].x - 75;
+
+      let newXPos = this.arr[oriIdx + 1].x - X;
       // move the piece in between to left
-      while (xPos != newXPos) {
+      while (this.arr[oriIdx + 1].x > newXPos) {
         inputArr = [];
         let i = 1;
         for (i = 1; i <= newIdx - oriIdx; i++) {
-          value = this.arr[oriIdx + i].value;
-          oriX = this.arr[oriIdx + i].x;
-          oriY = this.arr[oriIdx + i].y;
-          this.arr[oriIdx + i].x -= this.arr[oriIdx + i].speed.x;
-          newX = this.arr[oriIdx + i].x;
-          newY = this.arr[oriIdx + i].y;
-          inputArr.push([value, oriX, oriY, newX, newY]);
+          inputArr.push(this.move(oriIdx + i, LEFT));
         }
-        xPos -= this.arr[oriIdx + 1].speed.x;
-        //this.animate(_.cloneDeep(this.arr));
-        this.animate(inputArr);
+        await this.delay(this.delay_time);
+        this.draw(inputArr);
       }
     }
     else if (oriIdx > newIdx) {
       // move element to newIdx
-      while (this.arr[oriIdx].x != this.arr[newIdx].x) {
-        value = this.arr[oriIdx].value;
-        oriX = this.arr[oriIdx].x;
-        oriY = this.arr[oriIdx].y;
-        this.arr[oriIdx].x -= this.arr[oriIdx].speed.x;
-        newX = this.arr[oriIdx].x;
-        newY = this.arr[oriIdx].y;
-        inputArr = [[value, oriX, oriY, newX, newY]];
-        //this.animate(_.cloneDeep(this.arr));
-        this.animate(inputArr);
+      while (this.arr[oriIdx].x > this.arr[newIdx].x) {
+        await this.delay(this.delay_time);
+        this.draw([this.move(oriIdx, LEFT)]);
       }
 
-      let xPos = this.arr[newIdx + 1].x;
-      let newXPos = xPos + 75;
+      let newXPos = this.arr[newIdx].x + X;
       // move the piece in between to right
-      while (xPos != newXPos) {
+      while (this.arr[newIdx].x < newXPos) {
         inputArr = [];
         var i = 0;
         for (i = 0; i < oriIdx - newIdx; i++) {
-          value = this.arr[newIdx + i].value;
-          oriX = this.arr[newIdx + i].x;
-          oriY = this.arr[newIdx + i].y;
-          this.arr[newIdx + i].x += this.arr[newIdx + i].speed.x;
-          newX = this.arr[newIdx + i].x;
-          newY = this.arr[newIdx + i].y;
-          inputArr.push([value, oriX, oriY, newX, newY]);
+          inputArr.push(this.move(newIdx + i, RIGHT));
         }
-        xPos += this.arr[newIdx].speed.x;
-        //this.animate(_.cloneDeep(this.arr));
-        this.animate(inputArr); 
+        await this.delay(this.delay_time);
+        this.draw(inputArr); 
       }
     }
     // move element down
-    while (this.arr[oriIdx].y != 100) {
-      value = this.arr[oriIdx].value;
-      oriX = this.arr[oriIdx].x;
-      oriY = this.arr[oriIdx].y;
-      this.arr[oriIdx].y += this.arr[oriIdx].speed.y;
-      newX = this.arr[oriIdx].x;
-      newY = this.arr[oriIdx].y;
-      inputArr = [[value, oriX, oriY, newX, newY]];
-      //this.animate(_.cloneDeep(this.arr));
-      this.animate(inputArr);
+    while (this.arr[oriIdx].y < Y) {
+      await this.delay(this.delay_time);
+      this.draw([this.move(oriIdx, DOWN)]);
     }
 
     // update the array move the element in the array
@@ -207,7 +265,56 @@ class AnimationContainer extends Component {
     }
   }
 
-  insertionSort() {
+  // this function is swap two elements in the array
+  // @param idx1: the index of the first element
+  // @param idx2: the index of the second element
+  async swap(idx1, idx2, adj) {
+    if (idx1 > idx2) {
+      let temp = idx1;
+      idx1 = idx2;
+      idx2 = temp;
+    }
+    let inputArr;
+    let upY = Y_UP;
+    if (adj){
+      upY = Y_UP_ADJ;
+    }
+    // move elements up and down
+    while (this.arr[idx1].y > upY) {
+      inputArr = [];
+      inputArr.push(this.move(idx1, UP));
+      inputArr.push(this.move(idx2, DOWN));
+      await this.delay(this.delay_time);
+      this.draw(inputArr);
+    }
+
+    // move elements left and right
+    let idx2X = this.arr[idx2].x;
+    while (this.arr[idx1].x < idx2X) {
+      inputArr = [];
+      inputArr.push(this.move(idx1, RIGHT));
+      inputArr.push(this.move(idx2, LEFT));
+      await this.delay(this.delay_time);
+      this.draw(inputArr);
+    }
+
+    // move elements up and down
+    while (this.arr[idx1].y < Y) {
+      inputArr = [];
+      inputArr.push(this.move(idx1, DOWN));
+      inputArr.push(this.move(idx2, UP));
+      await this.delay(this.delay_time);
+      this.draw(inputArr);
+    }
+
+    let temp = this.arr[idx1];
+    this.arr[idx1] = this.arr[idx2];
+    this.arr[idx2] = temp;
+  }
+
+  // this method is used to do the insertion sort for this.arr with animation
+  async insertionSort() {
+    console.log("calling insertionSort");
     let i = 1;
     let key = null;
     let j = 0; 
@@ -221,19 +328,63 @@ class AnimationContainer extends Component {
         of their current position */
         while (j >= 0 && this.arr[j].value > key) 
         {  
-          this.updateWithAnimation(j + 1, j);
+          await this.updateWithAnimation(j + 1, j);
           j = j - 1;  
         }
     } 
   }
 
+  // this method is used to do the selection sort for this.arr with animation
+  async selectionSort() {
+    console.log("calling selectionSort");
+    let i, j, min_idx;  
+  
+    // One by one move boundary of unsorted subarray  
+    for (i = 0; i < this.arr.length - 1; i++)  
+    {  
+        // Find the minimum element in unsorted array  
+        min_idx = i;  
+        for (j = i + 1; j < this.arr.length; j++) {
+          if (this.arr[j].value < this.arr[min_idx].value){
+            min_idx = j;
+          }
+        }
+  
+        // Swap the found minimum element with the first element  
+        if (i != min_idx) {
+          if (Math.abs(i - min_idx) == 1){
+            await this.swap(i, min_idx, true);
+          }
+          else {
+            await this.swap(i, min_idx, false);  
+          }
+        }
+    }  
+  }
+
+  // this method is used to do the bubble sort for this.arr with animation
+  async bubbleSort() {
+    console.log("calling bubbleSort");
+    let i, j;  
+    for (i = 0; i < this.arr.length; i++){
+      // Last i elements are already in place  
+      for (j = 0; j < this.arr.length - i - 1; j++) {
+          if (this.arr[j].value > this.arr[j+1].value){
+              await this.swap(j, j + 1, true);
+          }
+      }
+    }
+  }
+
+  handleClickOnSmartObj = (e) => {
+    e.preventDefault();
+    this.context.setSmartObjSelected(this.props.index);
+    this.context.setShowAnimationMenu(true);
+  }
+
   render() {
     return (
-       <canvas id={"animationCanvas"+this.props.smartObject.index} onClick={() => {
-         if (window.confirm("Are you sure you want to remove this animation?")) {
-            this.props.removeSmartObject(this.props.smartObject.index);
-         }
-       }} style={{border: '3px dotted'}}></canvas>
+       <canvas id={"animationCanvas"+this.props.smartObject.index} onClick={this.handleClickOnSmartObj} style={{border: '3px dotted'}}></canvas>
      /*  <div style={{
         "width": "100%",
         "height": "100%",
