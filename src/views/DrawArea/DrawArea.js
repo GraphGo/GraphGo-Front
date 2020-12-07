@@ -318,9 +318,12 @@ class DrawArea extends Component {
           break;
         case "pen":
           context.lineWidth = 7;
-          context.lineJoin = 'round';
-          context.lineCap = 'round';
-          context.strokeStyle = 'red';
+          // context.lineJoin = 'round';
+          // context.lineCap = 'round';
+          // context.strokeStyle = 'red';
+          if (context.strokeStyle === "white") {
+            context.strokeStyle = 'red';
+          }
           console.log(toolType);
           //place_holder = false;
           // if (arr_x.length != 0 & arr_y.length != 0) {
