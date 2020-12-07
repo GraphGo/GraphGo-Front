@@ -6,6 +6,8 @@ import DrawArea from "../DrawArea/DrawArea";
 import { saveCanvas} from '../../API/file'
 import AnimationMenuPopup from "../../components/AnimationMenuPopup/AnimationMenuPopup";
 import SmartObjsContext from '../../contexts/SmartObjsContext.js';
+import {INSERSION_SORT, SELECTION_SORT, BUBBLE_SORT} from '../../components/AnimationMenuPopup/AnimationMenuPopup';
+
 class CanvasPage extends Component {
 
   constructor(props) {
@@ -18,6 +20,8 @@ class CanvasPage extends Component {
     this.setLoopingAnimation = this.setLoopingAnimation.bind(this);
     this.setReplay = this.setReplay.bind(this);
     this.setRevert = this.setRevert.bind(this);
+    this.setAnimationSpeed = this.setAnimationSpeed.bind(this);
+    this.setSortType = this.setSortType.bind(this)
   }
   state = {
     smartObjStyle:{color: 'black', fontSize: '50'},
@@ -25,7 +29,9 @@ class CanvasPage extends Component {
     smartObjSelected: 0,
     loopingAnimation: false,
     replay: false,
-    revert: false
+    revert: false,
+    animationSpeed: 0.5,
+    sortType: 'bubbleSort' // bubbleSort
   }
 
   setSmartObjStyle(newStyle) {
@@ -46,7 +52,12 @@ class CanvasPage extends Component {
   setRevert(val){
     this.setState({revert: val})
   }
-
+  setAnimationSpeed(val){
+    this.setState({animationSpeed: val})
+  }
+  setSortType(val){
+    this.setState({sortType: val})
+  }
   /**
    * Calls backend function to store graph to firebase
    */
@@ -119,7 +130,9 @@ class CanvasPage extends Component {
            setSmartObjSelected:this.setSmartObjSelected,
            setLoopingAnimation: this.setLoopingAnimation,
            setReplay: this.setReplay,
-           setRevert: this.setRevert }}>
+           setRevert: this.setRevert,
+           setAnimationSpeed: this.setAnimationSpeed,
+           setSortType: this.setSortType }}>
           {/* <DrawingArea src="./demo.html"></DrawingArea> */}
           {/* <AnimationLayer /> */}{/* Commented out for testing. TODO: uncomment */}
           <AnimationMenuPopup show/>

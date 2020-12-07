@@ -2,9 +2,9 @@
   position: fixed;
   z-index: 1000;
   right: 5%;
-  top: 22%;
+  top: 12%;
   width: max-content;
-  height: 580px;
+  height: 650px;
   background-color: rgb(70, 141, 162, 0.15);
   border-radius: 25px;
 }
@@ -36,8 +36,13 @@ h3 {
 }
 
 .StrokeWidthSlider {
-  padding: 10px 15px 5px 0;
+  padding: 10px 15px 2px 0;
   background-color: rgb(255, 255, 255, 0.5);
+  border-radius: 10px;
+}
+.SpeedSlider {
+  padding: 5px 20px 2px 0;
+  background-color: rgb(255, 255, 255, 0.3);
   border-radius: 10px;
 }
 
@@ -56,7 +61,7 @@ h3 {
 }
 
 .loop {
-  margin: 0px 20px;
+  margin: -5px 20px;
   display: inline-flex;
   position: absolute;
   left: 0;
