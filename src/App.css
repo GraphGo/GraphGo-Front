@@ -9,7 +9,7 @@
 
 input {
   border: none;
-  background: none;
+  background: #e3edf7;
 }
 input:focus {
   outline: none;

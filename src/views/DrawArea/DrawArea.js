@@ -1,12 +1,10 @@
 import react, { Component } from 'react';
 import styled from 'styled-components';
 import $ from "jquery";
-import * as tf from '@tensorflow/tfjs';
 import "./DrawArea.css";
 import AnimationLayer from "../AnimationLayer/AnimationLayer"
 import SmartObject from "./SmartObject"
 import axios from "axios"
-import _ from 'lodash'
 
 class DrawArea extends Component {
   state = {
@@ -20,7 +18,6 @@ class DrawArea extends Component {
     height: 0,
     count: 0,
   }
-
   gtag() {
     window.dataLayer.push(arguments);
   }
@@ -38,9 +35,14 @@ class DrawArea extends Component {
 
   constructor(props) {
     super(props);
+    // this.renderFromSaved = false;
+    // if (props.savedData) {
+    //   this.renderFromSaved = true;
+    // }
     this.updateDatalayer();
     this.gtag = this.gtag.bind(this);
   }
+
 
   componentDidMount() {
     Array.prototype.max = function () {
@@ -50,6 +52,7 @@ class DrawArea extends Component {
     Array.prototype.min = function () {
       return Math.min.apply(null, this);
     };
+
 
     // sample call to create new smart object in animation layer
     // let newSmartObject = new SmartObject([3,5,2,4,7,6], 100, 100, 600, 200,0);
@@ -69,7 +72,7 @@ class DrawArea extends Component {
 
 
     var cw = $('#paint').width();
-    $('#paint').css({ 'height': cw / 3 + 'px' });
+    $('#paint').css({ 'height': '95%' });
 
     cw = $('#number').width();
     $('#number').css({ 'height': cw + 'px' });
@@ -78,10 +81,29 @@ class DrawArea extends Component {
     var canvas = document.getElementById('myCanvas');
     var context = canvas.getContext('2d');
 
+    // load image from saved data if passed in
+    if (this.props.savedData) {
+          const img = new Image();
+          img.src = this.props.savedData.img;
+          img.onload = function() {
+            context.drawImage(img, 0, 0);
+          }
+          let smartObjects = []
+          let count = 0;
+          this.props.savedData.smartObjects.forEach((element) =>{
+            smartObjects.push(new SmartObject(element.data, element.left, element.top,element.width,element.height, count));
+            count += 1;
+          });
+          this.setState({smartObjects:smartObjects});
+          
+
+
+    }
+
     var compuetedStyle = getComputedStyle(document.getElementById('paint'));
     canvas.width = parseInt(compuetedStyle.getPropertyValue('width'));
     canvas.height = parseInt(compuetedStyle.getPropertyValue('height'));
-
+  
     // the lasso popup container
     var lassoContainer = document.getElementById('lasso-container');
     lassoContainer.style.width = parseInt(compuetedStyle.getPropertyValue('width')) + "px";
@@ -89,14 +111,7 @@ class DrawArea extends Component {
 
 
     var mouse = { x: 0, y: 0 };
-    // var arr_x = []
-    // var arr_y = []
-    // var old_arr_x = []
-    // var old_arr_y = []
-    // var old_bbox = []
-    // var predicted_arr = []
-    // var same_object = false;
-    // var input;
+
     //var place_holder = false;
     var lasso_x = 0;
     var lasso_y = 0;
@@ -135,11 +150,14 @@ class DrawArea extends Component {
           break;
         case "lasso":
           //place_holder = false;
+          mouse.x = e.pageX - this.offsetLeft;
+          mouse.y = e.pageY - this.offsetTop;
+    
           context.moveTo(mouse.x, mouse.y);
           context.beginPath();
           canvas.addEventListener('mousemove', onPaint, false);
           
-          let lassoBox = document.getElementById("lasso-box");
+          var lassoBox = document.getElementById("lasso-box");
           lasso_x = mouse.x;
           lasso_y = mouse.y;
           lassoBox.style.display = 'block';
@@ -187,7 +205,7 @@ class DrawArea extends Component {
 
           // context.rect(Math.min(mouse.x, lasso_x), Math.min(mouse.y, lasso_y), Math.abs(mouse.x - lasso_x), Math.abs(mouse.y - lasso_y));
           //context.fillStyle = "white"
-          let originalStyle = context.strokeStyle;
+          var originalStyle = context.strokeStyle;
           //context.fillRect(Math.min(mouse.x, lasso_x), Math.min(mouse.y, lasso_y), Math.abs(mouse.x - lasso_x), Math.abs(mouse.y - lasso_y));
           context.setLineDash([5, 3])
           context.strokeStyle = "#a8b9c6";
@@ -195,8 +213,8 @@ class DrawArea extends Component {
           //let img = context.getImageData(Math.min(mouse.x, lasso_x), Math.min(mouse.y, lasso_y), Math.abs(mouse.x - lasso_x), Math.abs(mouse.y - lasso_y));
           
           // open the lasso container and popup box
-          let lassoContainer = document.getElementById("lasso-container");
-          let lassoPopup = document.getElementById("lasso-popup");
+          var lassoContainer = document.getElementById("lasso-container");
+          var lassoPopup = document.getElementById("lasso-popup");
           lassoContainer.style.display = "block";
           lassoPopup.style.display = "block";
           lassoPopup.style.left = Math.min(mouse.x, lasso_x) + "px";
@@ -275,7 +293,7 @@ class DrawArea extends Component {
           context.stroke();
           break;
         case "lasso":
-          let lassoBox = document.getElementById("lasso-box");
+          var lassoBox = document.getElementById("lasso-box");
           
           // bottom right
           if (mouse.x >= lasso_x && mouse.y >= lasso_y) {
@@ -300,51 +318,6 @@ class DrawArea extends Component {
           }
       }
     };
-
-    // tf.loadLayersModel('https://raw.githubusercontent.com/carlos-aguayo/carlos-aguayo.github.io/master/model/model.json').then(function (model) {
-    //   window.model = model;
-    //   console.log('ready');
-    // });
-
-
-    // var predict = function (input) {
-    //   if (window.model) {
-    //     window.model.predict([input.reshape([1, 28, 28, 1])]).array().then(function (scores) {
-    //       scores = scores[0];
-    //       let predicted = scores.indexOf(Math.max(...scores));
-    //       if (place_holder) {
-    //         predicted = 1;
-    //       }
-    //       //$('#number').html(predicted.toString()+','+predicted.toString());
-
-    //       if (same_object) {
-    //         predicted_arr[predicted_arr.length - 1] = predicted;
-    //       } else {
-    //         predicted_arr[predicted_arr.length] = predicted
-    //       }
-
-    //       console.log(predicted_arr)
-
-    //     });
-    //   } else {
-    //     // The model takes a bit to load, if we are too fast, wait
-
-    //     setTimeout(function () { predict(input) }, 50);
-    //   }
-    // }
-
-    // $('#clear').click(function () {
-    //   context.clearRect(0, 0, canvas.width, canvas.height);
-    //   mouse = { x: 0, y: 0 };
-    //   arr_x = []
-    //   arr_y = []
-    //   let local_arr_x = []
-    //   let local_arr_y = []
-    //   old_bbox = []
-    //   predicted_arr = []
-    //   same_object = false;
-    //   //   $('#number').html('');
-    // });
   }
 
   removeSmartObject = (id) => {
@@ -387,8 +360,6 @@ class DrawArea extends Component {
               backgroundColor: "#a8b9c6",
               fontFamily: 'Roboto',
               padding: "10px 20px",
-              color: "white",
-              backgroundColor: "rgb(168, 185, 198)",
               borderRadius: "15px",
               cursor: "pointer",
               transition: "all 0.1s linear",

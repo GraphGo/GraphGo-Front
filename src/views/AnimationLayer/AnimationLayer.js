@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import AnimationContainer from "../AnimationContainer/AnimationContainer.js"
 
@@ -21,10 +21,10 @@ class AnimationLayer extends React.Component {
   render() {
     console.log(this.props);
     return (
-      <Container style={{"height": `${window.innerWidth / 3}px`}}>
+      <Container style={{"height": "95%"}}>
         { 
         this.props.smartObjects.length != 0 ?
-        this.props.smartObjects.map(config => {
+        this.props.smartObjects.map((config, i) => {
           return (
             <div key={config.index.toString()} style={{
               "width": `${config.width}px`,
@@ -34,7 +34,7 @@ class AnimationLayer extends React.Component {
               "position": "absolute",
               "alignItems":"center"
             }}>
-              <AnimationContainer smartObject={config} key={config.index.toString()} removeSmartObject={this.props.removeSmartObject}/>
+              <AnimationContainer smartObject={config} index={i} removeSmartObject={this.props.removeSmartObject}/>
             </div>
             
           );
