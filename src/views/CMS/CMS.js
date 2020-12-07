@@ -45,32 +45,44 @@ class CMS extends React.Component {
         console.log(user);
         getAllFiles(user).then(res => {
             var files = []
+            var fileItems = []
             res.forEach(item => {
                 if (item.type === 'folder') {
                     files.push({ id: item.id, name: item.name, type: item.type, files: item.files, last_modified: item.last_modified, num_files: item.num_files })
+                    fileItems.push({ id: item.id, name: item.name, type: item.type, files: item.files, last_modified: item.last_modified, num_files: item.num_files })
                 } else if (item.type === 'graph') {
                     files.push({ id: item.id, name: item.name, type: item.type, root: item.root, last_modified: item.last_modified, img: item.img })
+                    if(item.root === this.state.currentFolder){
+                        fileItems.push({id: item.id, name: item.name, type: item.type, root: item.root, last_modified: item.last_modified, img: item.img})
+                    }
                 }
             })
-            this.setState({ fileItems: files, files: files })
+            this.setState({ fileItems: fileItems, files: files })
         }).catch(e => console.error(e))
     }
 
     enterFolder(id) {
+        console.log("Entering folder: "+id)
         if (id === "") {
-            this.setState({ fileItems: this.state.files, currentFolder: "" })
+            var fileItems = []
+            this.state.files.forEach(item => {
+                if(item.root === "" || item.type === 'folder'){
+                    fileItems.push(item)
+                }
+            })
+            this.setState({ fileItems: fileItems, currentFolder: "" })
             return
         }
-        var root = {};
+        var items = [];
         for (var i = 0; i < this.state.files.length; i++) {
             var item = this.state.files[i]
-            if (item.type !== "folder") continue
-            if (item.id === id) {
-                root = item
+            if (item.type === "folder") continue
+            if (item.root === id) {
+                items.push(item)
             }
         }
-        if (!root) return
-        else this.setState({ fileItems: root.files, currentFolder: id })
+        if (!items) return
+        else this.setState({ fileItems: items,  currentFolder: id })
     }
 
     onFolderClick(e) {
