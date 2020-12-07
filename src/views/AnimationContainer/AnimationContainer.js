@@ -159,14 +159,13 @@ class AnimationContainer extends Component {
   draw(arr) {
     let i = 0;
     for (i = 0; i < arr.length; i++){
-
+      let metrics = this.ctx.measureText(arr[i][VALUE_IDX].toString());
       this.ctx.clearRect(
-        arr[i][ORI_X_IDX] - this.textSize / HALF, 
-        arr[i][ORI_Y_IDX] - this.textSize, 
-        this.textSize * 1.1+ this.textSize * 0.5 * (arr[i][5]-1), 
-        this.textSize * 1.1
+        arr[i][ORI_X_IDX], 
+        arr[i][ORI_Y_IDX] - this.textSize / 1.1, 
+        metrics.width,
+        metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent
       );
-      console.log(arr[i][5])
       this.ctx.fillText(arr[i][VALUE_IDX],
                         arr[i][NEW_X_IDX],
                         arr[i][NEW_Y_IDX]);
