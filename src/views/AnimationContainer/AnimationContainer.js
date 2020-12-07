@@ -8,7 +8,7 @@ const LEFT = 0,
       DOWN = 3, 
       FONTSIZE = 50, 
       SPEED = 0.5, 
-      X = 75, 
+      X = 100, 
       Y = 100,
       Y_UP = 50,
       Y_UP_ADJ = 70,
@@ -34,7 +34,8 @@ class AnimationContainer extends Component {
         speed: {
           x: SPEED,
           y: SPEED
-        }
+        },
+        numDigits: Math.floor(inputArray[i] / 10) + 1
       })
     }
     this.draw = this.draw.bind(this);
@@ -74,7 +75,7 @@ class AnimationContainer extends Component {
         for (let i = 0; i < this.arr.length; i++) {
           this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
         }
-        this.ctx.fillText(']', this.arr.length * 75 + 75, 100);
+        this.ctx.fillText(']', this.arr.length * 100 + 100, 100);
     
         if (this.context.replay){
           this.context.setReplay(false);
@@ -86,12 +87,13 @@ class AnimationContainer extends Component {
             for (let i = 0; i < this.props.smartObject.data.length; i++) {
               this.arr.push({
                 value: this.props.smartObject.data[i],
-                x: (i + 1) * 75,
+                x: (i + 1) * 100,
                 y: 100,
                 speed: {
                   x: 0.5,
                   y: 0.5
-                }
+                }, 
+                numDigits: Math.floor(this.props.smartObject.data[i] / 10) + 1
               })
             }
             // draw
@@ -100,7 +102,7 @@ class AnimationContainer extends Component {
             for (let i = 0; i < this.arr.length; i++) {
               this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
             }
-            this.ctx.fillText(']', this.arr.length * 75 + 75, 100);
+            this.ctx.fillText(']', this.arr.length * 100 + 200, 100);
             // use await for this async function to continue executing after 
             // each loop
             // await this.insertionSort();
@@ -141,7 +143,7 @@ class AnimationContainer extends Component {
     for (i = 0; i < this.arr.length; i++) {
       this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
     }
-    this.ctx.fillText(']', (this.arr.length + 1) * X, Y);
+    this.ctx.fillText(']', (this.arr.length + 2) * X, Y);
 
     //this.insertionSort();
     this.selectionSort();
@@ -157,12 +159,14 @@ class AnimationContainer extends Component {
   draw(arr) {
     let i = 0;
     for (i = 0; i < arr.length; i++){
+
       this.ctx.clearRect(
         arr[i][ORI_X_IDX] - this.textSize / HALF, 
         arr[i][ORI_Y_IDX] - this.textSize, 
-        this.textSize * 1.1, 
+        this.textSize * 1.1+ this.textSize * 0.5 * (arr[i][5]-1), 
         this.textSize * 1.1
       );
+      console.log(arr[i][5])
       this.ctx.fillText(arr[i][VALUE_IDX],
                         arr[i][NEW_X_IDX],
                         arr[i][NEW_Y_IDX]);
@@ -174,6 +178,7 @@ class AnimationContainer extends Component {
     let value = this.arr[idx].value;
     let oriX = this.arr[idx].x;
     let oriY = this.arr[idx].y;
+    let numDigits = this.arr[idx].numDigits;
     switch(direction) {
       case UP:
         this.arr[idx].y -= this.arr[idx].speed.y;
@@ -191,7 +196,7 @@ class AnimationContainer extends Component {
     }
     let newX = this.arr[idx].x;
     let newY = this.arr[idx].y;
-    return [value, oriX, oriY, newX, newY];
+    return [value, oriX, oriY, newX, newY, numDigits];
   }
 
   // this function is update the array with animation
