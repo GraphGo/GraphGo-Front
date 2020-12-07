@@ -1,5 +1,5 @@
 import React from 'react'
-import folderSVG from '../../assets/folder-svg.svg'
+import folderSVG from '../../assets/icons/folder2.svg'
 
 const FolderItem = props => {
     return (

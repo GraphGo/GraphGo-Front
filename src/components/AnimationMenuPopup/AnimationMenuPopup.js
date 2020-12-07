@@ -1,9 +1,14 @@
 import React, { Component } from "react";
 import classes from "./AnimationMenuPopup.module.css";
-import { CirclePicker } from 'react-color'
-import StrokeWidthSlider from "../StrokeWidthSlider/StrokeWidthSlider"
+import { CirclePicker } from 'react-color';
+// import StrokeWidthSlider from "../StrokeWidthSlider/StrokeWidthSlider"
 import SmartObjsContext from '../../contexts/SmartObjsContext.js';
 import SpeedSlider from "../../components/SpeedSlider/SpeedSlider";
+import FontSizeSlider from "../../components/FontSizeSlider/FontSizeSlider";
+
+export const INSERSION_SORT = 'insertionSort';
+export const SELECTION_SORT = 'selectionSort';
+export const BUBBLE_SORT = 'bubbleSort';
 
 class AnimationMenuPopup extends Component {
   constructor(props){
@@ -16,26 +21,37 @@ class AnimationMenuPopup extends Component {
 
 
   handleColorChange = (color) => {
-    this.context.setSmartObjStyle({color: color.hex, strokeWidth: this.context.smartObjStyle.strokeWidth});
+    console.log("context: ", this.context, this.context.smartObjStyle)
+    if (this.context && this.context.smartObjStyle){
+      this.context.setSmartObjStyle({color: color.hex, fontSize: this.context.smartObjStyle.fontSize});
+    }
+    
   };
 
-  handleStrokeWidthChange = (val) => {
-    console.log(val);
-    console.log(val/3*90, Math.round(val/3*90/100)*100);
-    
-    this.context.setSmartObjStyle({color: this.context.smartObjStyle.color, strokeWidth: Math.round(val/3*90/100)*100});
+  handleFontSizeChange = (val) => {
+    // console.log(val);
+    // console.log(val/3*90, Math.round(val/3*90/100)*100);
+    if (this.context && this.context.smartObjStyle){
+      this.context.setSmartObjStyle({color: this.context.smartObjStyle.color, fontSize: val});
+    }
   }
   
   handleCloseMenu = () => {
     this.setState({
       show: false
     });
+    this.context.setShowAnimationMenu(false);
   }
 
-  handlePreivewBtnClicked = () => {
-    this.setState({
-      onPreviewMenu: true
-    });
+  handleClickPlay = () => {
+    // this.setState({
+    //   onPreviewMenu: true
+    // });
+    this.context.setReplay(true);
+  }
+
+  handleClickRevert = () => {
+    this.context.setRevert(true);
   }
 
   handleConfirmBtnClicked = () => {
@@ -47,17 +63,25 @@ class AnimationMenuPopup extends Component {
   toggleLoop = (e) => {
     // TODO: implement looping.
     console.log(e.target.checked);
+    this.context.setLoopingAnimation(e.target.checked);
   }
 
   handleSpeedChange = (speed) => {
     // TODO: implement animation speed.
+    this.context.setAnimationSpeed(speed)
+  }
 
+  handleChangeSortType = (e) => {
+    this.context.setSortType(e.target.value)
+    console.log("context sort type setting to: ", e.target.value)
   }
 
   render() {
     return (
-      (this.state.show) ? 
-      ( (!this.state.onPreviewMenu) ? <div className={classes.AnimationMenuPopup} onClick={this.props.clicked}>
+      (this.context.showAnimationMenu) ? 
+      ( 
+        // (!this.state.onPreviewMenu) ? 
+      <div className={classes.AnimationMenuPopup} onClick={this.props.clicked}>
         <button className={classes.closeBtn} onClick={this.handleCloseMenu}>
           X
         </button>
@@ -75,10 +99,10 @@ class AnimationMenuPopup extends Component {
         </section>
         <section>
           <h3>
-            Stroke Width
+            Font Size
           </h3>
           <div className={classes.StrokeWidthSlider}>
-            <StrokeWidthSlider handler={ this.handleStrokeWidthChange }/>
+            <FontSizeSlider handler={ this.handleFontSizeChange }/>
           </div>
         </section>
         <section>
@@ -88,34 +112,48 @@ class AnimationMenuPopup extends Component {
         <section>
           <h3>Animation Type</h3>
           <div className={classes.animationType}>
-					  <select id="contactVia" name="cars">
-					  		<option value="volvo" onClick={this.handleAnimationType}>Bubble Sort</option>
-					  		<option value="saab">Bubble Sort</option>
+					  <select id="contactVia" name="cars" onChange={this.handleChangeSortType}>
+					  		<option value={INSERSION_SORT}>Insertion Sort</option>
+                <option value={SELECTION_SORT}>Selection Sort</option>
+					  		<option value={BUBBLE_SORT}>Bubble Sort</option>
                 {/* <span class="focus"></span> */}
-
 					  </select>
           </div>
         </section> 
-        <button className={classes.previewBtn} onClick={this.handlePreivewBtnClicked}>PREVIEW</button>
-        <button className={classes.revertBtn}>REVERT</button>  
-      </div> :
-      <div className={classes.AnimationMenuPopup}>
-        <button className={classes.closeBtn} onClick={this.handleCloseMenu}>
-          X
-        </button>
-        <section className={classes.previewWindow}>
-          Animation Preview
-        </section>
         <section>
           <h3>Speed</h3>
-          <SpeedSlider/>
+          <div className={classes.SpeedSlider}>
+            <SpeedSlider handler={this.handleSpeedChange}/>
+          </div>
         </section>
-        <section style={{display:"inline-flex", position:"absolute", left:"0"}}>
+        <section>
+          <div className={classes.loop}>
           <h3>Loop</h3>
           <input id="loopCheckbox" type="checkbox" name="loop" onChange={this.toggleLoop}/>
+          </div>
         </section>
-        <button className={classes.revertBtn} onClick={this.handleConfirmBtnClicked}>CONFIRM</button>
-      </div> ) : null
+        <button title="Play the animation" className={classes.previewBtn} onClick={this.handleClickPlay}>PLAY</button>
+        <button title="Delete this smart object" className={classes.revertBtn} onClick={this.handleClickRevert}>DELETE</button>  
+      </div> 
+      // :
+      // <div className={classes.AnimationMenuPopup}>
+      //   <button className={classes.closeBtn} onClick={this.handleCloseMenu}>
+      //     X
+      //   </button>
+      //   <section className={classes.previewWindow}>
+      //     Animation Preview
+      //   </section>
+      //   <section>
+      //     <h3>Speed</h3>
+      //     <SpeedSlider/>
+      //   </section>
+      //   <section >
+      //     <h3>Loop</h3>
+      //     <input id="loopCheckbox" type="checkbox" name="loop" onChange={this.toggleLoop}/>
+      //   </section>
+      //   <button className={classes.revertBtn} onClick={this.handleConfirmBtnClicked}>CONFIRM</button>
+      // </div>
+      ) : null
     );
   }
 
