@@ -17,7 +17,7 @@ class SpeedSlider extends Component {
     render(){
         return (
             <div className={classes.slidecontainer}>
-                <input type="range" min="0.5" max="3" step="0.25" value={this.state.speed} className={classes.slider} id="strokeWidthInput" onChange={this.handleInput}/>
+                <input type="range" min="0.5" max="10" step="0.5" value={this.state.speed} className={classes.slider} id="strokeWidthInput" onChange={this.handleInput}/>
                 <p>Speed: <span id="demo">{this.state.speed}</span></p>
             </div>
       );

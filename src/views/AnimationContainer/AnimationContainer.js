@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import SmartObjsContext from '../../contexts/SmartObjsContext.js';
+import {INSERSION_SORT, SELECTION_SORT, BUBBLE_SORT} from '../../components/AnimationMenuPopup/AnimationMenuPopup';
 
 const LEFT = 0, 
       RIGHT = 1, 
@@ -43,6 +44,11 @@ class AnimationContainer extends Component {
     this.insertionSort = this.insertionSort.bind(this);
     this.selectionSort = this.selectionSort.bind(this);
     this.bubbleSort = this.bubbleSort.bind(this);
+    this.sortTypesMap = {
+      'insertionSort': this.insertionSort,
+      'selectionSort': this.selectionSort,
+      'bubbleSort': this.bubbleSort,
+    }
   }
 
   // Re-draw when React Context gets updated
@@ -52,6 +58,8 @@ class AnimationContainer extends Component {
       // console.log(this.context, this.context.smartObjStyle);
       if (this.props.index == this.context.smartObjSelected){
         console.log("Change", this.context.smartObjSelected, "th Smart Object property.")
+        this.delay_time = DELAYTIME / this.context.animationSpeed;
+        console.log("DELAYTIME: ", DELAYTIME, "this.context.animationSpeed" ,this.context.animationSpeed, ", Delay time: ", this.delay_time);
         this.canvas = document.getElementById("animationCanvas"+this.props.smartObject.index);
         this.canvas.width = this.props.smartObject.width;
         this.canvas.height = this.props.smartObject.height;
@@ -70,8 +78,10 @@ class AnimationContainer extends Component {
     
         if (this.context.replay){
           this.context.setReplay(false);
-          let loops = this.context.loopingAnimation ? 10 : 1;
-          for (let i = 0; i < loops; i++){
+          // let loops = this.context.loopingAnimation ? 10 : 1;
+          let playOnce = true
+          while (playOnce){
+            playOnce = this.context.loopingAnimation
             this.arr = [];
             for (let i = 0; i < this.props.smartObject.data.length; i++) {
               this.arr.push({
@@ -93,15 +103,14 @@ class AnimationContainer extends Component {
             this.ctx.fillText(']', this.arr.length * 75 + 75, 100);
             // use await for this async function to continue executing after 
             // each loop
-            await this.insertionSort();
+            // await this.insertionSort();
+            await this.sortTypesMap[this.context.sortType]();
+
             // copy and paste this wherever you want to pause in this function
             await this.delay(500);
           }
-          
         }
 
-        
-        
         if(this.context.revert){
           this.context.setRevert(false);
           if (window.confirm("Are you sure you want to remove this animation?")) {
@@ -300,6 +309,7 @@ class AnimationContainer extends Component {
 
   // this method is used to do the insertion sort for this.arr with animation
   async insertionSort() {
+    console.log("calling insertionSort");
     let i = 1;
     let key = null;
     let j = 0; 
@@ -321,6 +331,7 @@ class AnimationContainer extends Component {
 
   // this method is used to do the selection sort for this.arr with animation
   async selectionSort() {
+    console.log("calling selectionSort");
     let i, j, min_idx;  
   
     // One by one move boundary of unsorted subarray  
@@ -348,6 +359,7 @@ class AnimationContainer extends Component {
 
   // this method is used to do the bubble sort for this.arr with animation
   async bubbleSort() {
+    console.log("calling bubbleSort");
     let i, j;  
     for (i = 0; i < this.arr.length; i++){
       // Last i elements are already in place  
@@ -359,18 +371,15 @@ class AnimationContainer extends Component {
     }
   }
 
-  handleRightClick = (e) => {
+  handleClickOnSmartObj = (e) => {
     e.preventDefault();
+    this.context.setSmartObjSelected(this.props.index);
     this.context.setShowAnimationMenu(true);
   }
 
   render() {
     return (
-       <canvas id={"animationCanvas"+this.props.smartObject.index} onClick={() => {
-         if (window.confirm("Are you sure you want to remove this animation?")) {
-            this.props.removeSmartObject(this.props.smartObject.index);
-         }
-       }} onContextMenu={this.handleRightClick} style={{border: '3px dotted'}}></canvas>
+       <canvas id={"animationCanvas"+this.props.smartObject.index} onClick={this.handleClickOnSmartObj} style={{border: '3px dotted'}}></canvas>
      /*  <div style={{
         "width": "100%",
         "height": "100%",

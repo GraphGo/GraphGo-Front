@@ -5,6 +5,11 @@ import { CirclePicker } from 'react-color';
 import SmartObjsContext from '../../contexts/SmartObjsContext.js';
 import SpeedSlider from "../../components/SpeedSlider/SpeedSlider";
 import FontSizeSlider from "../../components/FontSizeSlider/FontSizeSlider";
+
+export const INSERSION_SORT = 'insertionSort';
+export const SELECTION_SORT = 'selectionSort';
+export const BUBBLE_SORT = 'bubbleSort';
+
 class AnimationMenuPopup extends Component {
   constructor(props){
     super(props);
@@ -63,7 +68,12 @@ class AnimationMenuPopup extends Component {
 
   handleSpeedChange = (speed) => {
     // TODO: implement animation speed.
+    this.context.setAnimationSpeed(speed)
+  }
 
+  handleChangeSortType = (e) => {
+    this.context.setSortType(e.target.value)
+    console.log("context sort type setting to: ", e.target.value)
   }
 
   render() {
@@ -102,21 +112,28 @@ class AnimationMenuPopup extends Component {
         <section>
           <h3>Animation Type</h3>
           <div className={classes.animationType}>
-					  <select id="contactVia" name="cars">
-					  		<option value="volvo" onClick={this.handleAnimationType}>Bubble Sort</option>
-					  		<option value="saab">Bubble Sort</option>
+					  <select id="contactVia" name="cars" onChange={this.handleChangeSortType}>
+					  		<option value={INSERSION_SORT}>Insertion Sort</option>
+                <option value={SELECTION_SORT}>Selection Sort</option>
+					  		<option value={BUBBLE_SORT}>Bubble Sort</option>
                 {/* <span class="focus"></span> */}
 					  </select>
           </div>
         </section> 
+        <section>
+          <h3>Speed</h3>
+          <div className={classes.SpeedSlider}>
+            <SpeedSlider handler={this.handleSpeedChange}/>
+          </div>
+        </section>
         <section>
           <div className={classes.loop}>
           <h3>Loop</h3>
           <input id="loopCheckbox" type="checkbox" name="loop" onChange={this.toggleLoop}/>
           </div>
         </section>
-        <button className={classes.previewBtn} onClick={this.handleClickPlay}>PLAY</button>
-        <button className={classes.revertBtn} onClick={this.handleClickRevert}>REVERT</button>  
+        <button title="Play the animation" className={classes.previewBtn} onClick={this.handleClickPlay}>PLAY</button>
+        <button title="Delete this smart object" className={classes.revertBtn} onClick={this.handleClickRevert}>DELETE</button>  
       </div> 
       // :
       // <div className={classes.AnimationMenuPopup}>
