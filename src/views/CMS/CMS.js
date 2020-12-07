@@ -142,13 +142,13 @@ class CMS extends React.Component {
                         {this.state.fileItems.map(item => {
                             if (item.type === 'folder') {
                                 return (
-                                    <Grid item xs={3} key={item.id} datakey={item.id} onClick={this.onFolderClick}>
+                                    <Grid item xs={2} key={item.id} datakey={item.id} onClick={this.onFolderClick}>
                                         <FolderItem name={item.name} datakey={item.id} />
                                     </Grid>
                                 )
                             } else if (item.type === 'graph') {
                                 return (
-                                    <Grid item xs={3} key={item.id} datakey={item.id} onClick={this.onFileClick}>
+                                    <Grid item xs={2} key={item.id} datakey={item.id} onClick={this.onFileClick}>
                                         <FileItem name={item.name} datakey={item.id}></FileItem>
                                     </Grid>
                                 )
