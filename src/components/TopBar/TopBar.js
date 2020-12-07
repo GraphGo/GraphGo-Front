@@ -37,9 +37,9 @@ export default function TopBar(props) {
     }
 
     const handleDropdownClose = (e)=>{
-        if(e.target.innerText === "New Folder"){
+        if(e.target.getAttribute("datakey") === "newFolder"){
             handleCreateFolderOpen()
-        }else if(e.target.innerText === "New Graph"){
+        }else if(e.target.getAttribute("datakey") === "newGraph"){
             handleCreateGraphOpen()
         }
         setAnchorEl(null)
@@ -70,8 +70,8 @@ export default function TopBar(props) {
                 <AddIcon />
             </IconButton>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleDropdownClose}>
-                <MenuItem onClick={handleDropdownClose} >New Folder</MenuItem>
-                <MenuItem onClick={handleDropdownClose}>New Graph</MenuItem>
+                <MenuItem onClick={handleDropdownClose} dataKey='newFolder'>New Folder</MenuItem>
+                <MenuItem onClick={handleDropdownClose} dataKey='newGraph'>New Graph</MenuItem>
             </Menu>
 
             <Dialog open={folderDialogOpen} onClose={handleCreateFolderClose} >

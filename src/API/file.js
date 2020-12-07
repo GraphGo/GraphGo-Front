@@ -83,22 +83,13 @@ const loadCanvas = (docID) => {
     })
 }
 
-const createFolder = (name, email) => {
+const createFolder = (name, uid) => {
     return new Promise((resolve, reject) => {
-        db.collection("user").get('email','==', email).then(querysnapshot => {
-            if (querysnapshot.empty){
-                reject("User does not exist")
-            }
-            var doc = querysnapshot.docs[0]
-            return db.collection('user').doc(doc.id)
-        }).then(userRef => {
-            console.log(name)
-            db.collection('folder').add({files: [], last_modified: new Date(), name: name, num_files: 0, type: 'folder'})
-                .then(docRef => {
-                    userRef.update({files: FieldValue.arrayUnion({id: docRef.id, type:"folder"})})
-                    resolve("Success")
-                })
-        })
+        db.collection('folder').add({files: [], last_modified: new Date(), name: name, num_files: 0, type: 'folder'})
+        .then(docRef => {
+            db.collection('user').doc(uid).update({files: FieldValue.arrayUnion({id: docRef.id, type:"folder"})})
+            resolve("Success")
+        }).catch(e => reject(e))
 
     })
 }

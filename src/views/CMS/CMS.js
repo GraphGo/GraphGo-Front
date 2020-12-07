@@ -94,7 +94,7 @@ class CMS extends React.Component {
     onCreatePopupConfirm(name, type) {
         if(type === "folder"){
             console.log("[CMS] --- Creating folder "+ name)
-            createFolder(name, sessionStorage.getItem("userEmail")).then(() => { //Hardcoded name, need fix
+            createFolder(name, sessionStorage.getItem("userID")).then(() => {
                 this.loadData()
             }).catch(e => { console.log(e) })
         } else if (type === "graph"){
@@ -103,7 +103,7 @@ class CMS extends React.Component {
             .then(docID => {
                 console.log("[CMS] --- Created with docID "+docID)
                 loadCanvas(docID).then(res => {
-                    history.push({pathname: '/' ,state: res})
+                    // history.push({pathname: '/' ,state: res})
                 })
             })
             .catch(e => console.log(e))
