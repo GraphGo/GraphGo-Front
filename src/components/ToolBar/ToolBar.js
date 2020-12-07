@@ -11,6 +11,8 @@ import redoIcon from "../../assets/icons/redo.svg";
 import redoDarkIcon from "../../assets/icons/redo-dark.svg";
 import saveIcon from "../../assets/icons/save.svg";
 import saveDarkIcon from "../../assets/icons/save-dark.svg";
+import eraserIcon from "../../assets/icons/eraser.svg";
+import eraserDarkIcon from "../../assets/icons/eraser-dark.svg";
 import PenToolPopup from "../PenToolPopup/PenToolPopup";
 import OutsideClickHandler from "../hoc/OutsideClickHandler/OutsideClickHandler"
 import classes from "./ToolBar.module.css";
@@ -20,6 +22,7 @@ const tools = {
   pen: [penIcon, penDarkIcon],
   hand: [handIcon, handDarkIcon],
   lasso: [lassoIcon, lassoDarkIcon],
+  eraser: [eraserIcon, eraserDarkIcon],
 };
 
 class ToolBar extends Component {
@@ -103,21 +106,21 @@ class ToolBar extends Component {
         }}>
           <img id="lasso" src={lassoIcon} alt="lasso tool"/>
         </button>
-        <button title="Erase" onClick={() => {
-          this.handleToolSelected("erase");
-          document.getElementById("redux-store").setAttribute("tool", "erase");
+        <button title="Eraser" onClick={() => {
+          this.handleToolSelected("eraser");
+          document.getElementById("redux-store").setAttribute("tool", "eraser");
           // make the animation layer lower than the canvas
           document.getElementById("myCanvas").style.zIndex = "4";
         }
         }>
-          <img id="pen" src={penIcon} alt="pen" />
+          <img id="eraser" src={eraserIcon} alt="eraser" />
         </button>
-        {/* <button title="Undo">
+        <button title="Undo" id="undo-button">
           <img id="undo" src={undoIcon} alt="undo" />
         </button>
-        <button title="Redo">
+        <button title="Redo" id="redo-button">
           <img id="redo" src={redoIcon} alt="redo" />
-        </button> */}
+        </button>
         <button title="Save">
           <img id="save" onClick={this.handleSave} src={saveIcon} alt="save" />
         </button>

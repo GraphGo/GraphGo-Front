@@ -7,6 +7,15 @@ import SmartObject from "./SmartObject"
 import axios from "axios"
 
 class DrawArea extends Component {
+  currentEdit = {};
+  doStack = [];
+  redoStack = [];
+  cPushArray = [];
+  cPopArray = [];
+  cStep = -1;
+  offsetLeft = 0;
+  offsetTop = 82;
+
   state = {
     animation_pos_top: 100, //the distance of the animation box to the top
     animation_pos_left: 100, // the distance of the animation box to the left
@@ -45,6 +54,7 @@ class DrawArea extends Component {
 
 
   componentDidMount() {
+
     Array.prototype.max = function () {
       return Math.max.apply(null, this);
     };
@@ -53,6 +63,148 @@ class DrawArea extends Component {
       return Math.min.apply(null, this);
     };
 
+    // undo functionality
+    document.getElementById("undo-button").addEventListener("click", () => {
+      let canvas = document.getElementById('myCanvas');
+      let context = canvas.getContext('2d');
+      if (this.doStack.length > 0) {
+        let last_edit = this.doStack.pop();
+        this.redoStack.push(last_edit);
+        var canvasPic;
+        switch(last_edit.tool) {
+          case "eraser":
+            if (this.cPushArray.length > 0) {
+              if (this.cPushArray.length === 1) {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                this.cPopArray.push(this.cPushArray.pop());
+              } else {
+                this.cPopArray.push(this.cPushArray.pop());
+                canvasPic = new Image();
+                canvasPic.src = this.cPushArray[this.cPushArray.length - 1];
+                canvasPic.onload = () => { 
+                  context.clearRect(0, 0, canvas.width, canvas.height);
+                  context.drawImage(canvasPic, 0, 0); 
+                }
+              }
+              // console.log(this.cPushArray);
+            }
+            break;
+          case "pen":
+            if (this.cPushArray.length > 0) {
+              if (this.cPushArray.length === 1) {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                this.cPopArray.push(this.cPushArray.pop());
+              } else {
+                this.cPopArray.push(this.cPushArray.pop());
+                canvasPic = new Image();
+                canvasPic.src = this.cPushArray[this.cPushArray.length - 1];
+                canvasPic.onload = () => { 
+                  context.clearRect(0, 0, canvas.width, canvas.height);
+                  context.drawImage(canvasPic, 0, 0); 
+                }
+              }
+              // console.log(this.cPushArray);
+            }
+            
+            // if (this.cStep > 0) {
+            //   var canvasPic = new Image();
+            //   canvasPic.src = this.cPushArray[this.cStep];
+            //   this.cStep--;
+            //   canvasPic.onload = () => { 
+            //     context.clearRect(0, 0, canvas.width, canvas.height);
+            //     context.drawImage(canvasPic, 0, 0); 
+            //   }
+            // } else {
+            //   context.clearRect(0, 0, canvas.width, canvas.height);
+            // }
+
+            // console.log(this.cStep);
+            // var start_point = last_edit.points[0];
+            // var originalStyle = context.strokeStyle;
+
+            // context.strokeStyle = "white";
+            // context.moveTo(start_point[0], start_point[1]);
+            // context.beginPath();
+
+            // for (var i = 0; i < last_edit.points.length; i++) {
+            //   this.draw_map[last_edit.points[i][1]][last_edit.points[i][0]] -= 1;
+            //   if (this.draw_map[last_edit.points[i][1]][last_edit.points[i][0]] == 0) {
+            //     context.lineTo(last_edit.points[i][0], last_edit.points[i][1]);
+            //     context.stroke();
+            //   } else {
+            //     context.moveTo(last_edit.points[i][0], last_edit.points[i][1]);
+            //   }
+            // }
+            // context.strokeStyle = originalStyle;
+            break;
+          default:
+            break;
+        }
+      }
+    });
+
+    document.getElementById("redo-button").addEventListener("click", () => {
+      let canvas = document.getElementById('myCanvas');
+      let context = canvas.getContext('2d');
+
+      if (this.redoStack.length > 0) {
+        let last_edit = this.redoStack.pop();
+        this.doStack.push(last_edit);
+
+        var last_one;
+        var canvasPic;
+        switch(last_edit.tool) {
+          case "eraser":
+            if (this.cPopArray.length > 0) {
+              last_one = this.cPopArray.pop();
+              this.cPushArray.push(last_one);
+              canvasPic = new Image();
+              canvasPic.src = this.cPushArray[this.cPushArray.length - 1];
+              canvasPic.onload = () => { 
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                context.drawImage(canvasPic, 0, 0); 
+              }
+              // console.log(this.cPushArray);
+            }
+            break;
+          case "pen":
+            if (this.cPopArray.length > 0) {
+              last_one = this.cPopArray.pop();
+              this.cPushArray.push(last_one);
+              canvasPic = new Image();
+              canvasPic.src = this.cPushArray[this.cPushArray.length - 1];
+              canvasPic.onload = () => { 
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                context.drawImage(canvasPic, 0, 0); 
+              }
+              // console.log(this.cPushArray);
+            }
+            // this.cStep++;
+            // var canvasPic = new Image();
+            // canvasPic.src = this.cPushArray[this.cStep];
+            // canvasPic.onload = function () { 
+            //   context.clearRect(0, 0, canvas.width, canvas.height);
+            //   context.drawImage(canvasPic, 0, 0); 
+            // }
+            // var start_point = last_edit.points[0];
+            // var originalStyle = context.strokeStyle;
+
+            // context.strokeStyle = last_edit.strokeStyle;
+            // context.moveTo(start_point[0], start_point[1]);
+            // context.beginPath();
+
+            // for (var i = 0; i < last_edit.points.length; i++) {
+            //   context.lineTo(last_edit.points[i][0], last_edit.points[i][1]);
+            //   context.stroke();
+            // }
+
+            // context.strokeStyle = originalStyle;
+            break;
+          default:
+            break;
+        }
+      }
+    });
 
     // sample call to create new smart object in animation layer
     // let newSmartObject = new SmartObject([3,5,2,4,7,6], 100, 100, 600, 200,0);
@@ -126,10 +278,14 @@ class DrawArea extends Component {
     context.lineCap = 'round';
     context.strokeStyle = 'red';
 
-    canvas.addEventListener('mousedown', function (e) {
+    canvas.addEventListener('mousedown', (e) => {
       let toolType = document.getElementById("redux-store").getAttribute("tool");
       switch(toolType) {
-        case "pen":
+        case "eraser":
+          context.lineWidth = 14;
+          context.lineJoin = 'round';
+          context.lineCap = 'round';
+          context.strokeStyle = 'white';
           console.log(toolType);
           //place_holder = false;
           // if (arr_x.length != 0 & arr_y.length != 0) {
@@ -147,22 +303,53 @@ class DrawArea extends Component {
           context.beginPath();
           //context.setLineDash([5, 15]);
           canvas.addEventListener('mousemove', onPaint, false);
+
+          this.currentEdit = {tool: "eraser", strokeStyle: context.strokeStyle, points: []};
+          break;
+        case "pen":
+          context.lineWidth = 7;
+          context.lineJoin = 'round';
+          context.lineCap = 'round';
+          context.strokeStyle = 'red';
+          console.log(toolType);
+          //place_holder = false;
+          // if (arr_x.length != 0 & arr_y.length != 0) {
+          //   if (mouse.x - arr_x.max() < 30) {
+          //     same_object = true;
+          //     console.log('Same object')
+          //   }
+          //   else {
+          //     same_object = false;
+          //     arr_x = [];
+          //     arr_y = [];
+          //   }
+          // }
+          context.moveTo(mouse.x, mouse.y);
+          context.beginPath();
+          //context.setLineDash([5, 15]);
+          canvas.addEventListener('mousemove', onPaint, false);
+
+          this.currentEdit = {tool: "pen", strokeStyle: context.strokeStyle, points: []};
           break;
         case "lasso":
           //place_holder = false;
           mouse.x = e.pageX - this.offsetLeft;
           mouse.y = e.pageY - this.offsetTop;
+          // console.log(e.pageX, e.pageY, this.offsetLeft, this.offsetTop);
     
           context.moveTo(mouse.x, mouse.y);
           context.beginPath();
           canvas.addEventListener('mousemove', onPaint, false);
           
           var lassoBox = document.getElementById("lasso-box");
+
           lasso_x = mouse.x;
           lasso_y = mouse.y;
           lassoBox.style.display = 'block';
           lassoBox.style.left = mouse.x + "px";
           lassoBox.style.top = 82 + mouse.y + "px";
+          lassoBox.style.width = 0 + "px";
+          lassoBox.style.height = 0 + "px";
           break;
       }  
     }, false);
@@ -170,9 +357,25 @@ class DrawArea extends Component {
     canvas.addEventListener('mouseup', () => {
       let toolType = document.getElementById("redux-store").getAttribute("tool");
       switch (toolType) {
+        case "eraser":
+          canvas.removeEventListener('mousemove', onPaint, false);
+          context.closePath();
+          this.doStack.push({...this.currentEdit});
+          this.currentEdit = {};
+
+          //if (this.cStep < this.cPushArray.length) { this.cPushArray.length = this.cStep; }
+          this.cPushArray.push(document.getElementById('myCanvas').toDataURL());
+          break;
         case "pen":
           //   $('#number').html('<img id="spinner" src="spinner.gif"/>');
           canvas.removeEventListener('mousemove', onPaint, false);
+          context.closePath();
+          this.doStack.push({...this.currentEdit});
+          this.currentEdit = {};
+
+          //if (this.cStep < this.cPushArray.length) { this.cPushArray.length = this.cStep; }
+          this.cPushArray.push(document.getElementById('myCanvas').toDataURL());
+
           //   var img = new Image();
           //   img.onload = function() {
           //context.drawImage(canvas, 0, 0, 28, 28);
@@ -283,18 +486,27 @@ class DrawArea extends Component {
       }));
     }, false);
 
-    var onPaint = function () {
+    var onPaint = () => {
       let toolType = document.getElementById("redux-store").getAttribute("tool");
       switch (toolType) {
+        case "eraser":
+          context.lineTo(mouse.x, mouse.y);
+          context.stroke();
+
+          this.currentEdit.points.push([mouse.x, mouse.y]);
+          break;
         case "pen":
           // arr_x.push(mouse.x)
           // arr_y.push(mouse.y)
           context.lineTo(mouse.x, mouse.y);
           context.stroke();
+
+          this.currentEdit.points.push([mouse.x, mouse.y]);
           break;
         case "lasso":
           var lassoBox = document.getElementById("lasso-box");
-          
+          // console.log(lasso_x, lasso_y);
+
           // bottom right
           if (mouse.x >= lasso_x && mouse.y >= lasso_y) {
             lassoBox.style.width = (mouse.x - lasso_x) - 5 + "px";
@@ -316,6 +528,7 @@ class DrawArea extends Component {
             lassoBox.style.top = 82 + mouse.y + 10 + "px";
             lassoBox.style.left = mouse.x + 10 + "px";
           }
+          break;
       }
     };
   }
