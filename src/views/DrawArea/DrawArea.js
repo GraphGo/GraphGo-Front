@@ -278,11 +278,21 @@ class DrawArea extends Component {
     context.lineCap = 'round';
     context.strokeStyle = 'red';
 
+    window.addEventListener("mousemove", (e) => {
+      let eraser_box = document.getElementById("eraser-box");
+      let top = e.offsetY;
+      let left = e.offsetX;
+      let von_clausewitz = 65;
+      let bismarck = 20;
+      eraser_box.style.top = top + von_clausewitz + "px";
+      eraser_box.style.left = left - bismarck + "px";
+    });
+
     canvas.addEventListener('mousedown', (e) => {
       let toolType = document.getElementById("redux-store").getAttribute("tool");
       switch(toolType) {
         case "eraser":
-          context.lineWidth = 14;
+          context.lineWidth = 25;
           context.lineJoin = 'round';
           context.lineCap = 'round';
           context.strokeStyle = 'white';
@@ -348,8 +358,8 @@ class DrawArea extends Component {
           lassoBox.style.display = 'block';
           lassoBox.style.left = mouse.x + "px";
           lassoBox.style.top = 82 + mouse.y + "px";
-          lassoBox.style.width = 0 + "px";
-          lassoBox.style.height = 0 + "px";
+          // lassoBox.style.width = 0 + "px";
+          // lassoBox.style.height = 0 + "px";
           break;
       }  
     }, false);
@@ -418,6 +428,7 @@ class DrawArea extends Component {
           // open the lasso container and popup box
           var lassoContainer = document.getElementById("lasso-container");
           var lassoPopup = document.getElementById("lasso-popup");
+          var lassoBox = document.getElementById("lasso-box");
           lassoContainer.style.display = "block";
           lassoPopup.style.display = "block";
           lassoPopup.style.left = Math.min(mouse.x, lasso_x) + "px";
@@ -562,6 +573,8 @@ class DrawArea extends Component {
           lassoBox.style.display = "none";
           lassoBox.style.left = 0 + "px";
           lassoBox.style.top = 0 + "px";
+          lassoBox.style.width = 0 + "px";
+          lassoBox.style.height = 0 + "px";
         }}>
           <div id="lasso-popup" style={{
             position: 'absolute', 
@@ -612,8 +625,8 @@ class DrawArea extends Component {
               lassoBox.style.display = "none";
               lassoBox.style.left = 0 + "px";
               lassoBox.style.top = 0 + "px";
-              lassoBox.style.width = 0 + "px";
-              lassoBox.style.height = 0 + "px";
+              // lassoBox.style.width = 0 + "px";
+              // lassoBox.style.height = 0 + "px";
             }}>Convert to Smart Object</div>
           </div>
         </div>
@@ -640,6 +653,20 @@ class DrawArea extends Component {
           zIndex: "10",
           border: "2px dotted #a8b9c6",
           boxSizing: "border-box"
+        }}></div>
+        <div id="eraser-box" style={{
+          width: "40px",
+          height: "40px",
+          borderRadius: "30px",
+          position: "absolute",
+          zIndex: "5000",
+          display: "none",
+          left: "0",
+          top: "0",
+          border: "3px dotted black",
+          pointerEvents: "none",
+          opacity: "0.1",
+          background: "grey"
         }}></div>
       </Container>
     )

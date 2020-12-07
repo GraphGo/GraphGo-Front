@@ -81,6 +81,7 @@ class ToolBar extends Component {
           document.getElementById("redux-store").setAttribute("tool", "pen");
           // make the animation layer lower than the canvas
           document.getElementById("myCanvas").style.zIndex = "4";
+          document.getElementById("eraser-box").style.display = "none";
         }
         }>
           <img id="pen" src={penIcon} alt="pen" />
@@ -94,6 +95,7 @@ class ToolBar extends Component {
           // make the animation layer lower than the canvas
           document.getElementById("myCanvas").style.zIndex = "2";
           document.getElementById("animation-layer").style.pointerEvents = "unset";
+          document.getElementById("eraser-box").style.display = "none";
         }}>
           <img id="hand" src={handIcon} alt="hand tool"/>
         </button>
@@ -103,6 +105,7 @@ class ToolBar extends Component {
           // make the animation layer higher than the canvas
           document.getElementById("myCanvas").style.zIndex = "2";
           document.getElementById("animation-layer").style.pointerEvents = "none";
+          document.getElementById("eraser-box").style.display = "none";
         }}>
           <img id="lasso" src={lassoIcon} alt="lasso tool"/>
         </button>
@@ -111,6 +114,8 @@ class ToolBar extends Component {
           document.getElementById("redux-store").setAttribute("tool", "eraser");
           // make the animation layer lower than the canvas
           document.getElementById("myCanvas").style.zIndex = "4";
+
+          document.getElementById("eraser-box").style.display = "block";
         }
         }>
           <img id="eraser" src={eraserIcon} alt="eraser" />
