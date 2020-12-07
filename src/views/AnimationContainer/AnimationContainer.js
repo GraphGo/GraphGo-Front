@@ -143,10 +143,10 @@ class AnimationContainer extends Component {
     for (i = 0; i < this.arr.length; i++) {
       this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
     }
-    this.ctx.fillText(']', (this.arr.length + 2) * X, Y);
+    this.ctx.fillText(']', (this.arr.length + 1) * X, Y);
 
     //this.insertionSort();
-    this.selectionSort();
+    //this.selectionSort();
     //this.bubbleSort();
   }
 
