@@ -91,7 +91,11 @@ class AnimationContainer extends Component {
               this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
             }
             this.ctx.fillText(']', this.arr.length * 75 + 75, 100);
+            // use await for this async function to continue executing after 
+            // each loop
             await this.insertionSort();
+            // copy and paste this wherever you want to pause in this function
+            await this.delay(500);
           }
           
         }
