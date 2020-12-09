@@ -17,28 +17,16 @@ const LEFT = 0,
       ORI_Y_IDX = 2,
       NEW_X_IDX = 3,
       NEW_Y_IDX = 4,
-      DELAYTIME = 5,
-      HALF = 2;
+      DELAYTIME = 5;
 class AnimationContainer extends Component {
   constructor(props) {
     super(props);
     this.arr = [];
     this.props = props;
-    let i = 0;
-    let inputArray = props.smartObject.data;
-    for (i = 0; i < inputArray.length; i++) {
-      this.arr.push({
-        value: inputArray[i],
-        x: (i + 1) * X,
-        y: Y,
-        speed: {
-          x: SPEED,
-          y: SPEED
-        },
-        numDigits: Math.floor(inputArray[i] / 10) + 1
-      })
-    }
+    this.initializeCanvas = this.initializeCanvas.bind(this);
     this.draw = this.draw.bind(this);
+    this.drawArray = this.drawArray.bind(this);
+    this.populateArray = this.populateArray.bind(this);
     this.move = this.move.bind(this);
     this.updateWithAnimation = this.updateWithAnimation.bind(this);
     this.swap = this.swap.bind(this);
@@ -54,28 +42,14 @@ class AnimationContainer extends Component {
 
   // Re-draw when React Context gets updated
   async componentDidUpdate(){
-    
     if (this.context && this.context.smartObjStyle){
       // console.log(this.context, this.context.smartObjStyle);
       if (this.props.index == this.context.smartObjSelected){
         console.log("Change", this.context.smartObjSelected, "th Smart Object property.")
-        this.delay_time = DELAYTIME / this.context.animationSpeed;
         console.log("DELAYTIME: ", DELAYTIME, "this.context.animationSpeed" ,this.context.animationSpeed, ", Delay time: ", this.delay_time);
-        this.canvas = document.getElementById("animationCanvas"+this.props.smartObject.index);
-        this.canvas.width = this.props.smartObject.width;
-        this.canvas.height = this.props.smartObject.height;
-        this.ctx = this.canvas.getContext("2d");
-        this.ctx.fillStyle = this.context.smartObjStyle.color;
-        this.textSize = this.context.smartObjStyle.fontSize;
-        this.ctx.font = this.context.smartObjStyle.fontSize + "px Arial";
+        this.initializeCanvas();
     
-        // draw
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.fillText('[', 0, 100);
-        for (let i = 0; i < this.arr.length; i++) {
-          this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
-        }
-        this.ctx.fillText(']', this.arr.length * 100 + 100, 100);
+        await this.drawArray();
     
         if (this.context.replay){
           this.context.setReplay(false);
@@ -83,32 +57,9 @@ class AnimationContainer extends Component {
           let playOnce = true
           while (playOnce){
             playOnce = this.context.loopingAnimation
-            this.arr = [];
-            for (let i = 0; i < this.props.smartObject.data.length; i++) {
-              this.arr.push({
-                value: this.props.smartObject.data[i],
-                x: (i + 1) * 100,
-                y: 100,
-                speed: {
-                  x: 0.5,
-                  y: 0.5
-                }, 
-                numDigits: Math.floor(this.props.smartObject.data[i] / 10) + 1
-              })
-            }
-            // draw
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.ctx.fillText('[', 0, 100);
-            for (let i = 0; i < this.arr.length; i++) {
-              this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
-            }
-            this.ctx.fillText(']', this.arr.length * 100 + 200, 100);
-            // use await for this async function to continue executing after 
-            // each loop
-            // await this.insertionSort();
+            await this.populateArray();
+            await this.drawArray();
             await this.sortTypesMap[this.context.sortType]();
-
-            // copy and paste this wherever you want to pause in this function
             await this.delay(500);
           }
         }
@@ -122,19 +73,66 @@ class AnimationContainer extends Component {
         }
       }  
     }
-}
+  }
 
-  componentDidMount() {
+  async componentDidMount() {
+    this.initializeCanvas();
+    await this.populateArray();
+    let gap = this.ctx.measureText("000").width;
+    let width = this.ctx.measureText(
+      this.arr[this.arr.length - 1].value.toString()).width;
+    this.endX = this.arr[this.arr.length - 1].x + width + gap
+    await this.drawArray();
+  }
 
-    this.canvas = document.getElementById("animationCanvas"+this.props.smartObject.index);
+  // initializing canvas
+  initializeCanvas(){
+    this.canvas = document.getElementById("animationCanvas"+
+      this.props.smartObject.index);
     this.canvas.width = this.props.smartObject.width;
     this.canvas.height = this.props.smartObject.height;
     this.ctx = this.canvas.getContext("2d");
-    this.textSize = FONTSIZE;
-    this.delay_time = DELAYTIME;
-    this.ctx.font = this.textSize + "px Arial";
     this.ctx.fillStyle = this.context.smartObjStyle.color;
+    this.textSize = this.context.smartObjStyle.fontSize;
+    this.ctx.font = this.context.smartObjStyle.fontSize + "px Arial";
+    this.delay_time = DELAYTIME / this.context.animationSpeed;
+  }
 
+  // this function is used to asynchronously delay the animation frames
+  delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // repopulate the array
+  async populateArray(){
+    this.arr = [];
+    let gap = this.ctx.measureText("000").width;
+    let width = 0;
+    this.arr.push({
+      value: this.props.smartObject.data[0],
+        x: gap + this.ctx.measureText("[").width,
+        y: Y,
+        speed: {
+          x: SPEED,
+          y: SPEED
+        }
+    });
+    for (let i = 1; i < this.props.smartObject.data.length; i++) {
+      width = this.ctx.measureText(this.arr[i-1].value.toString()).width;
+      this.arr.push({
+        value: this.props.smartObject.data[i],
+        x: this.arr[i - 1].x + width + gap,
+        y: Y,
+        speed: {
+          x: SPEED,
+          y: SPEED
+        }
+      })
+    }
+  }
+
+  // draw the entire array
+  async drawArray(){
     // draw the array
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillText('[', 0, Y);
@@ -143,20 +141,11 @@ class AnimationContainer extends Component {
     for (i = 0; i < this.arr.length; i++) {
       this.ctx.fillText(this.arr[i].value, this.arr[i].x, this.arr[i].y);
     }
-    this.ctx.fillText(']', (this.arr.length + 1) * X, Y);
-
-    //this.insertionSort();
-    //this.selectionSort();
-    //this.bubbleSort();
-  }
-
-  // this function is used to asynchronously delay the animation frames
-  delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    this.ctx.fillText(']', this.endX, Y);
   }
 
   // this function is used to redraw an element in an array
-  draw(arr) {
+  async draw(arr) {
     let i = 0;
     for (i = 0; i < arr.length; i++){
       let metrics = this.ctx.measureText(arr[i][VALUE_IDX].toString());
@@ -177,7 +166,6 @@ class AnimationContainer extends Component {
     let value = this.arr[idx].value;
     let oriX = this.arr[idx].x;
     let oriY = this.arr[idx].y;
-    let numDigits = this.arr[idx].numDigits;
     switch(direction) {
       case UP:
         this.arr[idx].y -= this.arr[idx].speed.y;
@@ -195,7 +183,7 @@ class AnimationContainer extends Component {
     }
     let newX = this.arr[idx].x;
     let newY = this.arr[idx].y;
-    return [value, oriX, oriY, newX, newY, numDigits];
+    return [value, oriX, oriY, newX, newY];
   }
 
   // this function is update the array with animation
@@ -203,48 +191,52 @@ class AnimationContainer extends Component {
   // @param newIdx: the new index of this element
   async updateWithAnimation(oriIdx, newIdx) {
     let inputArr;
+    let gap = this.ctx.measureText("000").width;
     // move element up
     while (this.arr[oriIdx].y > Y_UP) {
       await this.delay(this.delay_time);
-      this.draw([this.move(oriIdx, UP)]);
+      await this.draw([this.move(oriIdx, UP)]);
     }
     // choose which way to move by determining the positions of idxs
     if (oriIdx < newIdx) {
+      let width = this.ctx.measureText(this.arr[oriIdx].value.toString()).width;
+      let newIdxWidth = this.ctx.measureText(
+        this.arr[newIdx].value.toString()).width;
       // move element to newIdx
-      while (this.arr[oriIdx].x < this.arr[newIdx].x) {
+      while (this.arr[oriIdx].x + width < this.arr[newIdx].x + newIdxWidth) {
         await this.delay(this.delay_time);
-        this.draw([this.move(oriIdx, RIGHT)]);
+        await this.draw([this.move(oriIdx, RIGHT)]);
       }
 
-      let newXPos = this.arr[oriIdx + 1].x - X;
+      let newIdxX = this.arr[newIdx].x - width - gap;
       // move the piece in between to left
-      while (this.arr[oriIdx + 1].x > newXPos) {
+      while (this.arr[oriIdx + 1].x > newIdxX) {
         inputArr = [];
         let i = 1;
         for (i = 1; i <= newIdx - oriIdx; i++) {
           inputArr.push(this.move(oriIdx + i, LEFT));
         }
         await this.delay(this.delay_time);
-        this.draw(inputArr);
+        await this.draw(inputArr);
       }
     }
     else if (oriIdx > newIdx) {
       // move element to newIdx
       while (this.arr[oriIdx].x > this.arr[newIdx].x) {
         await this.delay(this.delay_time);
-        this.draw([this.move(oriIdx, LEFT)]);
+        await this.draw([this.move(oriIdx, LEFT)]);
       }
 
-      let newXPos = this.arr[newIdx].x + X;
+      let width = this.ctx.measureText(this.arr[oriIdx].value.toString()).width;
       // move the piece in between to right
-      while (this.arr[newIdx].x < newXPos) {
+      while (this.arr[newIdx].x < this.arr[oriIdx].x + gap + width) {
         inputArr = [];
         var i = 0;
         for (i = 0; i < oriIdx - newIdx; i++) {
           inputArr.push(this.move(newIdx + i, RIGHT));
         }
         await this.delay(this.delay_time);
-        this.draw(inputArr); 
+        await this.draw(inputArr); 
       }
     }
     // move element down
