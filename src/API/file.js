@@ -108,5 +108,5 @@ const deleteFolder = (email, folderID) => {
 
 
 export {
-    getAllFiles, getFileById,createFolder, saveCanvas, loadCanvas
+    getAllFiles, getFileById,createFolder, saveCanvas, loadCanvas, deleteFolder
 }

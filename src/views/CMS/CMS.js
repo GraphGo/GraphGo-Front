@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "../../components/Header/Header";
-import { Grid } from '@material-ui/core'
-import { getAllFiles, createFolder, loadCanvas, saveCanvas } from '../../API/file'
+import { Grid, Menu, MenuItem } from '@material-ui/core'
+import { getAllFiles, createFolder, loadCanvas, saveCanvas, deleteFolder } from '../../API/file'
 import FolderItem from '../../components/FolderItem/FolderItem'
 import FileItem from '../../components/FileItem/FileItem'
 import TopBar from '../../components/TopBar/TopBar'
@@ -15,13 +15,16 @@ class CMS extends React.Component {
         this.state = {
             files: [], // store all files
             fileItems:[], // store currently displayed files
-            currentFolder: "", // id of current route 
+            currentFolder: "", // id of current route ,
+            rightClickAnchorEl: null
         };
         this.loadData = this.loadData.bind(this)
         this.onCreatePopupConfirm = this.onCreatePopupConfirm.bind(this)
         this.onFolderClick = this.onFolderClick.bind(this)
         this.onFileClick = this.onFileClick.bind(this)
         this.onBack = this.onBack.bind(this)
+        this.setRightClickAnchorEl = this.setRightClickAnchorEl.bind(this)
+        this.handleRightClickClose = this.handleRightClickClose.bind(this)
     }
 
     componentDidMount() {
@@ -115,12 +118,34 @@ class CMS extends React.Component {
             .then(docID => {
                 console.log("[CMS] --- Created with docID "+docID)
                 loadCanvas(docID).then(res => {
-                    // history.push({pathname: '/' ,state: res})
+                    history.push({pathname: '/' ,state: res})
                 })
             })
             .catch(e => console.log(e))
         }
 
+    }
+
+    setRightClickAnchorEl(e) {
+        if(e){
+            e.preventDefault()
+            this.setState({rightClickAnchorEl: e.currentTarget})
+
+        }
+        else
+            this.setState({rightClickAnchorEl: null})
+    }
+
+    handleRightClickClose(e){
+        var targetID = this.state.rightClickAnchorEl.getAttribute('datakey')
+        if(e.target.getAttribute("action") === "delete"){
+            deleteFolder(sessionStorage.getItem("userEmail"), targetID).then(res => {
+                console.log(res)
+            }).catch(e => console.log(e))
+        }else if (e.target.getAttribute("action") === "rename"){
+            // rename
+        }
+        this.setRightClickAnchorEl(null)
     }
 
     render() {
@@ -150,17 +175,25 @@ class CMS extends React.Component {
                         onSubmit={this.onCreatePopupConfirm}
                     />
 
+                    <Menu anchorEl={this.state.rightClickAnchorEl} 
+                        open={Boolean(this.state.rightClickAnchorEl)} 
+                        onClose={this.handleRightClickClose}
+                        variant='menu'>
+                        <MenuItem onClick={this.handleRightClickClose} actionname="delete">Delete</MenuItem>
+                        <MenuItem onClick={this.handleRightClickClose} actionname="rename">Rename</MenuItem>
+                    </Menu>
+
                     <Grid style={gridStyle} container direction='row' justify='flex-start' alignItems='flex-start'>
                         {this.state.fileItems.map(item => {
                             if (item.type === 'folder') {
                                 return (
-                                    <Grid item xs={2} key={item.id} datakey={item.id} onClick={this.onFolderClick}>
+                                    <Grid item xs={2} key={item.id} datakey={item.id} onClick={this.onFolderClick} onContextMenu={this.setRightClickAnchorEl}>
                                         <FolderItem name={item.name} datakey={item.id} />
                                     </Grid>
                                 )
                             } else if (item.type === 'graph') {
                                 return (
-                                    <Grid item xs={2} key={item.id} datakey={item.id} onClick={this.onFileClick}>
+                                    <Grid item xs={2} key={item.id} datakey={item.id} onClick={this.onFileClick} onContextMenu={this.setRightClickAnchorEl}>
                                         <FileItem name={item.name} datakey={item.id}></FileItem>
                                     </Grid>
                                 )
