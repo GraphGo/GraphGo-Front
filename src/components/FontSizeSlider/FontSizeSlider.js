@@ -19,7 +19,7 @@ class FontSizeSlider extends Component {
 
         return (
             <div className={classes.slidecontainer}>
-                <input type="range" min="20" max="80" value={this.state.fontSize} className={classes.slider} id="strokeWidthInput" onChange={this.handleInput}/>
+                <input type="range" min="20" max="60" value={this.state.fontSize} className={classes.slider} id="strokeWidthInput" onChange={this.handleInput}/>
         <p>Font Size: <span id="demo">{this.state.fontSize}</span></p>
             </div>
       );

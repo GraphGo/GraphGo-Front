@@ -31,7 +31,7 @@ class CanvasPage extends Component {
     replay: false,
     revert: false,
     animationSpeed: 0.5,
-    sortType: 'bubbleSort' // bubbleSort
+    sortType: 'insertionSort' // insertion sort
   }
 
   setSmartObjStyle(newStyle) {
