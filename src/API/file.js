@@ -20,12 +20,7 @@ const getAllFiles = (email) => {
                     if(item.type === "folder"){
                         var files = []
                         for(var i = 0; i < data.files.length ; i++){
-                            var file = data.files[i]
-                            file.get().then(querysnapshot => {
-                                var data = querysnapshot.data()
-                                data.id = file.id
-                                files.push(data)
-                            })
+                            files.push({id: data.files[i].id})
                         }
                         data.files = files
                     }
@@ -58,6 +53,9 @@ const saveCanvas = (img, smartObj, width, height, name, uid, docID="", root="") 
             .then(fileID=>{
                 console.log("UID: ",uid)
                 db.collection('user').doc(uid).update({files: FieldValue.arrayUnion({id: fileID, type: "graph"})})
+                if(root){
+                    db.collection('folder').doc(root).update({files: FieldValue.arrayUnion({id: fileID})})
+                }
                 resolve(fileID)
             }).catch(e => {reject(e)})
         } else {
@@ -106,7 +104,57 @@ const deleteFolder = (email, folderID) => {
     })
 }
 
+const deleteFile = (email, fileID) => {
+    return new Promise((resolve, reject) => {
+        db.collection("user").where("email", "==", email).get().then(querysnapshot => {
+            if(querysnapshot.empty) reject("user does not exist")
+            var userRef = db.collection('user').doc(querysnapshot.docs[0].id)
+            userRef.update({files: FieldValue.arrayRemove({id: fileID,type: "graph"})})
+        }).then(()=>{
+            db.collection('file').doc(fileID).delete().then(res=> resolve(res)).catch(e=>reject(e))
+        })
+    })
+}
+
+const rename = (email, id, type, name) => {
+    return new Promise((resolve, reject) => {
+        db.collection('user').where('email','==',email).get().then(querysnapshot => {
+            if(querysnapshot.empty) reject("user does not exist")
+        }).then(() => {
+            // check sibling files for duplicate name
+            if(type === "file"){
+                // for file, check its root folder
+                db.collection('file').doc(id).get().then(docSnapshot => {
+                    return docSnapshot.data().root
+                }).then(rootFolderID => {
+                    if(!rootFolderID) return;
+                    // get snapshot for root folder
+                    db.collection('folder').doc(rootFolderID).get().then(docSnapshot => {
+                        // loop through files in folder, check duplicate name
+                        var files = docSnapshot.data().files
+                        var filePromises = []
+                        for(var file in files){
+                            filePromises.push(db.collection('file').doc(file.id).get())
+                        }
+                        Promise.all(filePromises).then(docSnapshots => {
+                            for(var doc in docSnapshots){
+                                if(doc.data().name === name){
+                                    reject("File "+name+" already exists")
+                                }
+                            }
+                        })
+                    })
+                })
+            } 
+        }).then(() => {
+            // update folder or file name
+            db.collection(type).doc(id).update({name: name}).catch(e=>reject(e))
+            resolve()
+        })
+    })
+} 
+
 
 export {
-    getAllFiles, getFileById,createFolder, saveCanvas, loadCanvas, deleteFolder
+    getAllFiles, getFileById,createFolder, saveCanvas, loadCanvas, deleteFolder, deleteFile, rename
 }
