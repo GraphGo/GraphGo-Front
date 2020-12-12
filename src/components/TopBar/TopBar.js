@@ -38,6 +38,11 @@ export default function TopBar(props) {
 
     const handleDropdownClose = (e)=>{
         if(e.target.getAttribute("datakey") === "newFolder"){
+            if(props.addDisabled){
+                alert("Sorry, cannot create folder in a folder (yet).")
+                setAnchorEl(null)
+                return;
+            }
             handleCreateFolderOpen()
         }else if(e.target.getAttribute("datakey") === "newGraph"){
             handleCreateGraphOpen()
@@ -66,7 +71,7 @@ export default function TopBar(props) {
             <IconButton onClick={props.onRefresh}>
                 <RefreshIcon />
             </IconButton>
-            <IconButton id="addButton" onClick={handleDropdownOpen} disabled={props.addDisabled}>
+            <IconButton id="addButton" onClick={handleDropdownOpen}>
                 <AddIcon />
             </IconButton>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleDropdownClose}>
