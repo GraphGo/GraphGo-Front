@@ -36,7 +36,6 @@ const getFileById = (fileId) => {
     return new Promise((resolve, reject) => {
         db.collection('file').doc(fileId).get().then(querysnapshot => {
             if(querysnapshot.docs.length == 0) reject('No file with this id found')
-            console.log(querysnapshot.docs[0].data())
             resolve(querysnapshot.docs[0].data())
         })
     })
@@ -51,7 +50,6 @@ const saveCanvas = (img, smartObj, width, height, name, uid, docID="", root="") 
                 return docRef.id
             })
             .then(fileID=>{
-                console.log("UID: ",uid)
                 db.collection('user').doc(uid).update({files: FieldValue.arrayUnion({id: fileID, type: "graph"})})
                 if(root){
                     db.collection('folder').doc(root).update({files: FieldValue.arrayUnion({id: fileID})})
@@ -59,7 +57,6 @@ const saveCanvas = (img, smartObj, width, height, name, uid, docID="", root="") 
                 resolve(fileID)
             }).catch(e => {reject(e)})
         } else {
-            console.log(docID);
             // save to exisitng graph
             db.collection('file').doc(docID).update({smartObjects:smartObj.map((obj) => {return Object.assign({}, obj)}),img: img, last_modified: new Date()}).then(res=> {
                 resolve(res)
@@ -70,7 +67,6 @@ const saveCanvas = (img, smartObj, width, height, name, uid, docID="", root="") 
 }
 
 const loadCanvas = (docID) => {
-    console.log(docID)
     return new Promise((resolve, reject) => {
         db.collection('file').doc(docID).get().then(querysnapshot => {
             var data = querysnapshot.data()

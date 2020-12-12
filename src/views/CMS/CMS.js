@@ -9,9 +9,11 @@ import { getAllFiles, createFolder, loadCanvas, saveCanvas, deleteFolder, delete
 import FolderItem from '../../components/FolderItem/FolderItem'
 import FileItem from '../../components/FileItem/FileItem'
 import TopBar from '../../components/TopBar/TopBar'
-//import {saveUserToDB, signUp, login, getUser} from '../../API/user'
 import history from '../../utils/history'
 
+/**
+ * This class renders the main view of CMS page
+ */
 class CMS extends React.Component {
     constructor(props) {
         // need to pass in props of the current user
@@ -41,7 +43,7 @@ class CMS extends React.Component {
 
     componentDidMount() {
         // TODO: use user email from Context
-        console.log("[CMS] --- Component loaded")
+        //console.log("[CMS] --- Component loaded")
         this.loadData()
     }
 
@@ -54,10 +56,10 @@ class CMS extends React.Component {
     }
 
     loadData() {
-        console.log("[CMS] --- Reloading data")
+        //console.log("[CMS] --- Reloading data")
         var user = sessionStorage.getItem('userEmail')
         if(!user) return;
-        console.log(user);
+        //console.log(user);
         getAllFiles(user).then(res => {
             var files = []
             var fileItems = []
@@ -75,7 +77,7 @@ class CMS extends React.Component {
     }
 
     enterFolder(id) {
-        console.log("Entering folder: "+id)
+        //console.log("Entering folder: "+id)
         if (id === "") {
             var fileItems = []
             this.state.files.forEach(item => {
@@ -106,7 +108,7 @@ class CMS extends React.Component {
     onFileClick(e) {
         var id = e.target.getAttribute("datakey")
         loadCanvas(id).then(res => {
-            console.log(res)
+            //console.log(res)
             history.push({pathname: '/', state: res})
         })
     }
@@ -118,15 +120,15 @@ class CMS extends React.Component {
 
     onCreatePopupConfirm(name, type) {
         if(type === "folder"){
-            console.log("[CMS] --- Creating folder "+ name)
+            //console.log("[CMS] --- Creating folder "+ name)
             createFolder(name, sessionStorage.getItem("userID")).then(() => {
                 this.loadData()
             }).catch(e => { console.log(e) })
         } else if (type === "graph"){
-            console.log("[CMS] --- Creating Graph "+name)
+            //console.log("[CMS] --- Creating Graph "+name)
             saveCanvas("", [], 900, 1200, name, sessionStorage.getItem('userID'), "", this.state.currentFolder)
             .then(docID => {
-                console.log("[CMS] --- Created with docID "+docID)
+                //console.log("[CMS] --- Created with docID "+docID)
                 loadCanvas(docID).then(res => {
                     history.push({pathname: '/' ,state: res})
                 })

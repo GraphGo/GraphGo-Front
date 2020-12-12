@@ -43,8 +43,6 @@ class AnimationContainer extends Component {
   async componentDidUpdate(){
     if (this.context && this.context.smartObjStyle){
       if (this.props.index == this.context.smartObjSelected){
-        console.log("Change", this.context.smartObjSelected, "th Smart Object property.")
-        console.log("DELAYTIME: ", DELAYTIME, "this.context.animationSpeed" ,this.context.animationSpeed, ", Delay time: ", this.delay_time);
         this.initializeCanvas();
     
         await this.drawArray();
@@ -305,7 +303,6 @@ class AnimationContainer extends Component {
 
   // this method is used to do the insertion sort for this.arr with animation
   async insertionSort() {
-    console.log("calling insertionSort");
     let i = 1;
     let key = null;
     let j = 0; 
@@ -327,7 +324,6 @@ class AnimationContainer extends Component {
 
   // this method is used to do the selection sort for this.arr with animation
   async selectionSort() {
-    console.log("calling selectionSort");
     let i, j, min_idx;  
   
     // One by one move boundary of unsorted subarray  
@@ -355,7 +351,6 @@ class AnimationContainer extends Component {
 
   // this method is used to do the bubble sort for this.arr with animation
   async bubbleSort() {
-    console.log("calling bubbleSort");
     let i, j;  
     for (i = 0; i < this.arr.length; i++){
       // Last i elements are already in place  

@@ -78,7 +78,6 @@ class DrawArea extends Component {
                   context.drawImage(canvasPic, 0, 0); 
                 }
               }
-              // console.log(this.cPushArray);
             }
             break;
           case "pen":
@@ -249,7 +248,6 @@ class DrawArea extends Component {
           if (context.strokeStyle === "white") {
             context.strokeStyle = 'red';
           }
-          console.log(toolType);
 
           context.moveTo(mouse.x, mouse.y);
           context.beginPath();
@@ -458,11 +456,9 @@ class DrawArea extends Component {
               })
                 .then(res => {
                   let newSmartObject = new SmartObject(res.data.result, left, top,  width, height, this.state.count);
-                  console.log(res);
                   this.setState(
                     state => {
                     const smartObjects = state.smartObjects.concat(newSmartObject);
-                    console.log(smartObjects);
                     return {
                       smartObjects: smartObjects
                     };

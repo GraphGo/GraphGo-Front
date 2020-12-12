@@ -21,7 +21,6 @@ class AnimationMenuPopup extends Component {
 
 
   handleColorChange = (color) => {
-    console.log("context: ", this.context, this.context.smartObjStyle)
     if (this.context && this.context.smartObjStyle){
       this.context.setSmartObjStyle({color: color.hex, fontSize: this.context.smartObjStyle.fontSize});
     }
@@ -29,8 +28,6 @@ class AnimationMenuPopup extends Component {
   };
 
   handleFontSizeChange = (val) => {
-    // console.log(val);
-    // console.log(val/3*90, Math.round(val/3*90/100)*100);
     if (this.context && this.context.smartObjStyle){
       this.context.setSmartObjStyle({color: this.context.smartObjStyle.color, fontSize: val});
     }
@@ -62,7 +59,6 @@ class AnimationMenuPopup extends Component {
 
   toggleLoop = (e) => {
     // TODO: implement looping.
-    console.log(e.target.checked);
     this.context.setLoopingAnimation(e.target.checked);
   }
 

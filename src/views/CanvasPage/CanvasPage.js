@@ -7,6 +7,9 @@ import { saveCanvas} from '../../API/file'
 import AnimationMenuPopup from "../../components/AnimationMenuPopup/AnimationMenuPopup";
 import SmartObjsContext from '../../contexts/SmartObjsContext.js';
 
+/**
+ * This class renders the main view of Canvas Page
+ */
 class CanvasPage extends Component {
 
   constructor(props) {
@@ -33,6 +36,7 @@ class CanvasPage extends Component {
     sortType: 'insertionSort' // insertion sort
   }
 
+  // state setter methods to pass down to child components
   setSmartObjStyle(newStyle) {
     this.setState({smartObjStyle: newStyle});
   }
@@ -73,20 +77,10 @@ class CanvasPage extends Component {
         height: canvas.height,
         userID: uid
       }
-      console.log(data);
       saveCanvas(img, currentDrawRef.state.smartObjects, canvas.width, canvas.height, text, uid, id).then(alert("File Saved Successfully"))
     } else {
       alert("You must login to save a file");
     }
-  }
-
-  componentDidMount() {
-    if (this.props.isLoggedIn === true) {
-      this.setState({ isLoggedIn: true });
-    }
-    console.log(this.props);
-
-
   }
 
 

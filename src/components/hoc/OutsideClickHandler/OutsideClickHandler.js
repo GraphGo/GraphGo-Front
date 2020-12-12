@@ -19,7 +19,6 @@ export default class OutsideClickHandler extends Component {
         document.removeEventListener('mousedown', this.handleClickOutside);
     }
     UNSAFE_componentWillUpdate() {
-        console.log(this.props.showPenMenu);
         if (this.props.showPenMenu) {
             document.removeEventListener('mousedown', this.handleClickOutside);
             this.handlerIsActive = false;
@@ -32,7 +31,7 @@ export default class OutsideClickHandler extends Component {
      */
     handleClickOutside(event) {
         if (this.wrapperRef && !this.wrapperRef.current.contains(event.target)) {
-            console.log("close modal")
+            //console.log("close modal")
             this.props.handler();
         }
     }

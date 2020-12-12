@@ -15,25 +15,22 @@ class Header extends Component {
     this.handleSignOut = this.handleSignOut.bind(this);
     this.handleRedirect = this.handleRedirect.bind(this);
     this.handleCloseSignupWindow = this.handleCloseSignupWindow.bind(this);
+    
+    // config for firebaseui auth window
     this.uiConfig = {
       callbacks: {
         signInSuccessWithAuthResult: function (authResult, redirectUrl) {
           // User successfully signed in.
           // Return type determines whether we continue the redirect automatically
           // or whether we leave that to developer to handle.
-          console.log(authResult)
           this.setState({user:authResult.user.email, signInWindowActive:false});
           
           sessionStorage.setItem("userEmail", authResult.user.email);
           sessionStorage.setItem("userID", authResult.user.uid);
-          console.log(sessionStorage.getItem("userID"));
-          console.log(sessionStorage.getItem("userEmail"));
           getUser(authResult.user.email)
             .catch((err) => {
-              console.log("in saving user")
               saveUserToDB({uid:authResult.user.uid,email: authResult.user.email, files: [], user_since:new Date().toString()})
             })
-          //document.getElementById('firebaseui-auth-container').style.display = 'none';
           return false;
         }.bind(this),
         uiShown: function () {
@@ -58,11 +55,12 @@ class Header extends Component {
   }
 
   componentDidMount() {
+    // initialize firebase signin ui
     this.ui =  new firebaseui.auth.AuthUI(firebase.auth());
   }
   
   handleLogin() {
-    //console.log(this.ui.)
+    // activate signin window
     this.ui.start('#firebaseui-auth-container', this.uiConfig);
     this.setState({signInWindowActive: true});
   }
@@ -70,8 +68,8 @@ class Header extends Component {
     this.ui.reset();
   }
   handleCloseSignupWindow() {
+    // deactivate signin window, ckear firebase auth state
     this.ui.reset();
-    //document.getElementById('firebaseui-auth-container').style.display = 'none';
     this.setState({signInWindowActive: false});
   }
   handleRedirect() {
@@ -86,7 +84,6 @@ class Header extends Component {
     sessionStorage.removeItem("userID");
   }
   render() {
-    console.log(this.state.user)
     let username = this.state.user || sessionStorage.getItem("userEmail");
     if(username) {
       return (
