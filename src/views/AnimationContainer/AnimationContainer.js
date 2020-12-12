@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import SmartObjsContext from '../../contexts/SmartObjsContext.js';
-import {INSERSION_SORT, SELECTION_SORT, BUBBLE_SORT} from '../../components/AnimationMenuPopup/AnimationMenuPopup';
-import $ from "jquery"
+
 const LEFT = 0, 
       RIGHT = 1, 
       UP = 2, 
@@ -33,7 +32,6 @@ class AnimationContainer extends Component {
     this.insertionSort = this.insertionSort.bind(this);
     this.selectionSort = this.selectionSort.bind(this);
     this.bubbleSort = this.bubbleSort.bind(this);
-    this.getTextHeight = this.getTextHeight.bind(this);
     this.sortTypesMap = {
       'insertionSort': this.insertionSort,
       'selectionSort': this.selectionSort,
@@ -44,7 +42,6 @@ class AnimationContainer extends Component {
   // Re-draw when React Context gets updated
   async componentDidUpdate(){
     if (this.context && this.context.smartObjStyle){
-      // console.log(this.context, this.context.smartObjStyle);
       if (this.props.index == this.context.smartObjSelected){
         console.log("Change", this.context.smartObjSelected, "th Smart Object property.")
         console.log("DELAYTIME: ", DELAYTIME, "this.context.animationSpeed" ,this.context.animationSpeed, ", Delay time: ", this.delay_time);
@@ -54,7 +51,6 @@ class AnimationContainer extends Component {
     
         if (this.context.replay){
           this.context.setReplay(false);
-          // let loops = this.context.loopingAnimation ? 10 : 1;
           let playOnce = true
           while (playOnce){
             playOnce = this.context.loopingAnimation
@@ -80,42 +76,13 @@ class AnimationContainer extends Component {
     this.initializeCanvas();
     await this.populateArray();
     let gap = this.ctx.measureText("000").width;
-    //console.log(this.ctx.measureText('0'))
     let width = this.ctx.measureText(
       this.arr[this.arr.length - 1].value.toString()).width;
     this.endX = this.arr[this.arr.length - 1].x + width + gap
     await this.drawArray();
   }
 
-  getTextHeight (font, size) {
-
-    var text = $('<span>Hg</span>').css({ 'font-family': font, 'font-size': size });
-    var block = $('<div style="display: inline-block; width: 1px; height: 0px;"></div>');
   
-    var div = $('<div></div>');
-    div.append(text, block);
-  
-    var body = $('body');
-    body.append(div);
-  
-    try {
-  
-      var result = {};
-  
-      block.css({ verticalAlign: 'baseline' });
-      result.ascent = block.offset().top - text.offset().top;
-  
-      block.css({ verticalAlign: 'bottom' });
-      result.height = block.offset().top - text.offset().top;
-  
-      result.descent = result.height - result.ascent;
-  
-    } finally {
-      div.remove();
-    }
-  
-    return result;
-  }
 
   // initializing canvas
   initializeCanvas(){
@@ -127,8 +94,7 @@ class AnimationContainer extends Component {
     this.ctx.fillStyle = this.context.smartObjStyle.color;
     this.textSize = this.context.smartObjStyle.fontSize;
     this.ctx.font = this.context.smartObjStyle.fontSize + "px Arial";
-    this.fontHeight = this.getTextHeight("Arial", this.context.smartObjStyle.fontSize);
-    console.log(this.fontHeight);
+
     this.delay_time = DELAYTIME / this.context.animationSpeed;
   }
 
@@ -183,7 +149,6 @@ class AnimationContainer extends Component {
     let i = 0;
     for (i = 0; i < arr.length; i++){
       let metrics = this.ctx.measureText(arr[i][VALUE_IDX].toString());
-      //console.log({orix: arr[i][ORI_X_IDX], oriy:arr[i][ORI_Y_IDX] - this.textSize / 1.1, w:metrics.width, h:metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent})
       this.ctx.clearRect(
         arr[i][ORI_X_IDX], 
         arr[i][ORI_Y_IDX] - this.textSize / 1.1, 
@@ -411,28 +376,6 @@ class AnimationContainer extends Component {
   render() {
     return (
        <canvas id={"animationCanvas"+this.props.smartObject.index} onClick={this.handleClickOnSmartObj} style={{border: '3px dotted'}}></canvas>
-     /*  <div style={{
-        "width": "100%",
-        "height": "100%",
-        "background-color": "white",
-        "display": "table-row",
-        "position":"fixed",
-        "z-index":"999"
-      }} onClick={window.alert("You have clicked on smart object")}>
-        <div style={{ "font-size": "50px", "display": "table-cell", "padding": "30px" }}>
-          {"["}
-        </div>
-        {this.state.arr.map(element => {
-          return (
-            <div style={{ "font-size": "50px", "display": "table-cell", "padding": "30px" }}>
-              {element.value}
-            </div>
-          );
-        })}
-        <div style={{ "font-size": "50px", "display": "table-cell", "padding": "30px" }}>
-          {"]"}
-          </div>
-        </div> */
     );
   }
 }

@@ -6,7 +6,6 @@ import DrawArea from "../DrawArea/DrawArea";
 import { saveCanvas} from '../../API/file'
 import AnimationMenuPopup from "../../components/AnimationMenuPopup/AnimationMenuPopup";
 import SmartObjsContext from '../../contexts/SmartObjsContext.js';
-import {INSERSION_SORT, SELECTION_SORT, BUBBLE_SORT} from '../../components/AnimationMenuPopup/AnimationMenuPopup';
 
 class CanvasPage extends Component {
 
@@ -90,17 +89,6 @@ class CanvasPage extends Component {
 
   }
 
-  componentWillUnmount() {
-
-  }
-
-  Login() {
-
-  }
-
-  Register() {
-
-  }
 
   render() {
     return (
@@ -133,8 +121,7 @@ class CanvasPage extends Component {
            setRevert: this.setRevert,
            setAnimationSpeed: this.setAnimationSpeed,
            setSortType: this.setSortType }}>
-          {/* <DrawingArea src="./demo.html"></DrawingArea> */}
-          {/* <AnimationLayer /> */}{/* Commented out for testing. TODO: uncomment */}
+
           <AnimationMenuPopup show/>
           <DrawArea savedData={this.props.location.state} ref={this.drawAreaRef} />
           <ToolBar handleSaveGraph={this.handleSaveGraph} docID={this.props.location.state ?this.props.location.state.id:null}/>
@@ -146,7 +133,7 @@ class CanvasPage extends Component {
 
 
 const ReduxStore = styled.div`
-  ${'' /* display: none; */}
+  ${''}
 `;
 
 export default CanvasPage;

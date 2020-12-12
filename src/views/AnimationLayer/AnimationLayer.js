@@ -3,17 +3,7 @@ import styled from 'styled-components';
 import AnimationContainer from "../AnimationContainer/AnimationContainer.js"
 
 class AnimationLayer extends React.Component {
-  state = {
-    // here is the state componenent to control all animation components in the animation layer
-    animationContainers: [{
-      key: 0,
-      top: 100,
-      left: 80,
-      width: 100,
-      height: 234,
-      values: [1, 2, 3, 4]
-    }]
-  }
+
   constructor(props) {
     super(props);
   }
