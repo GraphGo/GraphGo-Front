@@ -7,6 +7,11 @@ import SmartObject from "./SmartObject";
 import axios from "axios";
 
 const recognitionURL = "http://138.68.245.67:5000/";
+
+/**
+ * Renders main canvas for drawing, handles drawing, 
+ * smartobject creation, selection, and deletion.
+ */
 class DrawArea extends Component {
   currentEdit = {};
   doStack = [];

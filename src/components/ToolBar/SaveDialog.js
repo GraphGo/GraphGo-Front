@@ -1,5 +1,10 @@
 import { Button, Dialog, TextField, DialogContent, DialogActions, DialogTitle, DialogContentText } from "@material-ui/core"
 import { useState } from "react"
+
+/**
+ * Renders save graph prompt when new graph is being saved
+ * @param {*} props 
+ */
 export default function SaveDialog(props) {
 
     const [text, setText] = useState("");

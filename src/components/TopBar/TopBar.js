@@ -8,6 +8,10 @@ import RefreshIcon from '@material-ui/icons/Refresh'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import AddIcon from '@material-ui/icons/Add';
 
+/**
+ * Renders top navigation bar on CMS page
+ * @param {*} props 
+ */
 export default function TopBar(props) {
     const [folderDialogOpen, setFolderDialogOpen] = React.useState(false);
     const [text, setText] = React.useState("");

@@ -25,6 +25,9 @@ const tools = {
   eraser: [eraserIcon, eraserDarkIcon],
 };
 
+/**
+ * Renders toolbar on Canvas Page
+ */
 class ToolBar extends Component {
   constructor(props) {
     super(props);
