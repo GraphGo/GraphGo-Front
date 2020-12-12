@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Header from "../../components/Header/Header";
 import ToolBar from "../../components/ToolBar/ToolBar";
 import styled from "styled-components";
-import DrawArea from "../DrawArea/DrawArea";
+import DrawArea from "../../components/DrawArea/DrawArea";
 import { saveCanvas} from '../../API/file'
 import AnimationMenuPopup from "../../components/AnimationMenuPopup/AnimationMenuPopup";
 import SmartObjsContext from '../../contexts/SmartObjsContext.js';
