@@ -2,6 +2,34 @@
 
 This is the web frontend app of GraphGo, developed with React.js and bootstrapped with create-react-app.
 
+## Installation Instructions
+
+To start with a clean installation, after cloning the app, you can run `npm install` in the project root directory to install dependencies and start the app in development with `npm start`
+
+### Avaliable Scripts
+In the project directory, you can run:
+
+#### `npm start`
+
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
+
+#### `npm run build`
+
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+#### `serve -s build`
+This command could be run after build script finishes to serve a production build of the app locally. The app is default to server at [http://localhost:5000](http://localhost:5000)
+
 ## How to use
 
 ### Canvas Page
@@ -53,38 +81,6 @@ Please hard refresh (empty cache) the webpage if any unexpected behavior occurs.
 ### Minimum Device Requirement
 Windows 7, Windows 8, Windows 8.1, Windows 10 or later. An Intel Pentium 4 processor or later that's SSE3 capable. OR OS X Yosemite 10.10 or later. OR 64-bit Ubuntu 14.04+, Debian 8+, openSUSE 13.3+, or Fedora Linux 24+. An Intel Pentium 4 processor or later that's SSE3 capable. Please use the Google Chrome Browser. We strongly advise you to use our application in tablets, such as the iPad, with a writing apparatus, such as the Apple Pencil. 
 
-## Installation Instructions
-
-To start with a clean installation, after cloning the app, you can run `npm install` in the project root directory to install dependencies and start the app in development with `npm start`
-
-### Avaliable Scripts
-In the project directory, you can run:
-
-#### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-#### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-#### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-#### `serve -s build`
-This command could be run after build script finishes to serve a production build of the app locally. The app is default to server at [http://localhost:5000](http://localhost:5000)
 
 ## Example of MVC
 Our Content Management System (CMS) perfectly showcases the MVC design pattern. As src/views/CMS/CMS.js illustrates the View and Controller side of the pattern in function render() and onCreatePopupConfrim(), respectively. Data model is showcased by an API call to createFolder() function at src/API/file.js, which then handles data retrieval from our backend server. 
