@@ -4,6 +4,7 @@ This is the web frontend app of GraphGo, developed with React.js and bootstrappe
 
 ## How to use
 
+### Canvas Page
 After opening the app, you will be navigated to the Canvas Page, where you can draw and animate array data structure using the following tools.
 
 * Pen tool:
@@ -18,6 +19,15 @@ After opening the app, you will be navigated to the Canvas Page, where you can d
     To go back/ forward one stroke drawn on canvas.
 * Save tool:
     You can save the current graph to your personal workspace if you have logged in. The graph will be saved to the root directory of your workspace by default.
+
+### Content Management Page
+After logging into you account on Canvas Page, a "Workspace" button would appear on the top right corner of the screen, clicking on it would navigate you to your personal workspace where your saved graphs are stored and displayed. 
+
+* Navigating your workspace:
+    You see the folders and graphs in your workspace after they finish loading, you can navigate them by clicking on the folder/ graph icon. 
+* Create a new folder/ graph:
+    You can use the "+" button to name and create new folder/ graph. After you create a graph, you would be navigated to the Canvas Page where you can edit it. 
+
 
 ## Known Bugs and Issues
 
